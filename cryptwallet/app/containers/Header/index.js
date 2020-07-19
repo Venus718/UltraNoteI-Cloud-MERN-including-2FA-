@@ -15,7 +15,7 @@ import injectSaga from 'utils/injectSaga';
 import injectReducer from 'utils/injectReducer';
 import Image from 'components/uiStyle/Images';
 import { Grid, List, ListItem } from '@material-ui/core';
-import logo from 'images/logo.svg';
+import logo from 'images/logo.png';
 
 import './style.scss';
 import Typography from '@material-ui/core/Typography';
@@ -94,17 +94,17 @@ export class Header extends React.Component {
     return (
       <Grid className="mainHeadeArea">
         <Grid container alignItems="center" className="container">
-          <Grid item xs={12} sm={4} md={2}>
-            <Logo logo={logo} alt="CryptWallet" link="/dashboard" />
+          <Grid item xs={12} sm={4} md={2} >
+            <div style={{display:"flex",flexDirection:"row"}}>
+            <Logo logo={logo} alt="CryptWallet" link="/dashboard" /> <span style={{fontSize:"20px",fontWeight:"bold",color:"white",marginTop:"5px"}}>UltraNote</span> 
+            </div>
+
           </Grid>
           <Hidden smDown>
             <Grid item md={8}>
               <List className="mainMenu">
                 <ListItem className="menuItem">
                   <NavLink to="/dashboard">Dashboard</NavLink>
-                </ListItem>
-                <ListItem className="menuItem">
-                  <NavLink to="/buy-coin">Buy Coin</NavLink>
                 </ListItem>
                 <ListItem className="menuItem">
                   <NavLink to="/my-wallet">My Wallet</NavLink>
@@ -116,10 +116,7 @@ export class Header extends React.Component {
                   <NavLink to="/settings">Settings</NavLink>
                 </ListItem>
                 <ListItem className="menuItem">
-                  <NavLink to="/referral">Referral</NavLink>
-                </ListItem>
-                <ListItem className="menuItem">
-                  <NavLink to="/landingpage">landingpage</NavLink>
+                  <NavLink to="/landingpage">Homepage</NavLink>
                 </ListItem>
               </List>
             </Grid>

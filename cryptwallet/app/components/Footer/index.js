@@ -19,20 +19,10 @@ function Footer() {
   return (
     <Grid className="footerArea">
       <Grid container alignItems="center" className="container">
-        <Grid item xs={12} sm={6}>
+        <Grid item xs={12} sm={12}>
           <Typography component="p">
-            {currentYear} | All Right Reserved By <strong>Crypt Wallet</strong>
+            {currentYear} | All Right Reserved By <strong>UltraNote Cloud</strong>
           </Typography>
-        </Grid>
-        <Grid item xs={12} sm={6}>
-          <List disablePadding>
-            <ListItem>
-              <Link to="/">FAQS</Link>
-            </ListItem>
-            <ListItem>
-              <Link to="/">Terms And Conditions</Link>
-            </ListItem>
-          </List>
         </Grid>
       </Grid>
     </Grid>

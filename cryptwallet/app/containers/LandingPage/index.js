@@ -76,7 +76,7 @@ import screen8 from '../../images/screenshort/8.jpg';
 import screen9 from '../../images/screenshort/9.jpg';
 import screen10 from '../../images/screenshort/10.jpg';
 
-import logo from '../../images/logo.svg';
+import logo from '../../images/logo.png';
 
 import './landing.scss';
 
@@ -96,8 +96,8 @@ const mainMenu = [
   { menu: 'Home', id: 'home' },
   { menu: 'About', id: 'about' },
   { menu: 'Features', id: 'features' },
-  { menu: 'Demo', id: 'demo' },
-  { menu: 'Integration', id: 'integration' },
+  // { menu: 'Login', id: 'demo' },
+  // { menu: 'Integration', id: 'integration' },
 ];
 
 const sliderItem = [
@@ -239,7 +239,11 @@ export class LandingPage extends Component {
           <Grid container spacing={32} className="container">
             <Grid item xs={6}>
               <Grid className="logoWrap">
-                <Image src={logo} alt="logo" />
+                <div>
+                  <img src={logo} alt="logo" style={{width:"80px"}}/>
+                  <span style={{fontSize:"23px",color:"white",fontWeight:"bold"}}>UltraNote Cloud</span>
+                </div>
+                
               </Grid>
             </Grid>
             <Hidden smDown>
@@ -259,6 +263,18 @@ export class LandingPage extends Component {
                       </Link>
                     </ListItem>
                   ))}
+                    <ListItem >
+                      <a
+                        // activeClass="active"
+                        spy
+                        smooth
+                        offset={0}
+                        duration={1000}
+                        href={"/login"}
+                      >
+                        Login
+                      </a>
+                    </ListItem>
                 </List>
               </Grid>
             </Hidden>
@@ -312,7 +328,7 @@ export class LandingPage extends Component {
             <Grid item xl={7}>
               <Grid className="heroContent">
                 <Typography variant="h2">
-                  The Highly Secured Bitcoin Wallet
+                UltraNote Infinity  Cloud Wallet ?
                 </Typography>
                 <Typography paragraph>
                   There are many variations of passages of Lorem Ipsum
@@ -418,28 +434,14 @@ export class LandingPage extends Component {
             />
           </Grid>
         </Grid>
-        <Grid id="demo" className="productScreenShortArea">
+        {/* <Grid id="demo" className="productScreenShortArea">
           <Grid className="container" container spacing={32}>
-            <Grid item xs={12}>
-              <SectionTitle
-                title="Demo"
-                text="There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form."
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <Grid container spacing={16}>
-                {sliderItem.map(item => (
-                  <Grid key={item.id} item xs={12} md={6}>
-                    <Grid className="screenshortWrap">
-                      <NavLink target="_blank" to={item.link}><Image src={item.item} alt="slider" /></NavLink>
-                    </Grid>
-                  </Grid>
-                ))}
-              </Grid>
-            </Grid>
+                <Button component={NavLink} to="/login">
+                  Sign In
+                </Button>
           </Grid>
-        </Grid>
-        <Grid className="featuredArea" id="integration">
+        </Grid> */}
+        {/* <Grid className="featuredArea" id="integration">
           <Grid className="container" container spacing={32}>
             <FeaturedContent
               title="It Has Useful Integration With Other Awesome tools."
@@ -453,33 +455,14 @@ export class LandingPage extends Component {
               </Grid>
             </Grid>
           </Grid>
-        </Grid>
+        </Grid> */}
         <Footer className="footerArea">
-          <Grid className="container" spacing={32} container>
-            <Grid item md={4} xs={12}>
-              <Grid className="footerLogo">
-                <Image src={logo} alt="footer logo" />
-                <Typography paragraph>
-                  Lorem Ipsum is simply dummy text of the printing and
-                  typesetting industry. Lorem Ipsum has been text ever since.
-                </Typography>
-              </Grid>
-            </Grid>
-            <Grid item md={8} xs={12}>
-              <Grid container spacing={32}>
-                <FooterMenu title="Important Link" footerMenu={importantLink} />
-                <FooterMenu
-                  title="Awesome Feature"
-                  footerMenu={awesomeFeature}
-                />
-                <FooterMenu title="Social Link" footerMenu={socialLink} />
-              </Grid>
-            </Grid>
+          <Grid className="container" spacing={2} container>
             <Grid item xs={12}>
               <Grid className="footerBottom">
                 <Typography paragraph>
-                  2019 | All Right Reserved By{' '}
-                  <Typography component="span">Cryptwallet</Typography>{' '}
+                  2020 | All Right Reserved By{' '}
+                  <Typography component="span">UltraNote Cloud</Typography>{' '}
                 </Typography>
               </Grid>
             </Grid>

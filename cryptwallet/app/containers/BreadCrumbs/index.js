@@ -36,7 +36,7 @@ export class BreadCrumbs extends React.Component {
             </Typography>
             <List disablePadding className="breadList">
               <ListItem>
-                Crypt Wallet
+                UltraNote Cloud
                 <FontAwesome name="caret-right" />
               </ListItem>
               <ListItem className="active">{this.props.title}</ListItem>
@@ -52,7 +52,7 @@ export class BreadCrumbs extends React.Component {
                 <List>
                   <ListItem>
                     <Typography component="span">9067.7800000</Typography>
-                    BTC
+                    XUNI
                   </ListItem>
                   <ListItem>
                     <Typography component="span">127509750.800</Typography>
@@ -70,7 +70,7 @@ export class BreadCrumbs extends React.Component {
                 <List>
                   <ListItem>
                     <Typography component="span">9067.7800000</Typography>
-                    BTC
+                    XUNI
                   </ListItem>
                   <ListItem>
                     <Typography component="span">127509750.800</Typography>

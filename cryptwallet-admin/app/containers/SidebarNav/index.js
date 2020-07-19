@@ -19,7 +19,7 @@ import report from 'images/sidebar/report.svg'
 import user from 'images/sidebar/user.svg'
 import wallet from 'images/sidebar/wallet.svg'
 import arrow from 'images/icon/arrow.svg'
-import logo from 'images/logo.svg'
+import logo from 'images/logo.png'
 
 
 const SidebarNav = (props) => {
@@ -124,7 +124,7 @@ const SidebarNav = (props) => {
                 </ul>
                 <div className="logoSlidebar">
                     <NavLink to="/">
-                        <img src={logo} alt="" />
+                        <img src={logo} alt="" style={{width:"100px"}}/>
                     </NavLink>
                 </div>
                 <ScrollArea

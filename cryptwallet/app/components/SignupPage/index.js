@@ -24,7 +24,7 @@ import ReactPhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/dist/style.css';
 
 // images
-import logo from 'images/logo.svg';
+import logo from 'images/logo_512x512.png';
 import messages from './messages';
 import showPass from '../../images/icon/eye.svg';
 import pass from '../../images/icon/eye2.svg';
@@ -178,10 +178,12 @@ class SignupPage extends Component {
           <Grid className="container" container>
             <Grid item lg={6} xs={12}>
               <Grid className="accountImage">
-                <Image src={logo} alt="logo" />
+              <div className="logo-left" >
+                <img src={logo} alt="logo" style={{width:"150px"}}/>
+                <span>UltraNote Cloud</span>
+                </div>
                 <p>
-                  Store and manage digital currencies with ease in the smart and
-                  beautiful cryptocurrency wallets.
+                Store, Access and manange your UltraNote Infinity coins with ease securely on your cloud wallet.
                 </p>
               </Grid>
             </Grid>

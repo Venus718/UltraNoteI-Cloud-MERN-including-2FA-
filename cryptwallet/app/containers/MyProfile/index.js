@@ -86,16 +86,6 @@ export class MyProfile extends React.Component {
               />
               <Tab
                 disableRipple
-                label="Phone Varification"
-                icon={<Image src={PhoneVarificationIcon} />}
-              />
-              <Tab
-                disableRipple
-                label="ID Varification"
-                icon={<Image src={IdVarificationIcon} />}
-              />
-              <Tab
-                disableRipple
                 label="Reset Password"
                 icon={<Image src={ResetPasswordIcon} />}
               />
@@ -118,20 +108,10 @@ export class MyProfile extends React.Component {
           )}
           {tab === 2 && (
             <TabContainer>
-              <PhoneVarification />
-            </TabContainer>
-          )}
-          {tab === 3 && (
-            <TabContainer>
-              <IdVarification />
-            </TabContainer>
-          )}
-          {tab === 4 && (
-            <TabContainer>
               <RessetPassword />
             </TabContainer>
           )}
-          {tab === 5 && (
+          {tab === 3 && (
             <TabContainer>
               <ActivityLog />
             </TabContainer>
