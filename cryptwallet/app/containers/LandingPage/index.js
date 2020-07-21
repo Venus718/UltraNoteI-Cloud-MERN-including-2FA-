@@ -138,23 +138,23 @@ const awesomeFeatureList = [
   {
     image: feature1,
     imageWhite: feature1White,
-    title: 'Easy Customize',
+    title: 'Instant Transactions',
     text:
       'The point of using Lorem Ipsum is that it has or-less normal distribution letters, as opposed Content here.',
   },
   {
     image: feature2,
     imageWhite: feature2White,
-    title: 'Awesome Design',
+    title: 'Worldwide',
     text:
-      'The point of using Lorem Ipsum is that it has or-less normal distribution letters, as opposed Content here.',
+      'UltraNote Infinity doesn’t have borders. You can send Money to anyone in more than 196 Countries without any restrictions.',
   },
   {
     image: feature3,
     imageWhite: feature3White,
     title: 'Extreme Security',
     text:
-      'The point of using Lorem Ipsum is that it has or-less normal distribution letters, as opposed Content here.',
+      'Execute Instant Secured UltraNote Infinity Coin Transactions directly from your favorite browser.',
   },
 ];
 
@@ -328,14 +328,10 @@ export class LandingPage extends Component {
             <Grid item xl={7}>
               <Grid className="heroContent">
                 <Typography variant="h2">
-                UltraNote Infinity  Cloud Wallet ?
+                UltraNote Infinity Cloud Wallet 
                 </Typography>
                 <Typography paragraph>
-                  There are many variations of passages of Lorem Ipsum
-                  available, but the majority have suffered alteration.There are
-                  many There are many variations of passages of Lorem Ipsum
-                  available, but the majority have suffered alteration.There are
-                  many.
+                The Easiest and Most Popular Way To Send, Receive and Store your UltraNote Infinity ( XUNI ) Coins Online.
                 </Typography>
                 <Button component={NavLink} to="/signup">
                   Sign Up
@@ -354,8 +350,10 @@ export class LandingPage extends Component {
           <Grid className="container" container spacing={32}>
             <Grid item xs={12}>
               <SectionTitle
-                title="Who We are"
-                text="There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form."
+                title="About Us"
+                text="UltraNote Infinity Cloud has been designed to bring additional Flexibility and Mobility
+                within the UltraNote Ecosystem. As a complement to Our Flagship Desktop UltraNote
+                Infinity GUI Wallet, UltraNote Infinity Cloud allows you to have 24/7 access to your UltraNote Infinity Coins on the Move."
               />
             </Grid>
             <Grid item md={6} />
@@ -378,8 +376,8 @@ export class LandingPage extends Component {
           <Grid className="container" container spacing={32}>
             <Grid item xs={12}>
               <SectionTitle
-                title="Our Awesome Feature"
-                text="There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form."
+                title="Features & Tech Specifications"
+                text="There are many variations of cryptocurrency Cloud wallets, But the majority have suffered alteration in some form."
               />
             </Grid>
             {awesomeFeatureList.map((awesomeFeature, i) => (

@@ -138,7 +138,7 @@ class LoginPage extends Component {
             <Grid item lg={6} xs={12}>
               <Grid className="accountImage">
                 <div className="logo-left" >
-                <img src={Logo} alt="logo" style={{width:"150px"}}/>
+                <img src={Logo} alt="logo" style={{width:"100px"}, {height:"100px"}}/>
                 <span>UltraNote Cloud</span>
                 </div>
 
