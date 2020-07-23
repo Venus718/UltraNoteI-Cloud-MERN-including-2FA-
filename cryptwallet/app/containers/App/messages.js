@@ -11,6 +11,6 @@ export const scope = 'app.containers.App';
 export default defineMessages({
   appTitle: {
     id: `${scope}.appTitle`,
-    defaultMessage: 'Crypt Wallet',
+    defaultMessage: 'UltraNote Cloud',
   },
 });
