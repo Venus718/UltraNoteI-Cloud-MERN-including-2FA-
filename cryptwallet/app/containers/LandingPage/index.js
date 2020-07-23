@@ -41,11 +41,11 @@ import MenuList from '@material-ui/core/MenuList';
 import hero from 'images/mockup/laptop.png';
 import ellipse from 'images/icon/ellipse.svg';
 import whoWeAre from 'images/mockup/Image.png';
-import feature1 from 'images/icon/img1.png';
+import feature1 from 'images/icon/img1.svg';
 import feature1White from 'images/icon/img1.1.png';
-import feature2 from 'images/icon/img2.png';
+import feature2 from 'images/icon/img2.svg';
 import feature2White from 'images/icon/img2.1.png';
-import feature3 from 'images/icon/img3.png';
+import feature3 from 'images/icon/img3.svg';
 import feature3White from 'images/icon/img3.1.png';
 import payment from 'images/mockup/payment.png';
 import refferal from 'images/mockup/refferal.png';
@@ -230,62 +230,43 @@ export class LandingPage extends Component {
       nextArrow: <SampleNextArrow />,
       prevArrow: <SamplePrevArrow />,
     };
-    return (
-      <Fragment>
+    return <Fragment>
         <Helmet>
-          <Title>{this.t({ ...messages.pageTitle })}</Title>
+          <Title>UltraNote Cloud</Title>
+          {/* <Title>{this.t({ ...messages.pageTitle })}</Title> */}
         </Helmet>
         <Grid className="headerArea">
           <Grid container spacing={32} className="container">
             <Grid item xs={6}>
               <Grid className="logoWrap">
                 <div>
-                  <img src={logo} alt="logo" style={{width:"80px"}}/>
-                  <span style={{fontSize:"23px",color:"white",fontWeight:"bold"}}>UltraNote Cloud</span>
+                  <img src={logo} alt="logo" style={{ width: '80px' }} />
+                  <span style={{ fontSize: '23px', color: 'white', fontWeight: 'bold' }}>
+                    UltraNote Cloud
+                  </span>
                 </div>
-                
               </Grid>
             </Grid>
             <Hidden smDown>
               <Grid item lg={6}>
                 <List className="mainMenu">
-                  {mainMenu.map(menu => (
-                    <ListItem key={menu.id}>
-                      <Link
-                        activeClass="active"
-                        spy
-                        smooth
-                        offset={0}
-                        duration={1000}
-                        to={menu.id}
-                      >
+                  {mainMenu.map(menu => <ListItem key={menu.id}>
+                      <Link activeClass="active" spy smooth offset={0} duration={1000} to={menu.id}>
                         {menu.menu}
                       </Link>
-                    </ListItem>
-                  ))}
-                    <ListItem >
-                      <a
-                        // activeClass="active"
-                        spy
-                        smooth
-                        offset={0}
-                        duration={1000}
-                        href={"/login"}
-                      >
-                        Login
-                      </a>
-                    </ListItem>
+                    </ListItem>)}
+                  <ListItem>
+                    <a spy smooth offset={0 // activeClass="active"
+                      } duration={1000} href={'/login'}>
+                      Login
+                    </a>
+                  </ListItem>
                 </List>
               </Grid>
             </Hidden>
             <Hidden mdUp>
               <Grid item xs={6}>
-                <IconButton
-                  className="hamBurger"
-                  color="primary"
-                  aria-label="Menu"
-                  onClick={this.sMenuHandler}
-                >
+                <IconButton className="hamBurger" color="primary" aria-label="Menu" onClick={this.sMenuHandler}>
                   <FontAwesome name={this.state.sideMenu ? 'times' : 'bars'} />
                 </IconButton>
               </Grid>
@@ -294,31 +275,14 @@ export class LandingPage extends Component {
         </Grid>
 
         <Hidden mdUp>
-          <Grid
-            className={`sidebarMenu ${
-              this.state.sideMenu ? 'showSidebar' : ''
-              }`}
-          >
-            <Typography
-              onClick={this.sMenuHandleClose}
-              component="div"
-              className="backDrop"
-            />
+          <Grid className={`sidebarMenu ${this.state.sideMenu ? 'showSidebar' : ''}`}>
+            <Typography onClick={this.sMenuHandleClose} component="div" className="backDrop" />
             <MenuList>
-              {mainMenu.map(menu => (
-                <ListItem key={menu.id}>
-                  <Link
-                    activeClass="active"
-                    spy
-                    smooth
-                    offset={0}
-                    duration={1000}
-                    to={menu.id}
-                  >
+              {mainMenu.map(menu => <ListItem key={menu.id}>
+                  <Link activeClass="active" spy smooth offset={0} duration={1000} to={menu.id}>
                     {menu.menu}
                   </Link>
-                </ListItem>
-              ))}
+                </ListItem>)}
             </MenuList>
           </Grid>
         </Hidden>
@@ -328,10 +292,11 @@ export class LandingPage extends Component {
             <Grid item xl={7}>
               <Grid className="heroContent">
                 <Typography variant="h2">
-                UltraNote Infinity Cloud Wallet 
+                  UltraNote Infinity Cloud Wallet
                 </Typography>
                 <Typography paragraph>
-                The Easiest and Most Popular Way To Send, Receive and Store your UltraNote Infinity ( XUNI ) Coins Online.
+                  The Easiest and Most Popular Way To Send, Receive and
+                  Store your UltraNote Infinity ( XUNI ) Coins Online.
                 </Typography>
                 <Button component={NavLink} to="/signup">
                   Sign Up
@@ -349,12 +314,9 @@ export class LandingPage extends Component {
           </Grid>
           <Grid className="container" container spacing={32}>
             <Grid item xs={12}>
-              <SectionTitle
-                title="About Us"
-                text="UltraNote Infinity Cloud has been designed to bring additional Flexibility and Mobility
+              <SectionTitle title="About Us" text="UltraNote Infinity Cloud has been designed to bring additional Flexibility and Mobility
                 within the UltraNote Ecosystem. As a complement to Our Flagship Desktop UltraNote
-                Infinity GUI Wallet, UltraNote Infinity Cloud allows you to have 24/7 access to your UltraNote Infinity Coins on the Move."
-              />
+                Infinity GUI Wallet, UltraNote Infinity Cloud allows you to have 24/7 access to your UltraNote Infinity Coins on the Move." />
             </Grid>
             <Grid item md={6} />
             <Grid item md={6}>
@@ -365,7 +327,9 @@ export class LandingPage extends Component {
                       <Image src={whoWeAreContetnt.image} alt="icon" />
                       {whoWeAreContetnt.title}
                     </Typography>
-                    <Typography paragraph>{whoWeAreContetnt.text}</Typography>
+                    <Typography paragraph>
+                      {whoWeAreContetnt.text}
+                    </Typography>
                   </ListItem>
                 ))}
               </List>
@@ -375,10 +339,7 @@ export class LandingPage extends Component {
         <Grid className="awesomeFeatureArea" id="features">
           <Grid className="container" container spacing={32}>
             <Grid item xs={12}>
-              <SectionTitle
-                title="Features & Tech Specifications"
-                text="There are many variations of cryptocurrency Cloud wallets, But the majority have suffered alteration in some form."
-              />
+              <SectionTitle title="Features & Tech Specifications" text="There are many variations of cryptocurrency Cloud wallets, But the majority have suffered alteration in some form." />
             </Grid>
             {awesomeFeatureList.map((awesomeFeature, i) => (
               <Grid key={i} item md={4} xs={12}>
@@ -395,7 +356,9 @@ export class LandingPage extends Component {
                       alt="icon"
                     />
                   </Grid>
-                  <Typography variant="h3">{awesomeFeature.title}</Typography>
+                  <Typography variant="h3">
+                    {awesomeFeature.title}
+                  </Typography>
                   <Typography paragraph>{awesomeFeature.text}</Typography>
                 </Grid>
               </Grid>
@@ -404,12 +367,7 @@ export class LandingPage extends Component {
         </Grid>
         <Grid className="featuredArea">
           <Grid className="container" spacing={32} container>
-            <FeaturedContent
-              title="Easy Customization & Secure Payment System."
-              button="Know More"
-              link="/login"
-              text="Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy when Lorem Ipsum is simply dummy text of the printing and typesetting industry I completely follow all your instructions."
-            />
+            <FeaturedContent title="Easy Customization & Secure Payment System." button="Know More" link="/login" text="Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy when Lorem Ipsum is simply dummy text of the printing and typesetting industry I completely follow all your instructions." />
             <Grid item md={7}>
               <Grid className="featuredImg">
                 <Image src={payment} alt="payment" />
@@ -424,12 +382,7 @@ export class LandingPage extends Component {
                 <Image src={refferal} alt="refferal" />
               </Grid>
             </Grid>
-            <FeaturedContent
-              title="Easy Customization & Secure Payment System."
-              button="Know More"
-              link="/login"
-              text="Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy when Lorem Ipsum is simply dummy text of the printing and typesetting industry I completely follow all your instructions."
-            />
+            <FeaturedContent title="Easy Customization & Secure Payment System." button="Know More" link="/login" text="Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy when Lorem Ipsum is simply dummy text of the printing and typesetting industry I completely follow all your instructions." />
           </Grid>
         </Grid>
         {/* <Grid id="demo" className="productScreenShortArea">
@@ -458,16 +411,25 @@ export class LandingPage extends Component {
           <Grid className="container" spacing={2} container>
             <Grid item xs={12}>
               <Grid className="footerBottom">
+                <Typography paragraph style={{ padding: '25px' }}>
+                  <a target="_blank" href="https://www.ultranote.org/terms-conditions/" style={{ color: 'wheat', textDecoration: 'none' }}>
+                    Terms And Conditions
+                  </a>
+                  <a target="_blank" href="https://www.ultranote.org/privacy-policy/" style={{ color: 'wheat', textDecoration: 'none' }}>
+                    {'  '}| Privacy Policy{' '}
+                  </a>
+                </Typography>
                 <Typography paragraph>
-                  2020 | All Right Reserved By{' '}
-                  <Typography component="span">UltraNote Cloud</Typography>{' '}
+                  2020 | All Right Reserved By <Typography component="span">
+                    UltraNote Cloud
+                  </Typography>
+                  {'  '}
                 </Typography>
               </Grid>
             </Grid>
           </Grid>
         </Footer>
-      </Fragment>
-    );
+      </Fragment>;
   }
 }
 
