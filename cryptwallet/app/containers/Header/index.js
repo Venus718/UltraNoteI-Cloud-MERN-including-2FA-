@@ -116,7 +116,7 @@ export class Header extends React.Component {
                   <NavLink to="/settings">Settings</NavLink>
                 </ListItem>
                 <ListItem className="menuItem">
-                  <NavLink to="/landingpage">Homepage</NavLink>
+                  <NavLink to="/">Homepage</NavLink>
                 </ListItem>
               </List>
             </Grid>
