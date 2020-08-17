@@ -367,7 +367,7 @@ export class LandingPage extends Component {
         </Grid>
         <Grid className="featuredArea">
           <Grid className="container" spacing={32} container>
-            <FeaturedContent title="Easy Customization & Secure Payment System." button="Know More" link="/login" text="Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy when Lorem Ipsum is simply dummy text of the printing and typesetting industry I completely follow all your instructions." />
+            <FeaturedContent title="Clean Interface & Mobile Friendly." button="Know More" link="/login" text="Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy when Lorem Ipsum is simply dummy text of the printing and typesetting industry I completely follow all your instructions." />
             <Grid item md={7}>
               <Grid className="featuredImg">
                 <Image src={payment} alt="payment" />
@@ -382,7 +382,7 @@ export class LandingPage extends Component {
                 <Image src={refferal} alt="refferal" />
               </Grid>
             </Grid>
-            <FeaturedContent title="Easy Customization & Secure Payment System." button="Know More" link="/login" text="Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy when Lorem Ipsum is simply dummy text of the printing and typesetting industry I completely follow all your instructions." />
+            <FeaturedContent title="Accept Payments Online Instantly." button="Know More" link="/login" text="Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy when Lorem Ipsum is simply dummy text of the printing and typesetting industry I completely follow all your instructions." />
           </Grid>
         </Grid>
         {/* <Grid id="demo" className="productScreenShortArea">
