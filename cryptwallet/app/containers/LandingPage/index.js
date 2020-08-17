@@ -140,7 +140,7 @@ const awesomeFeatureList = [
     imageWhite: feature1White,
     title: 'Instant Transactions',
     text:
-      'The point of using Lorem Ipsum is that it has or-less normal distribution letters, as opposed Content here.',
+      'Execute Instant Secured UltraNote Infinity Coin Transactions directly from your favorite browser.',
   },
   {
     image: feature2,
@@ -154,7 +154,7 @@ const awesomeFeatureList = [
     imageWhite: feature3White,
     title: 'Extreme Security',
     text:
-      'Execute Instant Secured UltraNote Infinity Coin Transactions directly from your favorite browser.',
+      'Full access over your wallet private keys, Export your wallet easily from Cloud to Desktop wallet anytime you want.',
   },
 ];
 
@@ -296,7 +296,7 @@ export class LandingPage extends Component {
                 </Typography>
                 <Typography paragraph>
                   The Easiest and Most Popular Way To Send, Receive and
-                  Store your UltraNote Infinity ( XUNI ) Coins Online.
+                  Store your UltraNote Infinity Coins Online.
                 </Typography>
                 <Button component={NavLink} to="/signup">
                   Sign Up
