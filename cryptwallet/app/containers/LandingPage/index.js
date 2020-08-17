@@ -154,7 +154,7 @@ const awesomeFeatureList = [
     imageWhite: feature3White,
     title: 'Extreme Security',
     text:
-      'Full access over your wallet private keys, Export your wallet easily from Cloud to Desktop wallet anytime you want.',
+      'Full access over your wallet private keys. Export your wallet easily from Cloud to Desktop wallet anytime you want.',
   },
 ];
 
