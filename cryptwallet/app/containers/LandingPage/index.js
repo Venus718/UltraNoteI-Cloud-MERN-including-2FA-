@@ -382,7 +382,7 @@ export class LandingPage extends Component {
                 <Image src={refferal} alt="refferal" />
               </Grid>
             </Grid>
-            <FeaturedContent title="Accept Payments Online Instantly." button="Know More" link="/login" text="Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy when Lorem Ipsum is simply dummy text of the printing and typesetting industry I completely follow all your instructions." />
+            <FeaturedContent title="Accept Payments Online Instantly." button="Know More" link="/login" text="Share your wallet address or QR code directly in private or using social media links and start accepting payments directly to your web wallet." />
           </Grid>
         </Grid>
         {/* <Grid id="demo" className="productScreenShortArea">
