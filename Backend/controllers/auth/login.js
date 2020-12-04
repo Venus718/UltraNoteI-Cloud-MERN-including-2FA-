@@ -1,0 +1,37 @@
+const User = require('../../models/user');
+const jwt = require('jsonwebtoken');
+const twoFactAuth = require('../../controllers/auth/two_fact_auth')
+
+module.exports = {
+
+    async loginUser(req, res) {
+     if(!req.body.mail || !req.body.password) {
+         console.log(req.body)
+         return res.status(400).json({message:"No empty fields allowed"});
+     }
+     await User.findOne({mail: req.body.mail}).then(user => {
+         if (!user) {
+            return res.status(404).json({message:"E-mail is wrong"});
+         }
+            return bcrypt.compare(req.body.password, user.password).then((result) => {
+                if(!result) {
+                    return res.status(400).json({message:"Password is wrong"});
+                } 
+                if(!user.active) {
+                    return res.status(400).json({message:"Account is not active yet"});
+                }
+                if (user.two_fact_auth === false) {
+                    twoFactAuth(user.username, user.mail).then(() => {
+                        const token = jwt.sign({data: user } , "Hakona_Matata", {expiresIn: '72h'});
+                        return res.status(200).json({message: 'login successful', user, token});
+                    });
+                } else {
+                    const token = jwt.sign({data: user } , "Hakona_Matata", {expiresIn: '72h'});
+                    return res.status(200).json({message: 'login successful', user, token});
+                }  
+            })
+        }).catch (err => {
+        return res.status(400).json({message: 'ERROR WHILE LOGGING IN', err});
+     });
+    }
+}

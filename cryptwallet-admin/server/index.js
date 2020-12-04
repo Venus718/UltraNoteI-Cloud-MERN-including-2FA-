@@ -13,6 +13,9 @@ const ngrok =
     : false;
 const { resolve } = require('path');
 const app = express();
+const apiRoute = require("./routes/auth");
+
+
 
 // If you need a backend, e.g. an API, add your custom backend-specific middleware here
 // app.use('/api', myApi);
@@ -22,6 +25,9 @@ setup(app, {
   outputPath: resolve(process.cwd(), 'build'),
   publicPath: '/',
 });
+
+//routing
+app.use('/api', apiRoute);
 
 // get the intended host and port number, use localhost and port 3000 if not provided
 const customHost = argv.host || process.env.HOST;
@@ -40,6 +46,8 @@ app.listen(port, host, async err => {
   if (err) {
     return logger.error(err.message);
   }
+
+
 
   // Connect to ngrok in dev mode
   if (ngrok) {
