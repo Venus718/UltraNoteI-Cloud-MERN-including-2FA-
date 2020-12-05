@@ -5,6 +5,13 @@ import { injectIntl } from 'react-intl';
 
 import { Link, Redirect, withRouter } from 'react-router-dom';
 
+import {connect} from 'react-redux';
+
+import ReCAPTCHA from "react-google-recaptcha";
+import { toast } from 'react-toastify';
+
+
+
 import {
   Grid,
   Typography,
@@ -31,7 +38,7 @@ import pass from '../../images/icon/eye2.svg';
 
 import './account.scss';
 import cookie from 'js-cookie';
-import { toast } from 'react-toastify';
+import { signupStart } from '../../store/auth/auth.actions';
 
 /* eslint-disable react/prefer-stateless-function */
 class SignupPage extends Component {
@@ -45,7 +52,10 @@ class SignupPage extends Component {
     passwordShow: false,
     confirmPasswordShow: false,
     error: {},
+    verifiedCaptcha: null
   };
+
+  
 
   t(msg, values) {
     return this.props.intl.formatMessage(msg, values);
@@ -145,14 +155,22 @@ class SignupPage extends Component {
   submitHandler = event => {
     event.preventDefault();
     const error = this.validate();
+    const {signup} = this.props;
     this.setState({
       error: error || {},
     });
 
     if (!error) {
-      this.props.history.push('/login');
+      signup(this.state);
+      //this.props.history.push('/login');
     }
   };
+
+  onChangeCap = value => {
+    this.setState({
+      verifiedCaptcha: value
+    });
+  }
 
   render() {
     const auth = cookie.get('Auth');
@@ -300,13 +318,18 @@ class SignupPage extends Component {
                         : ''
                     }
                   />
-                  <Button type="submit" className="submitButton">
+                  <ReCAPTCHA className="recaptcha"
+    sitekey="6LdqlfoZAAAAAMLxltM3BSoqaFQInUh_lxtZ88cC"
+    onChange={this.onChangeCap}
+  />
+                  <Button type="submit" className="submitButton" disabled={!this.state.verifiedCaptcha}>
                     Sign Up
                   </Button>
                   <Typography variant="h6">
                     Already have an accoun ? <Link to="/login">Sign In</Link>
                   </Typography>
                 </Form>
+                
               </Grid>
             </Grid>
           </Grid>
@@ -316,4 +339,9 @@ class SignupPage extends Component {
   }
 }
 
-export default injectIntl(withRouter(SignupPage));
+const mapDispatchToProps = dispatch => ({
+  signup: (payload) => dispatch(signupStart(payload))
+});
+
+
+export default injectIntl(withRouter(connect(null, mapDispatchToProps)(SignupPage)));
