@@ -1,6 +1,7 @@
 const Express = require("express");
 const BodyParser = require("body-parser");
-const mongoose = require("mongoose"); 
+const mongoose = require("mongoose");
+const cors = require('cors');
 require('dotenv').config();
 
 
@@ -8,15 +9,19 @@ require('dotenv').config();
 var app = Express();
 
 
+//router imports
+const authRoute = require("./routes/auth");
 
 
 //Express setting-up
+app.use(cors());
 app.use(BodyParser.json());
 app.use(BodyParser.urlencoded({extended: true}));
 
 
-/*const apiRoute = require("./routes/auth");
-app.use('/api', apiRoute);*/
+//routing
+app.use('/api', authRoute);
+
 
 //Mongoose DataBase connection
 mongoose.connect(process.env.DB_HOST, {useNewUrlParser: true, useUnifiedTopology: true }).then(() => {
