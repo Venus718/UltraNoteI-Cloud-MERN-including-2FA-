@@ -1,5 +1,6 @@
 const User = require('../../models/user');
 const bcrypt = require('bcrypt');
+const mailer = require('nodemailer'); 
 
 module.exports = {
     async registerUser(req, res) {
@@ -15,9 +16,9 @@ module.exports = {
         const salt = await bcrypt.genSalt(10);
         const passwordHash = await  bcrypt.hash(password, salt);
         const user = new User({
-            userName: req.body.userName,
             firstName: req.body.firstName,
             lastName: req.body.lastName,
+            phone: req.body.phone,
             mail: mail,
             password: passwordHash,
         });
