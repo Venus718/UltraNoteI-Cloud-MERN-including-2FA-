@@ -28,8 +28,14 @@ module.exports = {
                         return res.status(200).json({message: 'login successful', user, token});
                     });
                 } else {
+                    const userData = {
+                        firstName: user.firstName,
+                        lastName: user.lastName,
+                        phone: user.phone,
+                        createdAt: user.creationDate
+                    }
                     const token = jwt.sign({data: user } , process.env.TOKENCODE, {expiresIn: '72h'});
-                    return res.status(200).json({message: 'login successful', user, token});
+                    return res.status(200).json({message: 'login successful', user: userData, token});
                 }  
             })
         }).catch (err => {
