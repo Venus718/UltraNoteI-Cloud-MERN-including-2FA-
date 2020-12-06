@@ -42,6 +42,7 @@ import { signupStart } from '../../store/auth/auth.actions';
 
 /* eslint-disable react/prefer-stateless-function */
 class SignupPage extends Component {
+  
   state = {
     firstName: '',
     lastName: '',
@@ -161,8 +162,8 @@ class SignupPage extends Component {
     });
 
     if (!error) {
+      this.state.history = this.props.history;
       signup(this.state);
-      //this.props.history.push('/login');
     }
   };
 
@@ -318,10 +319,10 @@ class SignupPage extends Component {
                         : ''
                     }
                   />
-                  <ReCAPTCHA className="recaptcha"
-    sitekey="6LdqlfoZAAAAAMLxltM3BSoqaFQInUh_lxtZ88cC"
-    onChange={this.onChangeCap}
-  />
+                    <ReCAPTCHA className="recaptcha"
+                      sitekey="6LdqlfoZAAAAAMLxltM3BSoqaFQInUh_lxtZ88cC"
+                      onChange={this.onChangeCap}
+                    />
                   <Button type="submit" className="submitButton" disabled={!this.state.verifiedCaptcha}>
                     Sign Up
                   </Button>

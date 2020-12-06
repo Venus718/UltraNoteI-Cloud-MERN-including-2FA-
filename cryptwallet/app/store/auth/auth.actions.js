@@ -1,7 +1,8 @@
 import AuthTypes from './auth.types';
 
 export const signupStart = (payload) => ({
-    type: AuthTypes.SIGNUP_START
+    type: AuthTypes.SIGNUP_START,
+    payload
 });
 
 export const signupSuccess = () => ({
@@ -14,11 +15,13 @@ export const signupFailure = (error) => ({
 });
 
 export const loginStart = (payload) => ({
-    type: AuthTypes.LOGIN_START
+    type: AuthTypes.LOGIN_START,
+    payload
 });
 
-export const loginSuccess = () => ({
-    type: AuthTypes.LOGIN_SUCESS
+export const loginSuccess = (payload) => ({
+    type: AuthTypes.LOGIN_SUCESS,
+    payload
 });
 
 export const loginFailure = (error) => ({

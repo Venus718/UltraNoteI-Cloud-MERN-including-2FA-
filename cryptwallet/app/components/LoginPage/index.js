@@ -26,6 +26,8 @@ import Pass from '../../images/icon/eye2.svg';
 
 import '../SignupPage/account.scss';
 import { toast } from 'react-toastify';
+import { loginStart } from '../../store/auth/auth.actions';
+import { connect } from 'react-redux';
 
 class LoginPage extends Component {
   state = {
@@ -115,10 +117,10 @@ class LoginPage extends Component {
       error: error || {},
     });
     const { email, password } = this.state;
+    const { login } = this.props;
     if (!error) {
-      cookie.set('Auth', true);
-      toast.success('Successfully login');
-      this.props.history.push('/dashboard');
+      this.state.history = this.props.history;
+      login(this.state);
     }
   };
 
@@ -211,4 +213,8 @@ class LoginPage extends Component {
   }
 }
 
-export default withRouter(LoginPage);
+const mapDispatchToProps = dispatch => ({
+  login: (payload) => dispatch(loginStart(payload))
+});
+
+export default withRouter(connect(null, mapDispatchToProps)(LoginPage));
