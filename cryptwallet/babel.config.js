@@ -21,8 +21,17 @@ module.exports = {
         'transform-react-remove-prop-types',
         '@babel/plugin-transform-react-inline-elements',
         '@babel/plugin-transform-react-constant-elements',
+        ["inline-dotenv",{
+          path: '.env.production'
+        }]
       ],
     },
+    development: {
+      plugins: [["inline-dotenv",{
+        path: '.env.development'
+      }]]
+    }
+    ,
     test: {
       plugins: [
         '@babel/plugin-transform-modules-commonjs',
