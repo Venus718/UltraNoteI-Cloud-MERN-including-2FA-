@@ -1,7 +1,6 @@
-/*
+
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
-require('dotenv').config();
 
 module.exports = async (req, res, next) => {
 	try {
@@ -17,4 +16,3 @@ module.exports = async (req, res, next) => {
 		res.status(401).send(err);
 	}
 };
-*/

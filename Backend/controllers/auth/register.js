@@ -1,6 +1,10 @@
 const User = require('../../models/user');
 const bcrypt = require('bcrypt');
-const mailer = require('nodemailer'); 
+const helper = require('../../helpers/activationMail');
+const jwt = require('jsonwebtoken');
+const user = require('../../models/user');
+const { request } = require('express');
+
 
 module.exports = {
     async registerUser(req, res) {
@@ -22,10 +26,17 @@ module.exports = {
             mail: mail,
             password: passwordHash,
         });
-        const savedUser = await user.save().then(user => {
-            /* const mailTemplat = `Account created ...`
-            mailer.sendEmail('verify@Crypto-Petty.com', user.mail , 'please verfiy your account', html);*/
-            res.status(200).json({message: 'User add successfully'});
+        user.save().then(async (savedUser) => {
+           try {
+            const token = jwt.sign({data: savedUser } , process.env.TOKENCODE, {expiresIn: '168h'});
+            const result =  await helper.ActivationMail(savedUser, token);
+            if (result) {
+                res.status(200).json({message: 'User add successfully'});
+            }
+           } catch (error) {
+            console.log(error);
+            res.status(400).json({message: 'faild while sending the activation male', error})
+           }
         })
        } catch (error) {
            res.status(400).json({message: 'ERROR WHILE CREATING AN ACCOUNT', error});
@@ -35,11 +46,27 @@ module.exports = {
 
     async activateAccount(req, res) {
         try {
-            if (!req.params) {
+            const token = req.params.token;
+            if (!token) {
                 res.status(400).json({message: 'No token provided'});
-            } 
+            } else {
+                const decodedToken =  jwt.verify(token, process.env.TOKENCODE);
+                console.log(decodedToken);
+                await User.updateOne({_id: decodedToken.data._id}, {
+                    $set: {
+                        isActive: true
+                    }
+                }).then(()  => {
+                    res.redirect(`${process.env.HOST}${process.env.PORT_FRONT}/login`);
+//                    res.status(200).json({message: "account activated successfully", user});
+                }).catch((error) => {
+                    console.log(error);
+                    res.status(400).json({message: 'ERROR OUCCURED', error});
+                });
+            }
         } catch (error) {
-            
+            console.log(error);
+            res.status(400).json({message: 'ERROR OUCCURED', error});
         }
     }
 }
