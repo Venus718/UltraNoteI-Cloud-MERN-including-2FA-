@@ -37,8 +37,37 @@ const authReducer = (state = INITIAL_STATE, action) => {
                 isLoggedIn: true,
                 user: action.payload.user,
                 token: action.payload.token
+            };
+        case AuthTypes.AUTO_LOGIN: 
+            return {
+                ...state,
+                isRegistred: true,
+                isLoading: false,
+                isLoggedIn: true,
+                user: action.payload.user,
+                token: action.payload.token
+            };
+
+        case AuthTypes.ENABLE_TWO_AUTH_SUCCESS:
+            const userUpdated = state.user;
+            userUpdated.two_fact_auth = action.payload.isActive;
+            localStorage.setItem('user', JSON.parse(userUpdated));
+            return {
+                ...state,
+                user: userUpdated
+            } ;
+
+        case AuthTypes.SEND_CODE_TWO_AUTH_SUCCESS: 
+            return {
+                ...state,
+                isRegistred: true,
+                isLoading: false,
+                isLoggedIn: true,
+                user: action.payload.user,
+                token: action.payload.token
 
             };
+        
         case AuthTypes.ERROR:
             return {
                 ...state,

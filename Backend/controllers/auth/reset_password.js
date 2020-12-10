@@ -12,13 +12,19 @@ module.exports = {
                 res.status(400).json({message: 'No empty field allowed'})
             } else {
                 User.findOne({mail: req.body.mail}).then(async (user) => {
-                    const token = jwt.sign({data: user}, process.env.TOKENCODE, {expiresIn: '168h'});
+                    if (user) {
+                        const token = jwt.sign({data: user}, process.env.TOKENCODE, {expiresIn: '168h'});
                     const result = await Helpers.ResetPasswordMail(user, token);
                     if (result) {
                         res.status(200).json({message: 'We sent you password reset mail'});
                     } else {
                         res.status(400).json({message: 'faild to resetPassword try again later'});
                     }
+                    }
+                    else {
+                        res.status(404).json({message: 'User not found'});
+                    }
+                    
                 });
             }
         } catch (error) {

@@ -195,7 +195,7 @@ class LoginPage extends Component {
                     }
                   />
                   <Grid className="forgotPassword">
-                    <Link to="/forgot-password">Forgot Password ?</Link>
+                    <Link to="/forgot-password/reset">Forgot Password ?</Link>
                   </Grid>
                   <Button type="submit" className="submitButton">
                     Sign In

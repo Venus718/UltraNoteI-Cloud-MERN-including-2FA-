@@ -19,15 +19,42 @@ import logo from 'images/logo.svg'
 
 import '../SignupPage/account.scss'
 import { toast } from 'react-toastify';
+import { RessetPassword } from '../../containers/RessetPassword';
+import { requestEmailResetStart, resetPasswordStart } from '../../store/auth/auth.actions';
+import { connect } from 'react-redux';
 class ForgotPasswordPage extends Component {
 
-  state = {
-    email: '',
-    error: {},
+  constructor(props) {
+    super(props);
+    const token = this.props.match.params.token;
+
+    if (token === 'reset') {
+      this.state = {
+        mode: 'reset',
+        email: '',
+        error: {},
+        token
+      };
+    }
+    else {
+      this.state = {
+        mode: 'change_password',
+        password: '',
+        confirmPassword: '',
+        error: {},
+        token
+      };
+    }
+
+    
+    console.log(this.state);
   }
+
+  
   t(msg, values) {
     return this.props.intl.formatMessage(msg, values);
   }
+  
 
   schema = {
     email: Joi.string().required().email({ minDomainAtoms: 2 }).error(errors => {
@@ -46,6 +73,45 @@ class ForgotPasswordPage extends Component {
       return errors;
     }),
   }
+
+  schemaChangePassword = {
+    password: Joi.string().required().min(8).error(errors => {
+      errors.forEach(err => {
+        switch (err.type) {
+          case "string.required":
+            err.message = "This field is Required";
+            break;
+          case "string.empty": 
+            err.message = "This field is Required";
+            break;
+          case "string.min":
+            err.message = "Must contains at least 8 caracters"
+          default:
+            break;
+        }
+      });
+      
+      return errors;
+    }),
+    confirmPassword: Joi.string().required().min(8).error(errors => {
+      errors.forEach(err => {
+        switch (err.type) {
+          case "string.required":
+            err.message = "This field is Required";
+            break;
+          case "string.empty": 
+            err.message = "This field is Required";
+            break;
+          case "string.min":
+            err.message = "Must contains at least 8 caracters"
+          default:
+            break;
+        }});
+        return errors;
+      })
+  }
+
+
   changeHandler = event => {
     const error = { ...this.state.error };
     const errorMassage = this.validationProperty(event);
@@ -60,9 +126,32 @@ class ForgotPasswordPage extends Component {
     })
   };
 
+  changeHandlerChangePassword = event => {
+    const error = { ...this.state.error };
+    const errorMassage = this.validationPropertyChangePassword(event);
+    if (errorMassage) {
+      error[event.target.name] = errorMassage;
+    } else {
+      delete error[event.target.name];
+    }
+    this.setState({
+      [event.target.name]: event.target.value,
+      error
+    })
+  };
+
   validationProperty = event => {
+    console.log(event.target.value)
     const Obj = { [event.target.name]: event.target.value };
     const schema = { [event.target.name]: this.schema[event.target.name] }
+    const { error } = Joi.validate(Obj, schema);
+    return error ? error.details[0].message : null
+  };
+
+  validationPropertyChangePassword = event => {
+    console.log(event.target.value)
+    const Obj = { [event.target.name]: event.target.value };
+    const schema = { [event.target.name]: this.schemaChangePassword[event.target.name] }
     const { error } = Joi.validate(Obj, schema);
     return error ? error.details[0].message : null
   };
@@ -82,8 +171,22 @@ class ForgotPasswordPage extends Component {
     return errors;
   };
 
+  validateChangePassword = () => {
+    const options = { abortEarly: false }
+    const form = {
+      password: this.state.password,
+      confirmPassword: this.state.confirmPassword
+    }
+    const { error } = Joi.validate(form, this.schemaChangePassword, options)
+    if (!error) return null;
+
+    const errors = {};
+    for (let item of error.details) errors[item.path[0]] = item.message
+    return errors;
+  };
+
   submitHandler = event => {
-    event.preventDefault();
+    event.preventDefault();     
     const error = this.validate();
     if (this.state.email === "") {
       this.setState({
@@ -91,8 +194,36 @@ class ForgotPasswordPage extends Component {
       })
       toast.error("Enter your email first")
     } else {
-      toast.success("Varification code Sended")
-      this.props.history.push('/confirm-code')
+      const {requestEmailReset} = this.props;
+      const requestData = {
+        email: this.state.email,
+        history: this.props.history
+      };
+      requestEmailReset(requestData);
+    }
+
+  }
+
+  submitHandlerChangePassword = event => {
+    event.preventDefault();  
+    console.log(this.state);   
+    const error = this.validateChangePassword();
+    if (this.state.password === "" || this.state.confirmPassword === "") {
+      this.setState({
+        error: error || {}
+      })
+    }
+    else if (this.state.password !== this.state.confirmPassword) {
+      toast.error("Passwords not match");
+    } 
+    else {
+      const {resetPassword} = this.props;
+      const requestData = {
+        password: this.state.password,
+        token: this.state.token,
+        history: this.props.history
+      }
+      resetPassword(requestData);
     }
 
   }
@@ -116,7 +247,10 @@ class ForgotPasswordPage extends Component {
               <Grid className="accountContent">
                 <Typography variant="h3">Forgot Password ?</Typography>
                 <Typography className="text" paragraph>Please enter the email address to request a password reset.</Typography>
-                <Form onSubmit={this.submitHandler}>
+                {
+                  this.state.mode === 'reset' ?
+                  (
+                    <Form onSubmit={this.submitHandler}>
                   <TextField
                     label="Email"
                     className="inputStyle"
@@ -131,6 +265,35 @@ class ForgotPasswordPage extends Component {
                     className="submitButton"
                   >Send</Button>
                 </Form>
+                  )
+                  :
+                  (<Form onSubmit={this.submitHandlerChangePassword}>
+                    <TextField
+                    type="password"
+                      label="Password"
+                      className="inputStyle"
+                      name="password"
+                      variant="outlined"
+                      onChange={this.changeHandlerChangePassword}
+                      value={this.state.password}
+                      helperText={this.state.error.password ? this.state.error.password : ""}
+                    />
+                    <TextField
+                    type="password"
+                      label="Confirm Password"
+                      className="inputStyle"
+                      name="confirmPassword"
+                      variant="outlined"
+                      onChange={this.changeHandlerChangePassword}
+                      value={this.state.confirmPassword}
+                      helperText={this.state.error.confirmPassword ? this.state.error.confirmPassword : ""}
+                    />
+                    <Button
+                      type="submit"
+                      className="submitButton"
+                    >Send</Button>
+                  </Form>)
+                }
               </Grid>
             </Grid>
           </Grid>
@@ -140,4 +303,10 @@ class ForgotPasswordPage extends Component {
   }
 }
 
-export default injectIntl(withRouter(ForgotPasswordPage));
+
+ const mapDispatchToProps = (dispatch) => ({
+  resetPassword: (payload) => dispatch(resetPasswordStart(payload)),
+  requestEmailReset: (payload) => dispatch(requestEmailResetStart(payload))
+});
+
+export default injectIntl(withRouter(connect(null, mapDispatchToProps)(ForgotPasswordPage)));

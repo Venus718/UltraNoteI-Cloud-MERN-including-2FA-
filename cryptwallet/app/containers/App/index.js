@@ -29,9 +29,22 @@ import messages from './messages';
 
 import GlobalStyle from '../../global-styles';
 import theme from '../../material-theme'
+import { autoLogin } from '../../store/auth/auth.actions';
 
 /* eslint-disable react/prefer-stateless-function */
 export class App extends Component {
+
+  constructor(props) {
+    super(props);
+    console.log('ok');
+    const token = localStorage.getItem('token');
+    const user = JSON.parse(localStorage.getItem('user'));
+    if (token && user) {
+      const {autoLogin} = this.props;
+      autoLogin({token, user});
+    }
+  }
+
   t(msg, values) {
     return this.props.intl.formatMessage(msg, values);
   }
@@ -61,11 +74,10 @@ const mapStateToProps = createStructuredSelector({
   app: makeSelectApp(),
 });
 
-function mapDispatchToProps(dispatch) {
-  return {
-    dispatch,
-  };
-}
+const mapDispatchToProps = (dispatch) => ({
+  autoLogin: (payload) => dispatch(autoLogin(payload)),
+  dispatch: () => dispatch()
+});
 
 const withConnect = connect(
   mapStateToProps,

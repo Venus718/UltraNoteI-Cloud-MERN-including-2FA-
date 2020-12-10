@@ -18,20 +18,35 @@ import ReactCodeInput from 'react-code-input';
 import '../SignupPage/account.scss';
 import { toast } from 'react-toastify';
 import messages from './messages';
+import { sendTwoCodeStart } from '../../store/auth/auth.actions';
+import { connect } from 'react-redux';
 
 class ConfirmCodePage extends Component {
   state = {
     code: '1234',
+    token: this.props.match.params.token
   };
 
   submitHandler = event => {
     event.preventDefault();
-    toast.success('Successfully confirmed');
-    this.props.history.push('/login');
+    const {sendCodeTwoAuth} = this.props;
+    const payload = {
+      code: this.state.code,
+      token: this.state.token,
+      history: this.props.history
+    };
+    sendCodeTwoAuth(payload);
   };
 
   t(msg, values) {
     return this.props.intl.formatMessage(msg, values);
+  }
+
+  changeHandler = event => {
+    this.setState({
+      ...this.state,
+      code: +event
+    });
   }
 
   render() {
@@ -63,6 +78,7 @@ class ConfirmCodePage extends Component {
                     name="code"
                     isValid
                     fields={4}
+                    onChange={this.changeHandler}
                   />
                   <Button type="submit" className="submitButton">
                     Send
@@ -77,4 +93,8 @@ class ConfirmCodePage extends Component {
   }
 }
 
-export default injectIntl(withRouter(ConfirmCodePage));
+const mapDispatchToProps = dispatch => ({
+  sendCodeTwoAuth: payload => dispatch(sendTwoCodeStart(payload))
+});
+
+export default injectIntl(withRouter(connect(null, mapDispatchToProps)(ConfirmCodePage)));

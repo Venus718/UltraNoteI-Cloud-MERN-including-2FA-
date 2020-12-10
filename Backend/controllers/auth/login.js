@@ -32,7 +32,9 @@ module.exports = {
                         firstName: user.firstName,
                         lastName: user.lastName,
                         phone: user.phone,
-                        createdAt: user.creationDate
+                        createdAt: user.creationDate,
+                        two_fact_auth: user.two_fact_auth,
+                        id: user._id
                     }
                     const token = jwt.sign({data: user } , process.env.TOKENCODE, {expiresIn: '72h'});
                     return res.status(200).json({message: 'login successful', user: userData, token});

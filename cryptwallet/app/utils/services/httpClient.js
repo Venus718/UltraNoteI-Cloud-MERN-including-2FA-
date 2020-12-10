@@ -1,4 +1,6 @@
 import axios from "axios";
+import { toast } from 'react-toastify';
+
 
 export const clientHttp = axios.create({
   baseURL: `${process.env.REACT_APP_SERVER_URL}`,
@@ -23,42 +25,14 @@ clientHttp.interceptors.request.use(
   }
 );
 
-// clientHttp.interceptors.response.use(
-//   (response) => {
-//     store.dispatch({
-//       type: SpinnerTypes.HIDE_SPINNER,
-//     });
-//     const error = store.getState().error;
-//     // check if there is any error in valid response
-//     if (error && error.code) {
-//       store.dispatch({
-//         type: AlertActionTypes.REMOVE_ERROR,
-//       });
-//     }
-
-//     return response;
-//   },
-//   (error) => {
-//     if (error && error.response && error.response.data.code) {
-//       console.log(error.response);
-//       const payload = {
-//         code: error.response.data.code,
-//         status: error.response.status,
-//       };
-//       store.dispatch({
-//         type: AlertActionTypes.ADD_ERROR,
-//         payload,
-//       });
-//     }
-//     else {
-//       const message = store.getState()?.language?.translation?.UNKNOWN_ERROR;
-//       store.dispatch({
-//         type: AlertActionTypes.ADD_CUSTOM_ERROR,
-//         payload: message,
-//       });
-//     }
-//     store.dispatch({
-//       type: SpinnerTypes.HIDE_SPINNER,
-//     });
-//   }
-// );
+clientHttp.interceptors.response.use(
+  (response) => {
+    return response;
+  },
+  (error) => {
+    if (error && error.response.data && error.response.data.message) {
+      toast.error(error.response.data.message);
+    }
+    
+  }
+);

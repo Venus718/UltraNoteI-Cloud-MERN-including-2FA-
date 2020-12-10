@@ -40,6 +40,8 @@ import AuthLock from '../../images/auth-lock-icon.png';
 
 import './style.scss';
 import { toast } from 'react-toastify';
+import { selectUser } from '../../store/auth/auth.selectors';
+import { enableTwoAuthStart } from '../../store/auth/auth.actions';
 
 const styles = theme => ({
   colorBar: {},
@@ -85,7 +87,7 @@ const styles = theme => ({
 /* eslint-disable react/prefer-stateless-function */
 export class Settings extends React.Component {
   state = {
-    checked: false,
+    checked: this.props.connectedUser.two_fact_auth,
     language: 'english',
     currency: 'usd',
   };
@@ -96,8 +98,14 @@ export class Settings extends React.Component {
 
   authSubmitHandler = e => {
     e.preventDefault();
+    
 
-    console.log(this.state.checked);
+    const {changeTwoAuthStatus, connectedUser} = this.props;
+    const payload = {
+      isActive: this.state.checked,
+      _id: connectedUser.id
+    };
+    changeTwoAuthStatus(payload);
   };
 
   ChangeHandler = e => {
@@ -141,7 +149,7 @@ export class Settings extends React.Component {
                       even when your phone is offline. Available for Android and
                       iPhone.
                     </Typography>
-                    <Button type="submit" className="formSubmitBtn">
+                    <Button type="submit" className="formSubmitBtn" disabled={this.props.connectedUser.two_fact_auth === this.state.checked}>
                       Set up
                     </Button>
                   </Grid>
@@ -239,13 +247,12 @@ Settings.propTypes = {
 
 const mapStateToProps = createStructuredSelector({
   settings: makeSelectSettings(),
+  connectedUser: selectUser
 });
 
-function mapDispatchToProps(dispatch) {
-  return {
-    dispatch,
-  };
-}
+const mapDispatchToProps = (dispatch) => ({
+  changeTwoAuthStatus: (payload) => dispatch(enableTwoAuthStart(payload))
+})
 
 const withConnect = connect(
   mapStateToProps,
@@ -254,6 +261,8 @@ const withConnect = connect(
 
 const withReducer = injectReducer({ key: 'settings', reducer });
 const withSaga = injectSaga({ key: 'settings', saga });
+
+
 
 export default compose(
   withReducer,

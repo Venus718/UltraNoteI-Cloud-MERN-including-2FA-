@@ -11,6 +11,7 @@ var app = Express();
 
 //router imports
 const authRoute = require("./routes/auth");
+const settingsRoute = require("./routes/settings");
 
 
 //Express setting-up
@@ -21,6 +22,7 @@ app.use(BodyParser.urlencoded({extended: true}));
 
 //routing
 app.use('/api', authRoute);
+app.use('/api/settings', settingsRoute);
 
 
 //Mongoose DataBase connection

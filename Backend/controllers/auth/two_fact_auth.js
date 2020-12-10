@@ -41,9 +41,11 @@ module.exports = {
                             firstName: user.firstName,
                             lastName: user.lastName,
                             phone: user.phone,
+                            two_fact_auth: user.two_fact_auth,
+                            id: user._id,
                             createdAt: user.creationDate
                         }
-                        res.status(200).json({message: 'acces garanted', newuser, token});
+                        res.status(200).json({message: 'acces garanted', user: newuser, token});
                     }).catch((err) => {
                         res.status(400).json({message: 'acces denied'});
                     });

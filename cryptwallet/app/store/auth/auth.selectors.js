@@ -1,7 +1,10 @@
 import { createSelector } from "reselect";
 
 
-const authSelector = (state) => state.auth;
+const authSelector = (state) => {
+  const authState = state._root.entries.find(item => item[0]==='auth');
+  return authState[1];
+};
 
 export const selectToken = createSelector(
   [authSelector],

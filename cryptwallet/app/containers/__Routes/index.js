@@ -75,8 +75,8 @@ export default function Routes() {
             <PublicRoute exact path="/" component={LandingPage} />
             <PublicRoute exact path="/login" component={LoginPage} />
             <PublicRoute path="/signup" component={SignupPage} />
-            <PublicRoute path="/forgot-password" component={ForgotPasswordPage} />
-            <PublicRoute path="/confirm-code" component={ConfirmCodePage} />
+            <PublicRoute path="/forgot-password/:token" component={ForgotPasswordPage} />
+            <PublicRoute path="/confirm-code/:token" component={ConfirmCodePage} />
 
             <Route path="/landingpage" component={LandingPage} />
             <Route path="/landingpage-two" component={LandingPageTwo} />
