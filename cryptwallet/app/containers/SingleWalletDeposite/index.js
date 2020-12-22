@@ -48,13 +48,15 @@ export class SingleWalletDeposite extends React.Component {
   };
 
   componentDidMount() {
+    console.log(this.props);
+    const {row} = this.props;
     QRCode.toDataURL(
-      'Hi, I am Rashed! 2NCzoqbY7CXitVwwiNDq9MqvjDJV4DcBj3Q2NCzoqbY7CXi 2NCzoqbY7CXitVwwiNDq9MqvjDJV4DcBj3Q2NCzoqbY7CXi',
+      row.address || 'No address for this wallet ! ',
     )
       .then(url => {
         this.setState({
           qr_code: url,
-          address: '2NCzoqbY7CXitVwwiNDq9MqvjDJV4DcBj3Q2NCzoqbY7CXi',
+          address: row.address || 'No address for this wallet ! ',
         });
       })
       .catch(err => {

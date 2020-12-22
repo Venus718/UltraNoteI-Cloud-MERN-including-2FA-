@@ -32,6 +32,8 @@ import Images from '../../components/uiStyle/Images';
 import './style.scss';
 import { isAmount, skipSpace } from '../../utils/commonFunctions';
 import { toast } from 'react-toastify';
+import { selectUser } from '../../store/auth/auth.selectors';
+import { withdrawWalletStart } from '../../store/wallet/wallet.actions';
 
 /* eslint-disable react/prefer-stateless-function */
 export class SingleWalletWithdraw extends React.Component {
@@ -41,6 +43,7 @@ export class SingleWalletWithdraw extends React.Component {
     note: '',
     errors: '',
   };
+
 
   changeHandler = e => {
     const Name = e.target.name;
@@ -70,6 +73,9 @@ export class SingleWalletWithdraw extends React.Component {
     if (address === '') {
       errors.address = 'Please provide Address';
     }
+    if (address.length !== 99) {
+      errors.address = 'Please provide a valid address';
+    }
     if (amount === '') {
       errors.amount = 'Please provide Amount';
     }
@@ -91,7 +97,16 @@ export class SingleWalletWithdraw extends React.Component {
       toast.error("Please give a valid input");
     }
     else {
-      toast.success("Successfully send your request!");
+      const {sendWithdraw, connectedUser, row} = this.props;
+      const {address, amount, note} = this.state;
+      const payload = {
+        id: connectedUser.id,
+        sender: row.address,
+        recipient: address,
+        amount,
+        note
+      };
+      sendWithdraw(payload);
     }
 
   };
@@ -170,15 +185,14 @@ SingleWalletWithdraw.propTypes = {
   dispatch: PropTypes.func.isRequired,
 };
 
-const mapStateToProps = createStructuredSelector({
-  singleWalletWithdraw: makeSelectSingleWalletWithdraw(),
+const mapStateToProps = state => ({
+  singleWalletWithdraw: makeSelectSingleWalletWithdraw(state),
+  connectedUser: selectUser(state)
 });
 
-function mapDispatchToProps(dispatch) {
-  return {
-    dispatch,
-  };
-}
+const mapDispatchToProps = dispatch => ({
+  sendWithdraw: (payload) => dispatch(withdrawWalletStart(payload))
+});
 
 const withConnect = connect(
   mapStateToProps,

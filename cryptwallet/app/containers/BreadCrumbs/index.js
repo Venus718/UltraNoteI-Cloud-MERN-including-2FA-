@@ -22,10 +22,15 @@ import saga from './saga';
 
 import './style.scss';
 import FontAwesome from 'components/uiStyle/FontAwesome';
+import { selectAvailableBalance, selectWallets } from '../../store/wallet/wallet.selectors';
+import { selectUser } from '../../store/auth/auth.selectors';
 
 /* eslint-disable react/prefer-stateless-function */
 export class BreadCrumbs extends React.Component {
-  render() {
+
+  render() {    
+    const {availableBalance} = this.props;
+    console.log(availableBalance);
     return (
       <Grid className="breadCrumbs">
         <Grid container alignItems="center" className="container">
@@ -51,11 +56,11 @@ export class BreadCrumbs extends React.Component {
                 <Typography component="p">Available Balance</Typography>
                 <List>
                   <ListItem>
-                    <Typography component="span">9067.7800000</Typography>
+                    <Typography component="span">{availableBalance}</Typography>
                     XUNI
                   </ListItem>
                   <ListItem>
-                    <Typography component="span">127509750.800</Typography>
+                    <Typography component="span">0</Typography>
                     USD
                   </ListItem>
                 </List>
@@ -69,11 +74,11 @@ export class BreadCrumbs extends React.Component {
                 <Typography component="p">Pending Withdrawal</Typography>
                 <List>
                   <ListItem>
-                    <Typography component="span">9067.7800000</Typography>
+                    <Typography component="span">0</Typography>
                     XUNI
                   </ListItem>
                   <ListItem>
-                    <Typography component="span">127509750.800</Typography>
+                    <Typography component="span">0</Typography>
                     USD
                   </ListItem>
                 </List>
@@ -90,14 +95,15 @@ BreadCrumbs.propTypes = {
   // dispatch: PropTypes.func.isRequired,
 };
 
-const mapStateToProps = createStructuredSelector({
-  breadCrumbs: makeSelectBreadCrumbs(),
+const mapStateToProps = state => ({
+  breadCrumbs: makeSelectBreadCrumbs(state),
+  availableBalance: selectAvailableBalance(state),
+  connectedUser: selectUser(state)
 });
 
-function mapDispatchToProps(dispatch) {
-  return {
-    // dispatch,
-  };
+
+const mapDispatchToProps = (dispatch) => {
+
 }
 
 const withConnect = connect(

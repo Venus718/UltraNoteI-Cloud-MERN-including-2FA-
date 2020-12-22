@@ -1,0 +1,105 @@
+import { toast } from "react-toastify";
+import { all, call, put, takeLatest } from "redux-saga/effects";
+import { addWalletSuccess, getTransactionsByWalletAddressSuccess, getWalletSuccess, throwError } from "./wallet.actions";
+import WalletTypes from "./wallet.types";
+import { clientHttp } from '../../utils/services/httpClient';
+
+
+export function* addNewWalletAsync({payload}) {
+    
+    try {
+        const result = yield clientHttp.post(`/wallets`, payload);
+        console.log('success');
+        if (result && result.data) {
+            toast.success('Wallet added successfully !!');
+            yield put(addWalletSuccess(result.data.wallet));
+        }
+    }
+    catch(error) {
+        console.log('error');
+        yield put(throwError(error));
+    }
+}
+
+
+export function* onAddNewWallet() {
+    yield takeLatest(WalletTypes.ADD_WALLET_START, addNewWalletAsync);
+}
+
+
+export function* withdrawWalletAsync({payload}) {
+    
+    try {
+        const result = yield clientHttp.post(`/wallets/transactions`, payload);
+        console.log('success');
+        if (result && result.data) {
+            toast.success("Successfully send your request!");
+            yield put(addWalletSuccess(result.data.wallet));
+        }
+    }
+    catch(error) {
+        console.log('error');
+        yield put(throwError(error));
+    }
+}
+
+
+export function* onWithdrawWallet() {
+    yield takeLatest(WalletTypes.WITHDRAW_WALLET_START, withdrawWalletAsync);
+}
+
+
+export function* getWalletsAsync({payload}) {
+    console.log(payload);
+    
+    try {
+        const result = yield clientHttp.get(`/wallets/${payload}`);
+        if (result && result.data) {
+            yield put(getWalletSuccess(result.data));
+        }
+    }
+    catch(error) {
+        yield put(throwError(error));
+    }
+}
+
+
+export function* onGetWallets() {
+    yield takeLatest(WalletTypes.GET_ALL_WALLETS, getWalletsAsync);
+}
+
+
+
+
+
+export function* onGetTransactionsByWalletAddress() {
+    yield takeLatest(WalletTypes.GET_TRANSACTIONS_BY_WALLET, getTransactionsByWalletAddressAsync);
+}
+
+
+export function* getTransactionsByWalletAddressAsync({payload}) {
+    console.log(payload);
+    
+    try {
+        const result = yield clientHttp.get(`/wallets/transactions/${payload}`);
+        if (result && result.data) {
+            console.log('HAAMA SUCCESS');
+            console.log(result.data);
+            yield put(getTransactionsByWalletAddressSuccess(result.data));
+        }
+    }
+    catch(error) {
+        yield put(throwError(error));
+    }
+}
+
+
+
+export function* walletSagas() {
+    yield all([
+        call(onAddNewWallet),
+        call(onGetWallets),
+        call(onWithdrawWallet),
+        call(onGetTransactionsByWalletAddress)
+    ]);
+};

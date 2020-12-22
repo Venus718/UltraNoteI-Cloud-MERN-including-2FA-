@@ -49,13 +49,14 @@ function TabContainer(props) {
 
 /* eslint-disable react/prefer-stateless-function */
 export class SingleWallet extends React.Component {
+
+
   render() {
     const { row, tab, tabChangeHandler, viewAllWalletOpenHandle } = this.props;
     return (
       <Grid className="container">
         <AppBar className="walletTabsBar" position="static" color="default">
           <Typography className="sWalletTitle" component="p">
-            {row.name}
           </Typography>
           <Tabs
             value={tab}
@@ -89,17 +90,17 @@ export class SingleWallet extends React.Component {
         </AppBar>
         {tab === 0 && (
           <TabContainer>
-            <SingleWalletDeposite />
+            <SingleWalletDeposite row={row} />
           </TabContainer>
         )}
         {tab === 1 && (
           <TabContainer>
-            <SingleWalletWithdraw />
+            <SingleWalletWithdraw row={row} />
           </TabContainer>
         )}
         {tab === 2 && (
           <TabContainer>
-            <SingleWalletActivity />
+            <SingleWalletActivity row={row} />
           </TabContainer>
         )}
       </Grid>

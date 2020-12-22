@@ -39,6 +39,8 @@ import UserDefaultImage from '../../images/author/user-image.jpg';
 import Logo from '../../components/Logo';
 import { toast } from 'react-toastify';
 import Redirect from 'react-router-dom/es/Redirect';
+import { selectUser } from '../../store/auth/auth.selectors';
+import { getWalletStart } from '../../store/wallet/wallet.actions';
 
 /* eslint-disable react/prefer-stateless-function */
 export class Header extends React.Component {
@@ -83,6 +85,7 @@ export class Header extends React.Component {
 
     this.setState({ state: this.state });
   };
+  
 
   render() {
     const { anchorEl, open, placement, sideMenu } = this.state;
@@ -223,15 +226,14 @@ Header.propTypes = {
   // dispatch: PropTypes.func.isRequired,
 };
 
-const mapStateToProps = createStructuredSelector({
-  header: makeSelectHeader(),
+const mapStateToProps = state => ({
+  header: makeSelectHeader(state),
+  connectedUser: selectUser(state)
 });
 
-function mapDispatchToProps(dispatch) {
-  return {
-    dispatch,
-  };
-}
+const mapDispatchToProps = (dispatch) =>  ({
+  getAllWallets: (id) => getWalletStart(id)
+});
 
 const withConnect = connect(
   mapStateToProps,

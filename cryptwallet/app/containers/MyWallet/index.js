@@ -41,6 +41,9 @@ import MoveCoin from '../../components/MoveCoin';
 import { isAmount } from '../../utils/commonFunctions';
 import SingleWallet from '../SingleWallet';
 import { toast } from 'react-toastify';
+import {selectUser} from '../../store/auth/auth.selectors';
+import {addWalletStart, getTransactionsByWalletAddressStart, getWalletStart} from '../../store/wallet/wallet.actions';
+import { selectWallets } from '../../store/wallet/wallet.selectors';
 
 const Row = [
   {
@@ -135,6 +138,20 @@ export class MyWallet extends React.Component {
     tab: 0,
   };
 
+  constructor(props) {
+    super(props);
+    const {getWallets, connectedUser} = this.props;
+    getWallets(connectedUser.id);
+  }
+
+  componentWillReceiveProps(nextProps) {
+    const {wallets} = nextProps;
+    console.log(wallets);
+    this.setState({
+      row: wallets
+    });
+  }
+
   awHandleClickOpen = () => {
     this.setState({ awModalOpen: true });
   };
@@ -154,12 +171,11 @@ export class MyWallet extends React.Component {
   awSubmitHandler = e => {
     e.preventDefault();
 
-    const id = this.state.row.length + 1;
+    const {connectedUser} = this.props;
+    const {addNewWallet} = this.props;
     const newWallet = {
-      id,
+      id: connectedUser.id,
       name: this.state.wallet_name,
-      balance: '0.000000',
-      updated_at: '2019-01-24 12:50:17',
     };
 
     Row.unshift(newWallet);
@@ -171,7 +187,7 @@ export class MyWallet extends React.Component {
         wallet_name: '',
         awModalOpen: false,
       });
-      toast.success("Wallet Added Successfully!");
+      addNewWallet(newWallet);
     }
 
   };
@@ -224,6 +240,9 @@ export class MyWallet extends React.Component {
   };
 
   walletViewHandler = (row, tab) => e => {
+
+    const {getTransactionsByWallet} = this.props;
+    getTransactionsByWallet(row.address);
     this.setState({
       walletView: 'single-wallet',
       selectedWallet: row,
@@ -322,16 +341,16 @@ export class MyWallet extends React.Component {
                       <TableRow key={index}>
                         <TableCell>{row.name}</TableCell>
                         <TableCell>{row.balance}</TableCell>
-                        <TableCell className="dateTd">{row.updated_at}</TableCell>
+                        <TableCell className="dateTd">{new Date(row.updatedAt).toLocaleDateString()}</TableCell>
                         <TableCell>
                           <List className="actionBtns">
                             <ListItem onClick={this.walletViewHandler(row, 0)}>
                               <Images src={WalletAction} />
                             </ListItem>
-                            <ListItem onClick={this.walletViewHandler(row, 1)}>
+                            <ListItem onClick={this.walletViewHandler(row, 2)}>
                               <Images src={GroupAction} />
                             </ListItem>
-                            <ListItem onClick={this.walletViewHandler(row, 2)}>
+                            <ListItem onClick={this.walletViewHandler(row, 1)}>
                               <Images src={ShareAction} />
                             </ListItem>
                             {row.id === 2 ? (
@@ -391,15 +410,16 @@ MyWallet.propTypes = {
   // dispatch: PropTypes.func.isRequired,
 };
 
-const mapStateToProps = createStructuredSelector({
-  myWallet: makeSelectMyWallet(),
+const mapStateToProps = state => ({
+  connectedUser: selectUser(state),
+  wallets: selectWallets(state)
 });
 
-function mapDispatchToProps(dispatch) {
-  return {
-    dispatch,
-  };
-}
+const mapDispatchToProps = (dispatch) => ({
+  addNewWallet: (payload) => dispatch(addWalletStart(payload)),
+  getWallets: (id) => dispatch(getWalletStart(id)),
+  getTransactionsByWallet: (address) => dispatch(getTransactionsByWalletAddressStart(address))
+});
 
 const withConnect = connect(
   mapStateToProps,

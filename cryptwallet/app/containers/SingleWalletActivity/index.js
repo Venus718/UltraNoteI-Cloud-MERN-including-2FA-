@@ -33,6 +33,7 @@ import WalletActivityTable from '../../components/WalletActivityTable';
 import './style.scss';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
+import { selectTransactions } from '../../store/wallet/wallet.selectors';
 
 const DepositeRow = [
   {
@@ -95,6 +96,7 @@ export class SingleWalletActivity extends React.Component {
     tab: 0,
   };
 
+
   paginateDepositeHandler = prop => event => {
     this.setState({
       currentPage: Number(event.target.id),
@@ -124,6 +126,10 @@ export class SingleWalletActivity extends React.Component {
       rowsPerPage,
       tab,
     } = this.state;
+
+    const {
+      transactions
+    } = this.props;
     return (
       <Grid className="walletActivity">
         <Grid container alignItems="center" className="walletActivityHeader">
@@ -163,7 +169,8 @@ export class SingleWalletActivity extends React.Component {
         {tab === 0 && (
           <WalletActivityTable
             rowsPerPage={rowsPerPage}
-            row={deposite_row}
+            row={transactions.deposit}
+            type='deposit'
             currentPage={currentPage}
             pageNumberOfPage={pageNumberOfPage}
             paginateHandler={this.paginateDepositeHandler}
@@ -172,7 +179,8 @@ export class SingleWalletActivity extends React.Component {
         {tab === 1 && (
           <WalletActivityTable
             rowsPerPage={rowsPerPage}
-            row={withdraw_row}
+            row={transactions.withdraw}
+            type='withdraw'
             currentPage={currentPageW}
             pageNumberOfPage={pageNumberOfPageW}
             paginateHandler={this.paginateWithdrawHandler}
@@ -187,8 +195,10 @@ SingleWalletActivity.propTypes = {
   // dispatch: PropTypes.func.isRequired,
 };
 
-const mapStateToProps = createStructuredSelector({
-  singleWalletActivity: makeSelectSingleWalletActivity(),
+const mapStateToProps = state =>  ({
+  singleWalletActivity: makeSelectSingleWalletActivity(state),
+  transactions: selectTransactions(state)
+
 });
 
 function mapDispatchToProps(dispatch) {

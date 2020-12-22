@@ -11,16 +11,18 @@ import './style.scss';
 import { Header } from '../Header';
 import { BreadCrumbs } from '../BreadCrumbs';
 import Footer from '../../components/Footer';
+import { selectAvailableBalance } from '../../store/wallet/wallet.selectors';
 
 export class PrivateRoute extends Component {
   render() {
     const Component = this.props.component;
     this.props = { ...this.props, component: null };
+    const {availableBalance} = this.props;
     return (
       <Fragment>
         <Grid className="headerWrapper">
           <Header />
-          <BreadCrumbs icon={this.props.icon} title={this.props.title} />
+          <BreadCrumbs availableBalance={availableBalance} icon={this.props.icon} title={this.props.title} />
         </Grid>
         <Route {...this.props} render={props => <Component {...props} />} />
         <Footer />
@@ -33,7 +35,9 @@ function mapDispatchToProps(dispatch) {
   return {};
 }
 
-const mapStateToProps = createStructuredSelector({});
+const mapStateToProps = state => ({
+  availableBalance: selectAvailableBalance(state)
+});
 
 const withConnect = connect(
   mapStateToProps,

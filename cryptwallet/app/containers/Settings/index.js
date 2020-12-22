@@ -245,9 +245,9 @@ Settings.propTypes = {
   // dispatch: PropTypes.func.isRequired,
 };
 
-const mapStateToProps = createStructuredSelector({
+const mapStateToProps = state => ({
   settings: makeSelectSettings(),
-  connectedUser: selectUser
+  connectedUser: selectUser(state)
 });
 
 const mapDispatchToProps = (dispatch) => ({
