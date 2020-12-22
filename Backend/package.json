@@ -20,6 +20,7 @@
     "nodemailer": "^6.4.16",
     "nodemon": "^2.0.6",
     "qrcode": "^1.4.4",
-    "speakeasy": "^2.0.0"
+    "speakeasy": "^2.0.0",
+    "ultranotei-api": "^0.7.6"
   }
 }
