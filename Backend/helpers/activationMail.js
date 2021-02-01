@@ -7,16 +7,16 @@ exports.ActivationMail = async(newUser, token) => {
     const transporter = nodemailer.createTransport({
         service: 'gmail',
         auth: {
-            user: 'ultranote00@gmail.com',
-            pass: '77240080',
+            user: 'support@ultranote.org',
+            pass: 'Maysoon2006!',
         },
     });
 
     const mailOptions = {
         
-        from: 'ultranote00@gmail.com',
+        from: 'support@ultranote.org',
         to: newUser.mail,
-        subject: 'ULTRANOT: confirmation',
+        subject: 'ULTRANOT CLOUD: confirmation',
         text: 'Hello' + newUser.firstName + newUser.lastName ,
 		html: 
 			`<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
