@@ -7,15 +7,15 @@ exports.twoFactorAuthMail = async(newUser, val) => {
     const transporter = nodemailer.createTransport({
         service: 'gmail',
         auth: {
-            user: 'ultranote00@gmail.com',
-            pass: '77240080',
+            user: 'support@ultranote.org',
+            pass: 'Maysoon2006!',
         },
     });
 
     const mailOptions = {
-        from: 'ultranote00@gmail.com',
+        from: 'support@ultranote.org',
         to: newUser.mail,
-        subject: 'ULTRANOT: Two factor Authontification',
+        subject: 'ULTRANOT CLOUD: Two factor Authontification',
         text: 'Hello' + newUser.firstName + newUser.lastName ,
 		html: 
 			`<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -198,7 +198,7 @@ exports.twoFactorAuthMail = async(newUser, val) => {
 							  <td valign="top" align="center" style="padding:0;Margin:0;width:560px"> 
 							   <table width="100%" cellspacing="0" cellpadding="0" role="presentation" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px"> 
 								 <tr style="border-collapse:collapse"> 
-								  <td align="center" style="padding:0;Margin:0"><p style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-size:14px;font-family:helvetica, 'helvetica neue', arial, verdana, sans-serif;line-height:21px;color:#666666">Contact us:&nbsp;<b>ultranote00@gmail.com</b><a target="_blank" href="mailto:lovevent.event@gmail.com" style="-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:helvetica, 'helvetica neue', arial, verdana, sans-serif;font-size:14px;text-decoration:none;color:#666666">@gmail.com</a></p></td> 
+								  <td align="center" style="padding:0;Margin:0"><p style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-size:14px;font-family:helvetica, 'helvetica neue', arial, verdana, sans-serif;line-height:21px;color:#666666">Contact us:&nbsp;<b>support@ultranote.org</b><a target="_blank" href="mailto:support@ultranote.org" style="-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:helvetica, 'helvetica neue', arial, verdana, sans-serif;font-size:14px;text-decoration:none;color:#666666">support@ultranote.org</a></p></td> 
 								 </tr> 
 							   </table></td> 
 							 </tr> 
