@@ -15,7 +15,7 @@ import Form from 'components/uiStyle/Form'
 import Joi from 'joi-browser'
 
 // images
-import logo from 'images/logo.svg'
+import Logo from '../../images/logo_512x512.png';
 
 import '../SignupPage/account.scss'
 import { toast } from 'react-toastify';
@@ -239,8 +239,11 @@ class ForgotPasswordPage extends Component {
           <Grid className="container" container>
             <Grid item lg={6} xs={12}>
               <Grid className="accountImage">
-                <Image src={logo} alt="logo" />
-                <p>Store and manage digital currencies with ease in the smart and beautiful cryptocurrency wallets.</p>
+              <div className="logo-left" >
+              <img src={Logo} alt="logo" style={{width:"100px"}, {height:"100px"}}/>
+              <span>UltraNote Cloud</span>
+              </div>
+                <p>Store, Access and manange your UltraNote Infinity coins with ease securely on your cloud wallet.</p>
               </Grid>
             </Grid>
             <Grid item lg={6} xs={12}>
