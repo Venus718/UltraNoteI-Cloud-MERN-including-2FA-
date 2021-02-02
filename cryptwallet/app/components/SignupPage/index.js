@@ -98,14 +98,14 @@ class SignupPage extends Component {
       .min(8)
       .regex(/^[a-zA-Z0-9]{3,30}$/)
       .error(errors => ({
-        message: 'Please Provide a strong password',
+        message: console.log(errors) + 'Please Provide a strong password',
       })),
     confirmPassword: Joi.string()
       .required()
       .min(8)
       .regex(/^[a-zA-Z0-9]{3,30}$/)
       .error(errors => ({
-        message: 'Please Provide a strong password',
+        message: console.log(errors) + 'Please Provide a strong password',
       })),
   };
 

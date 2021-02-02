@@ -35,7 +35,7 @@ module.exports = {
             }
            } catch (error) {
             console.log(error);
-            res.status(400).json({message: 'faild while sending the activation male', error})
+            res.status(400).json({message: console.log(error) +'faild while sending the activation male', error})
            }
         })
        } catch (error) {
@@ -57,7 +57,7 @@ module.exports = {
                         isActive: true
                     }
                 }).then(()  => {
-                    res.redirect(`${process.env.HOST}${process.env.PORT_FRONT}/login`);
+                    res.redirect(`${process.env.HOST}:${process.env.PORT_FRONT}/login`);
 //                    res.status(200).json({message: "account activated successfully", user});
                 }).catch((error) => {
                     console.log(error);
