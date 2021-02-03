@@ -8,12 +8,10 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
-import { compose } from 'redux';
 
 import Joi from 'joi-browser';
-
-import injectSaga from 'utils/injectSaga';
-import injectReducer from 'utils/injectReducer';
+import { resetPasswordStart } from '../../store/auth/auth.actions';
+import { injectIntl } from 'react-intl';
 import {
   Button,
   IconButton,
@@ -26,8 +24,6 @@ import { toast } from 'react-toastify';
 import Form from '../../components/uiStyle/Form';
 
 import makeSelectRessetPassword from './selectors';
-import reducer from './reducer';
-import saga from './saga';
 import pass from '../../images/icon/eye2.svg';
 import showPass from '../../images/icon/eye.svg';
 import Image from '../../components/uiStyle/Images';
@@ -172,13 +168,16 @@ export class RessetPassword extends React.Component {
           error: error || {},
         });
         toast.error("password dosen't match!");
-      } else {
-        this.setState({
-          currentPassword: '',
-          password: '',
-          confirmPassword: '',
-        });
-        toast.success('Successfully password reset!');
+      }
+      else {
+        const {resetPassword} = this.props;
+        const token = localStorage.getItem('token');
+        const requestData = {
+          password: this.state.password,
+          token: token,
+          history: this.props.history
+        }
+        resetPassword(requestData);
       }
     }
   };
@@ -291,22 +290,8 @@ const mapStateToProps = createStructuredSelector({
   ressetPassword: makeSelectRessetPassword(),
 });
 
-function mapDispatchToProps(dispatch) {
-  return {
-    dispatch,
-  };
-}
+const mapDispatchToProps = (dispatch) => ({
+  resetPassword: (payload) => dispatch(resetPasswordStart(payload)),
+});
 
-const withConnect = connect(
-  mapStateToProps,
-  mapDispatchToProps,
-);
-
-const withReducer = injectReducer({ key: 'ressetPassword', reducer });
-const withSaga = injectSaga({ key: 'ressetPassword', saga });
-
-export default compose(
-  withReducer,
-  withSaga,
-  withConnect,
-)(RessetPassword);
+export default injectIntl(connect(mapStateToProps, mapDispatchToProps)(RessetPassword));

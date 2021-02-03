@@ -24,7 +24,7 @@ const authReducer = (state = INITIAL_STATE, action) => {
                 isRegistred: true,
                 isLoading: false
             };
-            case AuthTypes.LOGIN_START: 
+        case AuthTypes.LOGIN_START:
             return {
                 ...state,
                 isLoading: true
