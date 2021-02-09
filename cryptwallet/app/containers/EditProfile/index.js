@@ -25,6 +25,7 @@ import saga from './saga';
 import messages from './messages';
 import UserImage from '../../images/author/user-image-big.jpg';
 import Image from '../../components/uiStyle/Images';
+import { updateProfileStart } from '../../store/auth/auth.actions';
 
 import './style.scss';
 import Form from '../../components/uiStyle/Form';
@@ -42,10 +43,10 @@ const styles = theme => ({
 export class EditProfile extends React.Component {
   state = {
     files: null,
-    imagesPreviewUrl: null,
-    first_name: 'Rashedul',
-    last_name: 'islam',
-    email: 'irashad42@gmail.com',
+    imagesPreviewUrl: JSON.parse(localStorage.getItem('user')).image,
+    first_name: JSON.parse(localStorage.getItem('user')).firstName,
+    last_name: JSON.parse(localStorage.getItem('user')).lastName,
+    email: JSON.parse(localStorage.getItem('user')).mail,
     error: {},
   };
 
@@ -133,13 +134,22 @@ export class EditProfile extends React.Component {
 
   submitHandler = event => {
     event.preventDefault();
-
+    const { updateProfile } = this.props;
+    const token = localStorage.getItem('token');
     const error = this.validate();
     this.setState({
       error: error || {},
     });
 
-    toast.success("Profile Updated Successfully!");
+    const requestData = {
+      image: this.state.imagesPreviewUrl,
+      firstName: this.state.first_name,
+      lastName: this.state.last_name,
+      email: this.state.email,
+      token: token,
+    }
+
+    updateProfile(requestData);
   };
 
   render() {
@@ -160,7 +170,7 @@ export class EditProfile extends React.Component {
                 <label htmlFor="choose-profile">
                   <Image
                     src={
-                      imagesPreviewUrl !== null ? imagesPreviewUrl : UserImage
+                      imagesPreviewUrl ? imagesPreviewUrl : UserImage
                     }
                   />
                 </label>
@@ -187,7 +197,7 @@ export class EditProfile extends React.Component {
                 helperText={error.first_name ? error.first_name : ''}
               />
               <TextField
-                label="First Name"
+                label="Last Name"
                 className="inputStyle"
                 name="last_name"
                 variant="outlined"
@@ -222,11 +232,9 @@ const mapStateToProps = createStructuredSelector({
   editProfile: makeSelectEditProfile(),
 });
 
-function mapDispatchToProps(dispatch) {
-  return {
-    dispatch,
-  };
-}
+const mapDispatchToProps = (dispatch) => ({
+  updateProfile: (payload) => dispatch(updateProfileStart(payload)),
+})
 
 const withConnect = connect(
   mapStateToProps,

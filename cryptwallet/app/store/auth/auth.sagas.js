@@ -2,7 +2,7 @@ import { toast } from 'react-toastify';
 import cookie from 'js-cookie';
 import { takeLatest, call, put, all } from 'redux-saga/effects';
 import { clientHttp } from '../../utils/services/httpClient';
-import { loginFailure, signupFailure, signupSuccess, loginSuccess, enableTwoAuthSuccess, sendTwoCodeFailure, sendTwoCodeSuccess } from './auth.actions';
+import { loginFailure, signupFailure, signupSuccess, loginSuccess, enableTwoAuthSuccess, sendTwoCodeFailure, sendTwoCodeSuccess, updateProfileStart, updateProfileSuccess, updateProfileFailure } from './auth.actions';
 
 import AuthTypes from './auth.types';
 
@@ -89,6 +89,33 @@ export function* onResetPasswordStart() {
     yield takeLatest(AuthTypes.RESET_PASSWORD, resetPasswordAsync);
 }
 
+export function* UpdateProfileAsync({payload}) {
+    const requestData = {
+        image: payload.image,
+        firstName: payload.firstName,
+        lastName: payload.lastName,
+        email: payload.email,
+    };
+    const token = payload.token;
+
+    try {
+        const result = yield clientHttp.post(`/update_profile/${token}`, requestData);
+        if (result) {
+            console.log("result", result);
+            localStorage.setItem('user', JSON.stringify(result.data.user));
+            toast.success("Profile Successfuly Updated");
+        }
+    }
+    catch(error) {
+        yield put(updateProfileFailure(error));
+    }
+}
+
+
+export function* onUpdateProfileStart() {
+    yield takeLatest(AuthTypes.UPDATE_PROFILE_START, UpdateProfileAsync);
+}
+
 export function* requestEmailResetAsync({payload}) {
     console.log(payload);
     const requestData = {
@@ -168,6 +195,7 @@ export function* authSagas() {
         call(onSignupStart),
         call(onLoginStart),
         call(onResetPasswordStart),
+        call(onUpdateProfileStart),
         call(onRequestEmailResetPasswordStart),
         call(onEnableTwoAuth),
         call(onSendTwoAuthVerif)

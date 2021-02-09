@@ -95,3 +95,18 @@ export const sendTwoCodeFailure = (payload) => ({
     type: AuthTypes.ERROR,
     payload
 });
+
+export const updateProfileStart = (payload) => ({
+    type: AuthTypes.UPDATE_PROFILE_START,
+    payload
+});
+
+export const updateProfileSuccess = () => ({
+    type: AuthTypes.UPDATE_PROFILE_SUCCESS,
+    payload
+});
+
+export const updateProfileFailure = (payload) => ({
+    type: AuthTypes.ERROR,
+    payload
+});

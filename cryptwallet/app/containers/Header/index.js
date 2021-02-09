@@ -40,10 +40,11 @@ import Logo from '../../components/Logo';
 import { toast } from 'react-toastify';
 import Redirect from 'react-router-dom/es/Redirect';
 import { selectUser } from '../../store/auth/auth.selectors';
-import { getWalletStart } from '../../store/wallet/wallet.actions';
+import { getWalletStart, walletReset } from '../../store/wallet/wallet.actions';
 
 /* eslint-disable react/prefer-stateless-function */
-export class Header extends React.Component {
+class Header extends React.Component {
+
   state = {
     anchorEl: null,
     open: false,
@@ -80,7 +81,10 @@ export class Header extends React.Component {
   };
 
   logOutHandler = () => {
+    this.props.walletReset();
+    localStorage.removeItem('user');
     cookie.remove('Auth');
+
     toast.warn("You have been loged out!");
 
     this.setState({ state: this.state });
@@ -94,6 +98,8 @@ export class Header extends React.Component {
       return <Redirect to="/login" />;
     }
 
+    const user_data = localStorage.getItem('user');
+    const user = JSON.parse(user_data);
     return (
       <Grid className="mainHeadeArea">
         <Grid container alignItems="center" className="container">
@@ -134,10 +140,10 @@ export class Header extends React.Component {
                   onClick={this.handleClick('bottom-end')}
                 >
                   <Typography className="userImage" component="div">
-                    <Image src={UserDefaultImage} />
+                    <Image src={user.image ? user.image : UserDefaultImage} />
                   </Typography>
                   <Typography className="userName" component="span">
-                    John Doe
+                     {user.firstName + " " + user.lastName}
                   </Typography>
                   <FontAwesome name={!open ? 'caret-down' : 'caret-up'} />
                 </Button>
@@ -222,9 +228,6 @@ export class Header extends React.Component {
   }
 }
 
-Header.propTypes = {
-  // dispatch: PropTypes.func.isRequired,
-};
 
 const mapStateToProps = state => ({
   header: makeSelectHeader(state),
@@ -232,7 +235,7 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = (dispatch) =>  ({
-  getAllWallets: (id) => getWalletStart(id)
+  walletReset: (payload) => dispatch(walletReset(payload))
 });
 
 const withConnect = connect(

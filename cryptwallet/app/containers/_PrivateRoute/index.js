@@ -8,7 +8,7 @@ import { compose } from 'redux';
 import Grid from '@material-ui/core/Grid';
 
 import './style.scss';
-import { Header } from '../Header';
+import Header from '../Header';
 import { BreadCrumbs } from '../BreadCrumbs';
 import Footer from '../../components/Footer';
 import { selectAvailableBalance } from '../../store/wallet/wallet.selectors';

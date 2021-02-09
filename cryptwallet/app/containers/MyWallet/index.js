@@ -42,82 +42,82 @@ import { isAmount } from '../../utils/commonFunctions';
 import SingleWallet from '../SingleWallet';
 import { toast } from 'react-toastify';
 import {selectUser} from '../../store/auth/auth.selectors';
-import {addWalletStart, getTransactionsByWalletAddressStart, getWalletStart} from '../../store/wallet/wallet.actions';
+import {addWalletStart, updateWalletStart, getTransactionsByWalletAddressStart, getWalletStart} from '../../store/wallet/wallet.actions';
 import { selectWallets } from '../../store/wallet/wallet.selectors';
 
 const Row = [
-  {
-    id: 1,
-    name: 'Btc Wallet 1',
-    balance: '0.000000',
-    updated_at: '2019-01-24 12:50:17',
-  },
-  {
-    id: 2,
-    name: 'Personal Wallete',
-    balance: '0.000000',
-    updated_at: '2019-01-24 12:50:17',
-  },
-  {
-    id: 3,
-    name: 'Business Wallet',
-    balance: '0.000000',
-    updated_at: '2019-01-24 12:50:17',
-  },
-  {
-    id: 4,
-    name: 'Business Wallet',
-    balance: '0.45245',
-    updated_at: '2019-01-24 12:50:17',
-  },
-  {
-    id: 5,
-    name: 'Business Wallet',
-    balance: '0.111',
-    updated_at: '2019-01-24 12:50:17',
-  },
-  {
-    id: 6,
-    name: 'Business Wallet',
-    balance: '0.2785',
-    updated_at: '2019-01-24 12:50:17',
-  },
-  {
-    id: 7,
-    name: 'Business Wallet',
-    balance: '0.547',
-    updated_at: '2019-01-24 12:50:17',
-  },
-  {
-    id: 8,
-    name: 'Business Wallet',
-    balance: '0.045',
-    updated_at: '2019-01-24 12:50:17',
-  },
-  {
-    id: 9,
-    name: 'Business Wallet',
-    balance: '0.2570',
-    updated_at: '2019-01-24 12:50:17',
-  },
-  {
-    id: 10,
-    name: 'Business Wallet',
-    balance: '0.2222',
-    updated_at: '2019-01-24 12:50:17',
-  },
-  {
-    id: 11,
-    name: 'Business Wallet',
-    balance: '0.450',
-    updated_at: '2019-01-24 12:50:17',
-  },
-  {
-    id: 12,
-    name: 'Business Wallet',
-    balance: '0.74850',
-    updated_at: '2019-01-24 12:50:17',
-  },
+  // {
+  //   id: 1,
+  //   name: 'Btc Wallet 1',
+  //   balance: '0.000000',
+  //   updated_at: '2019-01-24 12:50:17',
+  // },
+  // {
+  //   id: 2,
+  //   name: 'Personal Wallete',
+  //   balance: '0.000000',
+  //   updated_at: '2019-01-24 12:50:17',
+  // },
+  // {
+  //   id: 3,
+  //   name: 'Business Wallet',
+  //   balance: '0.000000',
+  //   updated_at: '2019-01-24 12:50:17',
+  // },
+  // {
+  //   id: 4,
+  //   name: 'Business Wallet',
+  //   balance: '0.45245',
+  //   updated_at: '2019-01-24 12:50:17',
+  // },
+  // {
+  //   id: 5,
+  //   name: 'Business Wallet',
+  //   balance: '0.111',
+  //   updated_at: '2019-01-24 12:50:17',
+  // },
+  // {
+  //   id: 6,
+  //   name: 'Business Wallet',
+  //   balance: '0.2785',
+  //   updated_at: '2019-01-24 12:50:17',
+  // },
+  // {
+  //   id: 7,
+  //   name: 'Business Wallet',
+  //   balance: '0.547',
+  //   updated_at: '2019-01-24 12:50:17',
+  // },
+  // {
+  //   id: 8,
+  //   name: 'Business Wallet',
+  //   balance: '0.045',
+  //   updated_at: '2019-01-24 12:50:17',
+  // },
+  // {
+  //   id: 9,
+  //   name: 'Business Wallet',
+  //   balance: '0.2570',
+  //   updated_at: '2019-01-24 12:50:17',
+  // },
+  // {
+  //   id: 10,
+  //   name: 'Business Wallet',
+  //   balance: '0.2222',
+  //   updated_at: '2019-01-24 12:50:17',
+  // },
+  // {
+  //   id: 11,
+  //   name: 'Business Wallet',
+  //   balance: '0.450',
+  //   updated_at: '2019-01-24 12:50:17',
+  // },
+  // {
+  //   id: 12,
+  //   name: 'Business Wallet',
+  //   balance: '0.74850',
+  //   updated_at: '2019-01-24 12:50:17',
+  // },
 ];
 
 /* eslint-disable react/prefer-stateless-function */
@@ -146,7 +146,22 @@ export class MyWallet extends React.Component {
 
   componentWillReceiveProps(nextProps) {
     const {wallets} = nextProps;
-    console.log(wallets);
+    if (this.state.selectedWallet) {
+      let newSelectedWallet;
+      wallets.forEach(wallet => {
+        if(this.state.selectedWallet.id == wallet.id) {
+          newSelectedWallet = wallet;
+        }
+      });
+
+      if (newSelectedWallet) {
+        this.setState({
+          row: wallets,
+          selectedWallet: newSelectedWallet
+        });
+        return;
+      }
+    }
     this.setState({
       row: wallets
     });
@@ -190,6 +205,20 @@ export class MyWallet extends React.Component {
       addNewWallet(newWallet);
     }
 
+  };
+
+  awNewWalletAddress = (row) => {
+
+    const {connectedUser} = this.props;
+    const {updateWallet} = this.props;
+
+    const Wallet = {
+      user_id: connectedUser.id,
+      name: row.name,
+      id: row._id,
+    };
+
+    updateWallet(Wallet);
   };
 
   mcHandleClickOpen = () => {
@@ -381,6 +410,7 @@ export class MyWallet extends React.Component {
             tabChangeHandler={this.tabChangeHandler}
             row={selectedWallet}
             viewAllWalletOpenHandle={this.viewAllWalletOpenHandle}
+            awNewWalletAddress = {this.awNewWalletAddress}
           />
         ) : (
           ''
@@ -418,7 +448,8 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = (dispatch) => ({
   addNewWallet: (payload) => dispatch(addWalletStart(payload)),
   getWallets: (id) => dispatch(getWalletStart(id)),
-  getTransactionsByWallet: (address) => dispatch(getTransactionsByWalletAddressStart(address))
+  getTransactionsByWallet: (address) => dispatch(getTransactionsByWalletAddressStart(address)),
+  updateWallet: (payload) => dispatch(updateWalletStart(payload))
 });
 
 const withConnect = connect(

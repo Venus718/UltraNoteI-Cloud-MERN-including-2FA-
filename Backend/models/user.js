@@ -7,6 +7,7 @@ const UserSchema = mongoose.Schema({
     mail: {type: String, required: true},
     phone: { type: String, required: true},
     password: {type: String, min: 8, max: 18, required: true},
+    image: {type: String, require: false},
     isActive: {type: Boolean, default: false, required: true},
     two_fact_auth: {type: Boolean, default: false, required: true},
     two_fact_auth_code: {type: Number, default: null},

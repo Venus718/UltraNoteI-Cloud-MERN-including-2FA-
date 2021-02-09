@@ -43,13 +43,28 @@ import './style.scss';
 export class SingleWalletDeposite extends React.Component {
   state = {
     qr_code: '',
-    address: '2NCzoqbY7CXitVwwiNDq9MqvjDJV4DcBj3Q2NCzoqbY7CXi',
+    address: '',
     showAddress: false,
   };
 
   componentDidMount() {
-    console.log(this.props);
     const {row} = this.props;
+    QRCode.toDataURL(
+      row.address || 'No address for this wallet ! ',
+    )
+      .then(url => {
+        this.setState({
+          qr_code: url,
+          address: row.address || 'No address for this wallet ! ',
+        });
+      })
+      .catch(err => {
+        console.error(err);
+      });
+  }
+
+  componentWillReceiveProps(nextProps) {
+    const {row} = nextProps;
     QRCode.toDataURL(
       row.address || 'No address for this wallet ! ',
     )
@@ -71,21 +86,10 @@ export class SingleWalletDeposite extends React.Component {
     toast.info("Copied to clipboard");
   };
 
-  generateAddressHandler = () => {
-    QRCode.toDataURL(
-      'New Generate Address! 2NCzoqbY7CXitVwwiNDq9MqvjDJV4DcBj3Q2NCzoqbY7CXi 2NCzoqbY7CXitVwwiNDq9MqvjDJV4DcBj3Q2NCzoqbY7CXi',
-    )
-      .then(url => {
-        this.setState({
-          qr_code: url,
-          address: 'VwwiNDq9MqvjDJV4DcBj3Q2NCzoi',
-        });
-
-        toast.success("New Address Generated!");
-      })
-      .catch(err => {
-        console.error(err);
-      });
+  generateAddressHandler = async () => {
+    const {awNewWalletAddress} = this.props;
+    const { row } = this.props;
+    awNewWalletAddress(row);
   };
 
   showAddressHandler = () => {

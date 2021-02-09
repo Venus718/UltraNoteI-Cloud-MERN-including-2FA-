@@ -1,7 +1,8 @@
 const XUNI = require('ultranotei-api');
 const Wallets = require('../../models/wallet');
 const Transactions = require('../../models/transactions');
-const wallet = require('../../models/wallet');
+const Wallet = require('../../models/wallet');
+const { compareSync } = require('bcrypt');
 const xuni = new XUNI(process.env.XUNI_HOST, process.env.XUNI_PORT);     
 
 module.exports = {
@@ -17,18 +18,40 @@ module.exports = {
 
     async getAllWallets(req, res) {
         const userId = req.params.id;
-           Wallets.find({walletHolder: userId}).then((wallets) => {
-               if (wallets) {
-                   res.status(200).json(wallets);
-               }
-               else {
-                   res.status(404);
-               }
-           })
-           .catch((error) => {
+        try {
+            const wallets = await Wallets.find({walletHolder: userId});
+            for (let i = 0; i< wallets.length; i++){
+                const wallet = wallets[i];
+                let balance = 0;
+                try{
+                    balance = await xuni.getBalance(wallet.address.trim());
+                } catch (ex) {
+                    console.log(ex);
+                }
+
+                await Wallets.update({_id: wallet._id},
+                    { $set: {
+                        balance: balance.availableBalance
+                    }
+                });
+            };
+        } catch (ex) {
+            console.log(ex);
+        }
+
+        wallets = await Wallets.find({walletHolder: userId}).then((wallets) => {
+
+            if (wallets) {
+                res.status(200).json(wallets);
+            }
+            else {
+                res.status(404);
+            }
+        })
+        .catch((error) => {
             console.log('*'.repeat(50), 'Error: ' , error)
             res.json(status).json(error);
-           })
+        })
 
         
     },
@@ -51,6 +74,28 @@ module.exports = {
                     res.status(400).json({message: 'ERROR WHILE CREATING A NEW WALLET', err});
                 });
             } catch {
+                res.status(400).json({message: 'ERROR OUCURED'});
+            }
+    },
+    async UpdateWallet(req, res) {
+        try {
+            const resRPC = await xuni.createAddress();
+            const newAddress = resRPC.address;
+            const id = req.body.id;
+            const updateWallet = {
+                address: newAddress,
+                updatedAt: Date.now(),
+            };
+            Wallet.updateOne({_id: id}, { $set: updateWallet})
+            .then(async (wallet) => {
+                wallet = await Wallets.find({_id: id});
+                res.status(200).json({message: 'wallet Updated successfully', wallet });
+            }).catch(err => {
+                console.log(err);
+                res.status(400).json({message: 'ERROR WHILE GENERATING A NEW ADDRESS', err});
+            });
+            } catch(ex) {
+                console.log(ex);
                 res.status(400).json({message: 'ERROR OUCURED'});
             }
     },
@@ -150,7 +195,7 @@ module.exports = {
         console.log(address);
         console.log('sadok'+'hama');
         const balance = await xuni.getBalance(address.trim());
-        res.status(200).json({message: 'BALANCE:', balance})
+        res.status(200).json({message: 'BALANCE:', balance});
        } catch (error) {
            res.json(error)
        }

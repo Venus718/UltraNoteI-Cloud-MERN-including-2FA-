@@ -31,12 +31,26 @@ module.exports = {
                     const userData = {
                         firstName: user.firstName,
                         lastName: user.lastName,
+                        mail: user.mail,
                         phone: user.phone,
+                        image: user.image,
                         createdAt: user.creationDate,
                         two_fact_auth: user.two_fact_auth,
+                        is_active: user.isActive,
                         id: user._id
                     }
-                    const token = jwt.sign({data: user } , process.env.TOKENCODE, {expiresIn: '72h'});
+                    tokenData = {
+                        firstName: user.firstName,
+                        lastName: user.lastName,
+                        email: user.mail,
+                        phone: user.phone,
+                        creationDate: user.creationDate,
+                        two_fact_auth: user.two_fact_auth,
+                        isActive: user.isActive,
+                        _id: user._id
+                    }
+
+                    const token = jwt.sign({data: tokenData } , process.env.TOKENCODE, {expiresIn: '72h'});
                     return res.status(200).json({message: 'login successful', user: userData, token});
                 }  
             })

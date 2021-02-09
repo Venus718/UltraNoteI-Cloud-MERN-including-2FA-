@@ -12,6 +12,17 @@ export const addWalletSuccess = (payload) => ({
     payload
 });
 
+export const updateWalletStart = (payload) => ({
+    type: WalletTypes.UPDATE_WALLET_START,
+    payload
+});
+
+
+export const updateWalletSuccess = (payload) => ({
+    type: WalletTypes.UPDATE_WALLET_SUCCESS,
+    payload
+});
+
 export const withdrawWalletStart = (payload) => ({
     type: WalletTypes.WITHDRAW_WALLET_START,
     payload
@@ -46,6 +57,14 @@ export const getTransactionsByWalletAddressStart = (payload) => ({
 export const getTransactionsByWalletAddressSuccess = (payload) => ({
     type: WalletTypes.GET_TRANSACTIONS_BY_WALLET_SUCCESS,
     payload
+});
+
+export const walletReset = () => ({
+    type: WalletTypes.WALLET_RESET
+});
+
+export const walletResetSuccess = () => ({
+    type: WalletTypes.WALLET_RESET_SUCCESS
 });
 
 

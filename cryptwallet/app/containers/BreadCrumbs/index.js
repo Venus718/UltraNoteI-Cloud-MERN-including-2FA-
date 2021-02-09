@@ -28,6 +28,17 @@ import { selectUser } from '../../store/auth/auth.selectors';
 /* eslint-disable react/prefer-stateless-function */
 export class BreadCrumbs extends React.Component {
 
+  // state = {
+  //   availableBalance: 0
+  // }
+
+  // componentWillReceiveProps(nextProps){
+  //   console.log("BNP", nextProps);
+  //   const {availableBalance} = nextProps;
+  //   this.setState({
+  //     availableBalance: availableBalance
+  //   });
+  // }
   render() {    
     const {availableBalance} = this.props;
     console.log(availableBalance);

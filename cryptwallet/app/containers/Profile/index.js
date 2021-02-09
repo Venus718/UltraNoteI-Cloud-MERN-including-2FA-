@@ -44,15 +44,16 @@ const styles = theme => ({
 export class Profile extends React.Component {
   render() {
     const { classes } = this.props;
+    const image = JSON.parse(localStorage.getItem('user')).image;
     return (
       <Grid>
         <Grid className={classes.root} container spacing={32}>
           <Grid item sm={4} xs={12} className="userProfile">
             <Grid className="userThumb">
-              <Image src={UserImage} />
+              <Image src={image ? image : UserImage} />
             </Grid>
-            <Typography component="h5">Jhon Doe</Typography>
-            <Typography component="p">jhondoe45@gmail.com</Typography>
+            <Typography component="h5">{JSON.parse(localStorage.getItem('user')).firstName + " " + JSON.parse(localStorage.getItem('user')).lastName}</Typography>
+            <Typography component="p">{JSON.parse(localStorage.getItem('user')).mail}</Typography>
             <Typography component="p">United States</Typography>
           </Grid>
           <Grid item sm={8} xs={12} className="userInfo">
@@ -66,7 +67,7 @@ export class Profile extends React.Component {
                   </TableCell>
 
                   <TableCell>
-                    <strong>Jhon Doe</strong>
+                    <strong>{JSON.parse(localStorage.getItem('user')).firstName + " " + JSON.parse(localStorage.getItem('user')).lastName}</strong>
                   </TableCell>
                 </TableRow>
                 <TableRow>
@@ -88,7 +89,7 @@ export class Profile extends React.Component {
                   </TableCell>
 
                   <TableCell>
-                    <strong>jhondoe45@gmail.com</strong>
+                    <strong>{JSON.parse(localStorage.getItem('user')).email}</strong>
                   </TableCell>
                 </TableRow>
                 <TableRow>
@@ -110,7 +111,7 @@ export class Profile extends React.Component {
                   </TableCell>
 
                   <TableCell>
-                    <strong>+0123456789</strong>
+                    <strong>{JSON.parse(localStorage.getItem('user')).phone}</strong>
                   </TableCell>
                 </TableRow>
                 <TableRow>
