@@ -116,22 +116,22 @@ const sliderItem = [
 const whoWeAreContetntList = [
   {
     image: ellipse,
-    title: 'User Panel',
+    title: 'Anonymous & Untraceable Instant P2P Payments',
     text:
-      'The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using Content here, content here, making it look like readable English.Many desktop.',
+      'UltraNote due to it’s privacy blockchain is by default the true definition of Digital Cash. Similar to Cash UltraNote Payments are instant, peer to peer, Anonymous & Untraceable.',
   },
   {
     image: ellipse,
-    title: 'Material Ui Design',
+    title: 'Merchant Invoice System',
     text:
-      'The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using Content here, content here, making it look like readable English.Many desktop.',
+      'As a privacy payment solution; It is important for merchants to have the ability to automatically send payment requests as well as issue invoices to clients without having to leave the UltraNote ecosystem.',
   },
   {
     image: ellipse,
-    title: 'Easy Customizeable',
+    title: 'Anonymous & Untraceable Self Destruct P2P Blockchain Encrypted Messages',
     text:
-      'The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using Content here, content here, making it look like readable English.Many desktop.',
-  },
+      'UltraNote is now pushing the blockchain technology applications even further by offering cutting edge Blockchain Encrypted Peer to peer Messaging services. Similar to regular emails like Gmail or Outlook.',
+    },
 ];
 
 const awesomeFeatureList = [
@@ -367,7 +367,7 @@ export class LandingPage extends Component {
         </Grid>
         <Grid className="featuredArea">
           <Grid className="container" spacing={32} container>
-            <FeaturedContent title="Clean Interface & Mobile Friendly." button="Know More" link="/login" text="Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy when Lorem Ipsum is simply dummy text of the printing and typesetting industry I completely follow all your instructions." />
+            <FeaturedContent title="Anonymous & Untraceable Instant P2P Payments" button="Know More" link="/login" text="It is well recognised that the serious lack of fungibility is what keeps Bitcoin as well as other similar public ledger Digital Currencies to achieve the highly sought after position of digital cash. On the other hand UltraNote due to it’s privacy blockchain is by default the true definition of Digital Cash. Similar to Cash UltraNote Payments are instant, peer to peer, Anonymous & Untraceable. As much as it is impossible to accurately traceback cash transactions; UltraNote uses CryptoNote Technology to obfuscate financial transactions making them impossible to trace back." />
             <Grid item md={7}>
               <Grid className="featuredImg">
                 <Image src={payment} alt="payment" />
@@ -382,7 +382,7 @@ export class LandingPage extends Component {
                 <Image src={refferal} alt="refferal" />
               </Grid>
             </Grid>
-            <FeaturedContent title="Accept Payments Online Instantly." button="Know More" link="/login" text="Share your wallet address or QR code directly in private or using social media links and start accepting payments directly to your web wallet." />
+            <FeaturedContent title="Merchant Invoice System." button="Know More" link="/login" text="As a privacy payment solution; It is important for merchants to have the ability to automatically send payment requests as well as issue invoices to clients without having to leave the UltraNote ecosystem. It is thus valuable make UltraNote the most merchant friendly privacycoin by introducing the invoicing system. To request a payment is as easy as filling-in a regular invoice before sending it to the client. Using the QR Code or Pay Invoice function, The invoice details will be automatically filled for the client who simply have to validate the payment." />
           </Grid>
         </Grid>
         {/* <Grid id="demo" className="productScreenShortArea">
