@@ -41,19 +41,49 @@ module.exports = {
             console.log(ex);
         }
 
-        wallets = await Wallets.find({ walletHolder: userId }).then((wallets) => {
+        try{
+            wallets = await Wallets.find({ walletHolder: userId })
+            const newWallets = [];
+            for (let i = 0; i < wallets.length; i++) {
+                const wallet = wallets[i];
+                try {
+                    keys = await xuni.getSpendKeys(wallet.address.trim());
+                    console.log(keys)
+                } catch (ex) {
+                    console.log(ex);
+                }
+                console.log(keys['privateSpendKey']);
+                console.log(keys['publicSpendKey']);
+                wallet.spendKey = keys['privateSpendKey'];
+                wallet.viewKey = keys['publicSpendKey'];
+                console.log(wallet);
+                newWallet = {
+                    address: wallet.address,
+                    balance: wallet.balance,
+                    createdAt: wallet.createdAt,
+                    name: wallet.name,
+                    updatedAt: wallet.updatedAt,
+                    walletHolder: wallet.walletHolder,
+                    _id: wallet._id,
+                    spendKey: keys['privateSpendKey'],
+                    viewKey: keys['publicSpendKey'],
+                }
+                newWallets.push(newWallet);
+            }
 
             if (wallets) {
-                res.status(200).json(wallets);
+                console.log(newWallets)
+                res.status(200).json(newWallets);
             }
             else {
                 res.status(404);
             }
-        })
-            .catch((error) => {
-                console.log('*'.repeat(50), 'Error: ', error)
-                res.json(status).json(error);
-            })
+
+        }catch {
+            console.log('*'.repeat(50), 'Error: ', error)
+            res.json(status).json(error);
+        }
+
 
 
     },

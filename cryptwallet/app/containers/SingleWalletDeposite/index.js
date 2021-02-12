@@ -45,6 +45,8 @@ export class SingleWalletDeposite extends React.Component {
     qr_code: '',
     address: '',
     showAddress: false,
+    spendKey: '',
+    viewKey: '',
   };
 
   componentDidMount() {
@@ -56,6 +58,8 @@ export class SingleWalletDeposite extends React.Component {
         this.setState({
           qr_code: url,
           address: row.address || 'No address for this wallet ! ',
+          spendKey: row.spendKey || '',
+          viewKey: row.viewKey || ''
         });
       })
       .catch(err => {
@@ -66,12 +70,18 @@ export class SingleWalletDeposite extends React.Component {
   componentWillReceiveProps(nextProps) {
     const {row} = nextProps;
     QRCode.toDataURL(
-      row.address || 'No address for this wallet ! ',
+      {
+        address: row.address || 'No address for this wallet ! ',
+        spendKey: row.spendKey || '',
+        viewKey: row.viewKey || ''
+      }
     )
       .then(url => {
         this.setState({
           qr_code: url,
           address: row.address || 'No address for this wallet ! ',
+          spendKey: row.spendKey || '',
+          viewKey: row.viewKey || ''
         });
       })
       .catch(err => {
@@ -106,18 +116,18 @@ export class SingleWalletDeposite extends React.Component {
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell>Address</TableCell>
-              <TableCell>Created At</TableCell>
+              <TableCell>Key</TableCell>
+              <TableCell>Key Type</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             <TableRow>
-              <TableCell>2NCzoqbY7CXitVwwiNDq9MqvjDJV4DcBj3Q</TableCell>
-              <TableCell className="dateTd">2019-01-24 12:50:17</TableCell>
+              <TableCell>{this.state.spendKey}</TableCell>
+              <TableCell className="dateTd">Spend Key</TableCell>
             </TableRow>
             <TableRow>
-              <TableCell>2NCzoqbY7CXitVwwiNDq9MqvjDJV4DcBj3Q</TableCell>
-              <TableCell className="dateTd">2019-01-24 12:50:17</TableCell>
+              <TableCell>{this.state.viewKey}</TableCell>
+              <TableCell className="dateTd">View Key</TableCell>
             </TableRow>
           </TableBody>
         </Table>
@@ -154,7 +164,7 @@ export class SingleWalletDeposite extends React.Component {
                 disabled={showAddress}
                 className={`formSubmitBtn ${showAddress && 'disableBtn'}`}
               >
-                Show past address
+                Show Keys
               </Button>
               {showAddress ? AddressTable : ''}
             </Grid>
