@@ -182,7 +182,7 @@ export class SingleWalletWithdraw extends React.Component {
 }
 
 SingleWalletWithdraw.propTypes = {
-  dispatch: PropTypes.func.isRequired,
+  //dispatch: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = state => ({
@@ -190,7 +190,7 @@ const mapStateToProps = state => ({
   connectedUser: selectUser(state)
 });
 
-const mapDispatchToProps = dispatch => ({
+const mapDispatchToProps = (dispatch) => ({
   sendWithdraw: (payload) => dispatch(withdrawWalletStart(payload))
 });
 

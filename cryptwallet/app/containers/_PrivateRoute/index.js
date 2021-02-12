@@ -9,7 +9,7 @@ import Grid from '@material-ui/core/Grid';
 
 import './style.scss';
 import Header from '../Header';
-import { BreadCrumbs } from '../BreadCrumbs';
+import BreadCrumbs from '../BreadCrumbs';
 import Footer from '../../components/Footer';
 import { selectAvailableBalance } from '../../store/wallet/wallet.selectors';
 
@@ -22,7 +22,7 @@ export class PrivateRoute extends Component {
       <Fragment>
         <Grid className="headerWrapper">
           <Header />
-          <BreadCrumbs availableBalance={availableBalance} icon={this.props.icon} title={this.props.title} />
+          <BreadCrumbs icon={this.props.icon} title={this.props.title} />
         </Grid>
         <Route {...this.props} render={props => <Component {...props} />} />
         <Footer />

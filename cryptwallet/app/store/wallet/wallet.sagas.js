@@ -1,6 +1,6 @@
 import { toast } from "react-toastify";
 import { all, call, put, takeLatest } from "redux-saga/effects";
-import { addWalletSuccess, updateWalletSuccess, getTransactionsByWalletAddressSuccess, getWalletSuccess, walletResetSuccess, throwError } from "./wallet.actions";
+import { addWalletSuccess, updateWalletSuccess, getTransactionsByWalletAddressSuccess, getWalletSuccess, walletResetSuccess, withdrawWalletSuccess, throwError } from "./wallet.actions";
 import WalletTypes from "./wallet.types";
 import { clientHttp } from '../../utils/services/httpClient';
 
@@ -52,10 +52,10 @@ export function* withdrawWalletAsync({payload}) {
     
     try {
         const result = yield clientHttp.post(`/wallets/transactions`, payload);
-        console.log('success');
+        console.log('result', result);
         if (result && result.data) {
             toast.success("Successfully send your request!");
-            yield put(addWalletSuccess(result.data.wallet));
+            yield put(withdrawWalletSuccess(result.data.newTransaction));
         }
     }
     catch(error) {

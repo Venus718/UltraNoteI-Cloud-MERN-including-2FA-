@@ -41,6 +41,7 @@ import { toast } from 'react-toastify';
 import Redirect from 'react-router-dom/es/Redirect';
 import { selectUser } from '../../store/auth/auth.selectors';
 import { getWalletStart, walletReset } from '../../store/wallet/wallet.actions';
+import { authReset } from '../../store/auth/auth.actions';
 
 /* eslint-disable react/prefer-stateless-function */
 class Header extends React.Component {
@@ -82,7 +83,7 @@ class Header extends React.Component {
 
   logOutHandler = () => {
     this.props.walletReset();
-    localStorage.removeItem('user');
+    this.props.authReset();
     cookie.remove('Auth');
 
     toast.warn("You have been loged out!");
@@ -235,7 +236,8 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = (dispatch) =>  ({
-  walletReset: (payload) => dispatch(walletReset(payload))
+  walletReset: (payload) => dispatch(walletReset(payload)),
+  authReset: (payload) => dispatch(authReset(payload))
 });
 
 const withConnect = connect(

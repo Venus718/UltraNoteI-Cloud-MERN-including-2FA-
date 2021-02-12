@@ -7,6 +7,10 @@ const INITIAL_STATE = {
     isLoading: false,
     user: null,
     token: '',
+    withdrawByMonth: [],
+    depositByMonth: [],
+    withdrawByDay: [],
+    depositByDay: [],
     error: null
 };
 
@@ -67,7 +71,19 @@ const authReducer = (state = INITIAL_STATE, action) => {
                 token: action.payload.token
 
             };
-        
+
+        case AuthTypes.DEPOSIT_AND_WITHDRAW_SUCCESS:
+            return{
+                ...state,
+                withdrawByMonth: action.payload[0],
+                depositByMonth: action.payload[1],
+                withdrawByDay: action.payload[2],
+                depositByDay: action.payload[3] 
+            };
+
+        case AuthTypes.AUTH_RESET_SUCCESS:
+            return { ...INITIAL_STATE};
+
         case AuthTypes.ERROR:
             return {
                 ...state,

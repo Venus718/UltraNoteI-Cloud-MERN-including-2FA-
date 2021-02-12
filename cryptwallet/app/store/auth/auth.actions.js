@@ -110,3 +110,21 @@ export const updateProfileFailure = (payload) => ({
     type: AuthTypes.ERROR,
     payload
 });
+
+export const depositAndWithdrawStart = (payload) => ({
+    type: AuthTypes.DEPOSIT_AND_WITHDRAW_START,
+    payload
+});
+
+export const depositAndWithdrawSuccess = (payload) => ({
+    type: AuthTypes.DEPOSIT_AND_WITHDRAW_SUCCESS,
+    payload
+});
+
+export const authReset = () => ({
+    type: AuthTypes.AUTH_RESET
+});
+
+export const authResetSuccess = () => ({
+    type: AuthTypes.AUTH_RESET_SUCCESS
+});

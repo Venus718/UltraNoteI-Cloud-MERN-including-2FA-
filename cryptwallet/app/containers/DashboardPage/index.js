@@ -28,36 +28,87 @@ import saga from './saga';
 
 import './style.scss';
 import DwLineChart from '../../components/DwLineChart';
+import {depositAndWithdrawStart} from '../../store/auth/auth.actions';
+import { selectWithdrawByMonth, selectDepositByMonth, selectWithdrawByDay, selectDepositByDay } from '../../store/auth/auth.selectors';
 
-const withdrawData = [
-  { month: 'Jan', actual: 140 },
-  { month: 'Feb', actual: 310 },
-  { month: 'March', actual: 190 },
-  { month: 'April', actual: 320 },
-  { month: 'May', actual: 200 },
-  { month: 'Jun', actual: 320 },
-];
 
-const depositeData = [
-  { month: 'Jan', actual: 220 },
-  { month: 'Feb', actual: 350 },
-  { month: 'March', actual: 490 },
-  { month: 'April', actual: 320 },
-  { month: 'May', actual: 250 },
-  { month: 'Jun', actual: 350 },
-];
+// let monthNames = ["Jan", "Feb", "March", "April", "May", "June", "July", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
+// let today = new Date();
+// let d;
+// const withdrawData = [];
+// const depositeData = [];
+
+// for(let i = 6; i > 0; i -= 1) {
+//   d = new Date(today.getFullYear(), today.getMonth() - i, 1);
+//   withdrawData.push({ month: monthNames[d.getMonth()], actual: 140 });
+//   depositeData.push({ month: monthNames[d.getMonth()], actual: 140 });
+//   { month: 'Jan', actual: 140 },
+//   { month: 'Feb', actual: 310 },
+//   { month: 'March', actual: 190 },
+//   { month: 'April', actual: 320 },
+//   { month: 'May', actual: 200 },
+//   { month: 'Jun', actual: 320 },
+// ];
+
+// const depositeData = [
+//   { month: 'Jan', actual: 220 },
+//   { month: 'Feb', actual: 350 },
+//   { month: 'March', actual: 490 },
+//   { month: 'April', actual: 320 },
+//   { month: 'May', actual: 250 },
+//   { month: 'Jun', actual: 350 },
+// ];
+// }
 /* eslint-disable react/prefer-stateless-function */
 export class DashboardPage extends React.Component {
   state = {
     metric: 0,
-    withDraw: withdrawData,
-    deposite: depositeData,
+    withDraw: [],
+    deposite: [],
   };
 
   componentDidMount() {
+    const {depositAndWithdrawData} = this.props;
+    const user_id = JSON.parse(localStorage.getItem('user')).id
+    depositAndWithdrawData(user_id);
+
+  }
+
+  componentWillReceiveProps(nextProps){
+    console.log(nextProps)
+    const {withdrawByMonth} = nextProps;
+    const {depositByMonth} = nextProps;
+    console.log("Withdraw", withdrawByMonth);
+    console.log("Deposite", depositByMonth);
+
+    let withdrawTotal = 0;
+    for (let i = 0; i < withdrawByMonth.length; i++){
+      const withdrawAmount = withdrawByMonth[i]['actual'];
+      withdrawTotal += withdrawAmount;
+    }
+    console.log(withdrawTotal);
+
+    let depositTotal = 0;
+    for (let i = 0; i < depositByMonth.length; i++){
+      const depositAmount = depositByMonth[i]['actual'];
+      depositTotal += depositAmount;
+    }
+    console.log(depositTotal);
+    let metric;
+    if (depositTotal != 0 || withdrawTotal != 0) {
+      metric = Math.round(withdrawTotal / (depositTotal + withdrawTotal) * 100);
+    } else {
+      metric = 0;
+    }
+
     this.setState({
-      metric: 70,
+
+      metric: metric,
+      withDraw: withdrawByMonth,
+      deposite: depositByMonth,      
+      withdrawData: withdrawByMonth,
+      depositeData: depositByMonth,
     });
   }
 
@@ -70,7 +121,7 @@ export class DashboardPage extends React.Component {
       }
       if (this.state[prop].length === 0) {
         this.setState({
-          [prop]: depositeData,
+          [prop]: this.state.depositeData,
         });
       }
     }
@@ -84,7 +135,7 @@ export class DashboardPage extends React.Component {
       if (this.state[prop].length === 0) {
         console.log('called');
         this.setState({
-          [prop]: withdrawData,
+          [prop]: this.state.withdrawData,
         });
       }
     }
@@ -93,6 +144,7 @@ export class DashboardPage extends React.Component {
   render() {
 
     const { withDraw, deposite } = this.state;
+    console.log("State",this.state)
 
     return (
       <Grid className="mainBody">
@@ -209,7 +261,7 @@ export class DashboardPage extends React.Component {
                   </Typography>
                 </Grid>
                 <Grid item xs={12} sm={4}>
-                  <Grid className="barController">
+                  <Grid className="barController lineChart">
                     <Button disableRipple>
                       <p />
                       Deposite
@@ -221,7 +273,9 @@ export class DashboardPage extends React.Component {
                   </Grid>
                 </Grid>
               </Grid>
-              <DwLineChart />
+              <DwLineChart 
+                withdrawByDay = {this.props.withdrawByDay}
+                depositByDay = {this.props.depositByDay} />
             </Grid>
           </Grid>
         </Grid>
@@ -234,15 +288,19 @@ DashboardPage.propTypes = {
   // dispatch: PropTypes.func.isRequired,
 };
 
-const mapStateToProps = createStructuredSelector({
+// const mapStateToProps = createStructuredSelector({
+const mapStateToProps = state => ({
   dashboardPage: makeSelectDashboardPage(),
+  withdrawByMonth: selectWithdrawByMonth(state),
+  depositByMonth: selectDepositByMonth(state),
+  withdrawByDay: selectWithdrawByDay(state),
+  depositByDay: selectDepositByDay(state),
+  
 });
 
-function mapDispatchToProps(dispatch) {
-  return {
-    dispatch,
-  };
-}
+const mapDispatchToProps = (dispatch) => ({
+  depositAndWithdrawData: (payload) => dispatch(depositAndWithdrawStart(payload))
+});
 
 const withConnect = connect(
   mapStateToProps,

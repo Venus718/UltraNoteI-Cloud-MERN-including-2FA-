@@ -22,26 +22,34 @@ import saga from './saga';
 
 import './style.scss';
 import FontAwesome from 'components/uiStyle/FontAwesome';
+import {getWalletStart} from '../../store/wallet/wallet.actions';
 import { selectAvailableBalance, selectWallets } from '../../store/wallet/wallet.selectors';
 import { selectUser } from '../../store/auth/auth.selectors';
 
 /* eslint-disable react/prefer-stateless-function */
-export class BreadCrumbs extends React.Component {
+class BreadCrumbs extends React.Component {
 
-  // state = {
-  //   availableBalance: 0
-  // }
+  constructor(props) {
+    super(props);
+    
+  }
 
-  // componentWillReceiveProps(nextProps){
-  //   console.log("BNP", nextProps);
-  //   const {availableBalance} = nextProps;
-  //   this.setState({
-  //     availableBalance: availableBalance
-  //   });
-  // }
+  componentDidMount(){
+    const {getWallets, connectedUser} = this.props;
+    if (connectedUser){
+      getWallets(connectedUser.id);
+    }
+  }
+
+  componentWillReceiveProps(nextProps){
+    const {getWallets, connectedUser} = nextProps;
+    if (connectedUser && (!this.props.connectedUser || connectedUser.id != this.props.connectedUser.id)) {
+      getWallets(connectedUser.id);
+    }
+  }
+
   render() {    
     const {availableBalance} = this.props;
-    console.log(availableBalance);
     return (
       <Grid className="breadCrumbs">
         <Grid container alignItems="center" className="container">
@@ -113,9 +121,9 @@ const mapStateToProps = state => ({
 });
 
 
-const mapDispatchToProps = (dispatch) => {
-
-}
+const mapDispatchToProps = (dispatch) => ({
+  getWallets: (id) => dispatch(getWalletStart(id))
+});
 
 const withConnect = connect(
   mapStateToProps,

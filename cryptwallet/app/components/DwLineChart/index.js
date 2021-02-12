@@ -26,6 +26,7 @@ import './style.scss';
 /* eslint-disable react/prefer-stateless-function */
 class DwLineChart extends React.PureComponent {
   render() {
+    const { withdrawByDay, depositByDay } = this.props;
     return (
       <Grid className="dwLineChart">
         <VictoryChart
@@ -62,15 +63,7 @@ class DwLineChart extends React.PureComponent {
                 fill: '#666666',
               },
             }}
-            data={[
-              { x: 'Sun', y: 0 },
-              { x: 'Mon', y: 80 },
-              { x: 'Tue', y: 150 },
-              { x: 'Wed', y: 100 },
-              { x: 'Thu', y: 150 },
-              { x: 'Fir', y: 200 },
-              { x: 'Sat', y: 50 },
-            ]}
+            data={depositByDay}
             x="x"
             y={d => d.y}
           />
@@ -88,15 +81,7 @@ class DwLineChart extends React.PureComponent {
                 fill: '#666666',
               },
             }}
-            data={[
-              { x: 'Sun', y: 50 },
-              { x: 'Mon', y: 80 },
-              { x: 'Tue', y: 50 },
-              { x: 'Wed', y: 80 },
-              { x: 'Thu', y: 10 },
-              { x: 'Fir', y: 150 },
-              { x: 'Sat', y: 100 },
-            ]}
+            data={withdrawByDay}
             x="x"
             y={d => d.y}
           />

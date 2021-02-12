@@ -63,3 +63,16 @@
     }
   }
 }
+
+.lineChart {
+  button {
+    p {
+      background: #1CA8EE;
+    }
+    &.withDraw {
+      p {
+        background: #F8A2C1;
+      }
+    }
+  }
+}

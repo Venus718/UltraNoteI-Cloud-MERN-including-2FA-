@@ -2,7 +2,8 @@ import { toast } from 'react-toastify';
 import cookie from 'js-cookie';
 import { takeLatest, call, put, all } from 'redux-saga/effects';
 import { clientHttp } from '../../utils/services/httpClient';
-import { loginFailure, signupFailure, signupSuccess, loginSuccess, enableTwoAuthSuccess, sendTwoCodeFailure, sendTwoCodeSuccess, updateProfileStart, updateProfileSuccess, updateProfileFailure } from './auth.actions';
+import { loginFailure, signupFailure, signupSuccess, loginSuccess, enableTwoAuthSuccess, sendTwoCodeFailure, sendTwoCodeSuccess,
+         updateProfileStart, updateProfileSuccess, updateProfileFailure, depositAndWithdrawSuccess, authResetSuccess } from './auth.actions';
 
 import AuthTypes from './auth.types';
 
@@ -189,6 +190,39 @@ export function* onSendTwoAuthVerif() {
     yield takeLatest(AuthTypes.SEND_CODE_TWO_AUTH, sendTwoAuthVerifAsync);
 }
 
+export function* DepositAndWithdrawAsync({payload}) {
+    try {
+        const result = yield clientHttp.post(`/user/dashboard`, {id: payload});
+        if (result && result.data) {
+            console.log("Result Data", result.data);
+            yield put(depositAndWithdrawSuccess(result.data));
+        }
+    }
+    catch(error) {
+        console.log(error);
+    }
+}
+
+
+export function* onDepositAndWithdraw() {
+    yield takeLatest(AuthTypes.DEPOSIT_AND_WITHDRAW_START, DepositAndWithdrawAsync);
+}
+
+
+export function* authResetAsync() {
+    try {
+        console.log('Reset Auth States');
+        yield put(authResetSuccess());
+        }
+    catch(error) {
+        yield put(throwError(error));
+    }
+}
+
+export function* onAuthReset() {
+    yield takeLatest(AuthTypes.AUTH_RESET, authResetAsync);
+}
+
 
 export function* authSagas() {
     yield all([
@@ -198,6 +232,8 @@ export function* authSagas() {
         call(onUpdateProfileStart),
         call(onRequestEmailResetPasswordStart),
         call(onEnableTwoAuth),
-        call(onSendTwoAuthVerif)
+        call(onSendTwoAuthVerif),
+        call(onDepositAndWithdraw),
+        call(onAuthReset)
     ]);
 };

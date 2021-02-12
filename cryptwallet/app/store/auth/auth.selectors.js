@@ -15,7 +15,28 @@ export const selectUser = createSelector(
     (auth) => auth.user
   );
 
-  export const selectIsLoggedIn = createSelector(
-    [authSelector],
-    (auth) => auth.isLoggedIn
-  );
+export const selectIsLoggedIn = createSelector(
+  [authSelector],
+  (auth) => auth.isLoggedIn
+);
+
+
+export const selectWithdrawByMonth = createSelector(
+  [authSelector],
+  (auth) => auth.withdrawByMonth
+);
+
+export const selectDepositByMonth = createSelector(
+  [authSelector],
+  (auth) => auth.depositByMonth
+);
+
+export const selectWithdrawByDay = createSelector(
+  [authSelector],
+  (auth) => auth.withdrawByDay
+);
+
+export const selectDepositByDay = createSelector(
+  [authSelector],
+  (auth) => auth.depositByDay
+);
