@@ -11,6 +11,7 @@ import { Helmet } from 'react-helmet';
 import { FormattedMessage } from 'react-intl';
 import { createStructuredSelector } from 'reselect';
 import { compose } from 'redux';
+import CopyAction from '../../images/icon/action/copy-action.png';
 
 import { toast } from 'react-toastify';
 
@@ -35,6 +36,7 @@ import makeSelectSingleWalletDeposite from './selectors';
 import reducer from './reducer';
 import saga from './saga';
 import messages from './messages';
+import { List, ListItem } from '@material-ui/core';
 
 import Images from '../../components/uiStyle/Images';
 import './style.scss';
@@ -51,9 +53,8 @@ export class SingleWalletDeposite extends React.Component {
 
   componentDidMount() {
     const {row} = this.props;
-    QRCode.toDataURL(
-      row.address || 'No address for this wallet ! ',
-    )
+    const data = row.address;
+    QRCode.toDataURL(data)
       .then(url => {
         this.setState({
           qr_code: url,
@@ -69,13 +70,8 @@ export class SingleWalletDeposite extends React.Component {
 
   componentWillReceiveProps(nextProps) {
     const {row} = nextProps;
-    QRCode.toDataURL(
-      {
-        address: row.address || 'No address for this wallet ! ',
-        spendKey: row.spendKey || '',
-        viewKey: row.viewKey || ''
-      }
-    )
+    const data = row.address;
+    QRCode.toDataURL(data | 'No address for this wallet ! ')
       .then(url => {
         this.setState({
           qr_code: url,
@@ -92,6 +88,20 @@ export class SingleWalletDeposite extends React.Component {
   copyHandler = e => {
     e.preventDefault();
     navigator.clipboard.writeText(this.state.address);
+
+    toast.info("Copied to clipboard");
+  };
+
+  copySpendKeyHandler = e => {
+    e.preventDefault();
+    navigator.clipboard.writeText(this.state.spendKey);
+
+    toast.info("Copied to clipboard");
+  };
+
+  copyViewKeyHandler = e => {
+    e.preventDefault();
+    navigator.clipboard.writeText(this.state.viewKey);
 
     toast.info("Copied to clipboard");
   };
@@ -118,16 +128,31 @@ export class SingleWalletDeposite extends React.Component {
             <TableRow>
               <TableCell>Key</TableCell>
               <TableCell>Key Type</TableCell>
+              <TableCell> Copy</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             <TableRow>
               <TableCell>{this.state.spendKey}</TableCell>
               <TableCell className="dateTd">Spend Key</TableCell>
+              <TableCell>
+                <List className="actionBtns">
+                  <ListItem onClick={this.copySpendKeyHandler}>
+                    <Images src={CopyAction} />
+                  </ListItem>
+                </List>
+              </TableCell>
             </TableRow>
             <TableRow>
               <TableCell>{this.state.viewKey}</TableCell>
               <TableCell className="dateTd">View Key</TableCell>
+              <TableCell>
+                <List className="actionBtns">
+                  <ListItem onClick={this.copyViewKeyHandler}>
+                    <Images src={CopyAction} />
+                  </ListItem>
+                </List>
+              </TableCell>
             </TableRow>
           </TableBody>
         </Table>
