@@ -3,7 +3,7 @@ import { toast } from 'react-toastify';
 
 
 export const clientHttp = axios.create({
-  baseURL: `${process.env.REACT_APP_SERVER_URL}`,
+  baseURL: process.env.NODE_ENV === 'production'? 'https://cloud.ultranote.org/api': 'https://localhost:3600/api',
   timeout: 60000,
 });
 
