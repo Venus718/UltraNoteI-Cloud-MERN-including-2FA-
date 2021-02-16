@@ -5,10 +5,12 @@ exports.twoFactorAuthMail = async(newUser, val) => {
 
 
     const transporter = nodemailer.createTransport({
-        service: 'gmail',
+        host: 'smtp.sendgrid.net',
+		port: 587,
+		secure: false,
         auth: {
-            user: 'support@ultranote.org',
-            pass: 'Maysoon2006!',
+            user: 'apikey',
+            pass: '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',
         },
     });
 

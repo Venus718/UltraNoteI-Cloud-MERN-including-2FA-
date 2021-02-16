@@ -126,6 +126,9 @@ class Header extends React.Component {
                   <NavLink to="/settings">Settings</NavLink>
                 </ListItem>
                 <ListItem className="menuItem">
+                  <NavLink to="/address-book">Address Book</NavLink>
+                </ListItem>
+                <ListItem className="menuItem">
                   <NavLink to="/">Homepage</NavLink>
                 </ListItem>
               </List>

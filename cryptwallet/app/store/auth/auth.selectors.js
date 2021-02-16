@@ -40,3 +40,13 @@ export const selectDepositByDay = createSelector(
   [authSelector],
   (auth) => auth.depositByDay
 );
+
+export const selectAllUsers = createSelector(
+  [authSelector],
+  (auth) => auth.users
+);
+
+export const selectContactList = createSelector(
+  [authSelector],
+  (auth) => auth.contactList
+);

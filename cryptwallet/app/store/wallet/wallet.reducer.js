@@ -52,7 +52,6 @@ const walletReducer = (state = INITIAL_STATE, action) => {
         case WalletTypes.WITHDRAW_WALLET_SUCCESS:
             return {
                 ...state,
-                transactions: action.payload
             };
         case WalletTypes.WALLET_RESET_SUCCESS:
             return { ...INITIAL_STATE};

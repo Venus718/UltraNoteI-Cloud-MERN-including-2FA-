@@ -11,7 +11,8 @@ const UserSchema = mongoose.Schema({
     isActive: {type: Boolean, default: false, required: true},
     two_fact_auth: {type: Boolean, default: false, required: true},
     two_fact_auth_code: {type: Number, default: null},
-    creationDate: {type: Date, default: Date.now()}
+    creationDate: {type: Date, default: Date.now()},
+    contacts: {type: [String], default: null}
 });
 
 module.exports = mongoose.model('User', UserSchema);

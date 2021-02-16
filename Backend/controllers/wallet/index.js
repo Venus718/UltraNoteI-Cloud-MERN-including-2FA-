@@ -4,6 +4,7 @@ const Transactions = require('../../models/transactions');
 const Wallet = require('../../models/wallet');
 const { compareSync } = require('bcrypt');
 const user = require('../../models/user');
+const { baseModelName } = require('../../models/user');
 const xuni = new XUNI(process.env.XUNI_HOST, process.env.XUNI_PORT);
 
 module.exports = {
@@ -33,7 +34,7 @@ module.exports = {
                 await Wallets.update({ _id: wallet._id },
                     {
                         $set: {
-                            balance: balance.availableBalance
+                            balance: balance.availableBalance/1000000
                         }
                     });
             };
@@ -48,15 +49,12 @@ module.exports = {
                 const wallet = wallets[i];
                 try {
                     keys = await xuni.getSpendKeys(wallet.address.trim());
-                    console.log(keys)
                 } catch (ex) {
                     console.log(ex);
                 }
-                console.log(keys['privateSpendKey']);
-                console.log(keys['publicSpendKey']);
                 wallet.spendKey = keys['privateSpendKey'];
                 wallet.viewKey = keys['publicSpendKey'];
-                console.log(wallet);
+
                 newWallet = {
                     address: wallet.address,
                     balance: wallet.balance,
@@ -65,6 +63,7 @@ module.exports = {
                     updatedAt: wallet.updatedAt,
                     walletHolder: wallet.walletHolder,
                     _id: wallet._id,
+                    id: wallet._id,
                     spendKey: keys['privateSpendKey'],
                     viewKey: keys['publicSpendKey'],
                 }
@@ -72,19 +71,16 @@ module.exports = {
             }
 
             if (wallets) {
-                console.log(newWallets)
                 res.status(200).json(newWallets);
             }
             else {
                 res.status(404);
             }
 
-        }catch {
+        }catch(error) {
             console.log('*'.repeat(50), 'Error: ', error)
-            res.json(status).json(error);
+            res.status(500).json(error);
         }
-
-
 
     },
 

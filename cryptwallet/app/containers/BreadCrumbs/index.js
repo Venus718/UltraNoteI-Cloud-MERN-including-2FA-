@@ -38,6 +38,7 @@ class BreadCrumbs extends React.Component {
     const {getWallets, connectedUser} = this.props;
     if (connectedUser){
       getWallets(connectedUser.id);
+      
     }
   }
 

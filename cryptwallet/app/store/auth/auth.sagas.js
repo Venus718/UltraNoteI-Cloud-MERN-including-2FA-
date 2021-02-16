@@ -3,7 +3,8 @@ import cookie from 'js-cookie';
 import { takeLatest, call, put, all } from 'redux-saga/effects';
 import { clientHttp } from '../../utils/services/httpClient';
 import { loginFailure, signupFailure, signupSuccess, loginSuccess, enableTwoAuthSuccess, sendTwoCodeFailure, sendTwoCodeSuccess,
-         updateProfileStart, updateProfileSuccess, updateProfileFailure, depositAndWithdrawSuccess, authResetSuccess } from './auth.actions';
+         updateProfileStart, updateProfileSuccess, updateProfileFailure, depositAndWithdrawSuccess, authResetSuccess, addContactSuccess, 
+         getContactListSuccess, getUsersSuccess } from './auth.actions';
 
 import AuthTypes from './auth.types';
 
@@ -223,6 +224,57 @@ export function* onAuthReset() {
     yield takeLatest(AuthTypes.AUTH_RESET, authResetAsync);
 }
 
+export function* getUsersAsync() {
+    try {
+        const result = yield clientHttp.get(`/user/get_users`);
+        if (result && result.data) {
+            yield put(getUsersSuccess(result.data));
+        }    
+    }
+    catch(error) {
+        yield put(throwError(error));
+    }
+}
+
+export function* onGetUsers() {
+    yield takeLatest(AuthTypes.GET_USERS, getUsersAsync);
+}
+
+
+export function* addContactAsync({payload}) {
+    try {
+        const result = yield clientHttp.post(`/user/add_contact`, payload);
+        if (result && result.data) {
+            toast.success('Contact Added Successfully');
+            yield put(addContactSuccess());
+        }
+    }
+    catch(error) {
+        yield put(throwError(error));
+    }
+}
+
+export function* onAddContact() {
+    yield takeLatest(AuthTypes.ADD_CONTACT, addContactAsync);
+}
+
+
+export function* getContactListAsync({payload}) {
+    try {
+        const result = yield clientHttp.post(`/user/get_contact_list`, {id: payload});
+        if (result && result.data) {
+            yield put(getContactListSuccess(result.data));
+        }
+    }
+    catch(error) {
+        yield put(throwError(error));
+    }
+}
+
+export function* onGetContactList() {
+    yield takeLatest(AuthTypes.GET_CONTACT_LIST, getContactListAsync);
+}
+
 
 export function* authSagas() {
     yield all([
@@ -234,6 +286,9 @@ export function* authSagas() {
         call(onEnableTwoAuth),
         call(onSendTwoAuthVerif),
         call(onDepositAndWithdraw),
-        call(onAuthReset)
+        call(onAuthReset),
+        call(onGetUsers),
+        call(onAddContact),
+        call(onGetContactList)
     ]);
 };

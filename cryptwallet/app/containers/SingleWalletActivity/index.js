@@ -130,6 +130,7 @@ export class SingleWalletActivity extends React.Component {
     const {
       transactions
     } = this.props;
+    
     return (
       <Grid className="walletActivity">
         <Grid container alignItems="center" className="walletActivityHeader">

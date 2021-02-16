@@ -30,6 +30,7 @@ import DashboardPage from '../DashboardPage/Loadable';
 import BuyCoin from '../BuyCoin';
 import MyWallet from '../MyWallet';
 import Settings from '../Settings';
+import AddressBook from '../AddressBook';
 import { Referral } from '../Referral';
 
 export default function Routes() {
@@ -64,6 +65,12 @@ export default function Routes() {
                 icon={SettingsIcon}
                 title="Settings"
                 component={Settings}
+            />
+            <PrivateRoute
+                path="/address-book"
+                icon={SettingsIcon}
+                title="Address Book"
+                component={AddressBook}
             />
             <PrivateRoute
                 path="/referral"

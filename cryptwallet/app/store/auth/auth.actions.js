@@ -128,3 +128,32 @@ export const authReset = () => ({
 export const authResetSuccess = () => ({
     type: AuthTypes.AUTH_RESET_SUCCESS
 });
+
+export const getUsers = () => ({
+    type: AuthTypes.GET_USERS
+});
+
+export const getUsersSuccess = (payload) => ({
+    type: AuthTypes.GET_USERS_SUCCESS,
+    payload
+});
+
+export const addContact = (payload) => ({
+    type: AuthTypes.ADD_CONTACT,
+    payload
+});
+
+export const addContactSuccess = (payload) => ({
+    type: AuthTypes.ADD_CONTACT_SUCCESS,
+    payload
+});
+
+export const getContactList = (payload) => ({
+    type: AuthTypes.GET_CONTACT_LIST,
+    payload
+});
+
+export const getContactListSuccess = (payload) => ({
+    type: AuthTypes.GET_CONTACT_LIST_SUCCESS,
+    payload
+});

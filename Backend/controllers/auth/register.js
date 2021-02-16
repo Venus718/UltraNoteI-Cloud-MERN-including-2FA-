@@ -35,7 +35,7 @@ module.exports = {
             }
            } catch (error) {
             console.log(error);
-            res.status(400).json({message: console.log(error) +'faild while sending the activation male', error})
+            res.status(400).json({message: console.log(error) +' failed while sending the activation mail', error})
            }
         })
        } catch (error) {

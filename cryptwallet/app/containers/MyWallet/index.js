@@ -146,25 +146,28 @@ export class MyWallet extends React.Component {
 
   componentWillReceiveProps(nextProps) {
     const {wallets} = nextProps;
-    if (this.state.selectedWallet) {
-      let newSelectedWallet;
-      wallets.forEach(wallet => {
-        if(this.state.selectedWallet.id == wallet.id) {
-          newSelectedWallet = wallet;
-        }
-      });
-
-      if (newSelectedWallet) {
-        this.setState({
-          row: wallets,
-          selectedWallet: newSelectedWallet
+    if(wallets) {
+      if (this.state.selectedWallet) {
+        let newSelectedWallet;
+        wallets.forEach(wallet => {
+          if(this.state.selectedWallet.id == wallet.id) {
+            newSelectedWallet = wallet;
+          }
         });
-        return;
+
+        if (newSelectedWallet) {
+          this.setState({
+            row: wallets,
+            selectedWallet: newSelectedWallet
+          });
+          return;
+        }
       }
+
+      this.setState({
+        row: wallets
+      });
     }
-    this.setState({
-      row: wallets
-    });
   }
 
   awHandleClickOpen = () => {
