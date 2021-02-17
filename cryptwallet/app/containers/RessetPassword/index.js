@@ -283,7 +283,7 @@ export class RessetPassword extends React.Component {
 }
 
 RessetPassword.propTypes = {
-  dispatch: PropTypes.func.isRequired,
+  //dispatch: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = createStructuredSelector({

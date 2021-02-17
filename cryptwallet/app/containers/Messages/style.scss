@@ -1,4 +1,4 @@
-.addressBookWrapper {
+.messageWrapper {
   margin-top: -230px;
   margin-bottom: 100px;
   @media (min-width: 992px) and (max-width: 1200px) {
@@ -10,21 +10,19 @@
   @media (max-width: 767px) {
     margin-bottom: 80px;
   }
-
-  .addressBookTabsBar {
+  .messageTabsBar {
     -webkit-box-shadow: none !important;
     -moz-box-shadow: none !important;
     box-shadow: none !important;
     background: #fff !important;
     border-bottom: 1px solid rgba(0, 0, 0, 0.1);
     align-items: center;
-    
     @media (max-width: 767px) {
       padding-left: 15px;
       display: block!important;
       padding-bottom: 15px;
     }
-    .addressBookTitle {
+    .messageTitle {
       flex-basis: 20%;
       font-family: Hind Vadodara;
       font-style: normal;
@@ -49,21 +47,8 @@
       }
     }
   }
-
-  .qrResults,
-  .singleWalletWithdraw {
-    background: #fff;
-    padding: 44px 100px;
-    box-shadow: 0 0 35px rgba(0, 0, 0, 0.04);
-    @media (min-width: 992px) and (max-width: 1200px) {
-      padding-left: 40px;
-    }
-    @media (max-width: 991px) {
-      padding: 30px 15px;
-    }
-  }
-
-  .myWalletBody {
+  
+  .messageBody {
     background: #fff;
     padding: 44px 70px;
     box-shadow: 0 0 35px rgba(0, 0, 0, 0.04);
@@ -73,7 +58,7 @@
     @media (max-width: 767px) {
       padding: 30px 15px;
     }
-    .walletHeader {
+    .messageHeader {
       margin-bottom: 40px;
     }
     .walletMenus {

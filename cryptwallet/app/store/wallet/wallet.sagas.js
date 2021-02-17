@@ -52,7 +52,6 @@ export function* withdrawWalletAsync({payload}) {
     
     try {
         const result = yield clientHttp.post(`/wallets/transactions`, payload);
-        console.log('result', result);
         if (result && result.data) {
             toast.success("Successfully send your request!");
             yield put(withdrawWalletSuccess(result.data.newTransaction));
@@ -71,7 +70,6 @@ export function* onWithdrawWallet() {
 
 
 export function* getWalletsAsync({payload}) {
-    console.log(payload);
     
     try {
         const result = yield clientHttp.get(`/wallets/${payload}`);
@@ -99,13 +97,10 @@ export function* onGetTransactionsByWalletAddress() {
 
 
 export function* getTransactionsByWalletAddressAsync({payload}) {
-    console.log(payload);
-    
     try {
         const result = yield clientHttp.get(`/wallets/transactions/${payload}`);
         if (result && result.data) {
-            console.log('HAAMA SUCCESS');
-            console.log(result.data);
+            console.log('SUCCESS');
             yield put(getTransactionsByWalletAddressSuccess(result.data));
         }
     }

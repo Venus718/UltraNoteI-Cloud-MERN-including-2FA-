@@ -89,7 +89,7 @@ export class Profile extends React.Component {
                   </TableCell>
 
                   <TableCell>
-                    <strong>{JSON.parse(localStorage.getItem('user')).email}</strong>
+                    <strong>{JSON.parse(localStorage.getItem('user')).mail}</strong>
                   </TableCell>
                 </TableRow>
                 <TableRow>

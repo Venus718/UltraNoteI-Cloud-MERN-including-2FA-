@@ -165,6 +165,12 @@ class Header extends React.Component {
                           <ListItem>
                             <NavLink to="/my-profile">My Profile</NavLink>
                           </ListItem>
+                          <ListItem >
+                            <NavLink to="/messages">Messages</NavLink>
+                          </ListItem>
+                          <ListItem >
+                            <NavLink to="/billing">Billing</NavLink>
+                          </ListItem>
                           {Auth ? (
                             <ListItem>
                               <Button

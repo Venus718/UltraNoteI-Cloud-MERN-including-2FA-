@@ -28,7 +28,6 @@ function WalletActivityTable({
   paginateHandler,
   type
 }) {
-  console.log(row);
   const indexOfLastRow = currentPage * rowsPerPage;
   const indexOfFirstRow = indexOfLastRow - rowsPerPage;
   const currentRows = row.slice(indexOfFirstRow, indexOfLastRow);

@@ -195,7 +195,6 @@ export function* DepositAndWithdrawAsync({payload}) {
     try {
         const result = yield clientHttp.post(`/user/dashboard`, {id: payload});
         if (result && result.data) {
-            console.log("Result Data", result.data);
             yield put(depositAndWithdrawSuccess(result.data));
         }
     }

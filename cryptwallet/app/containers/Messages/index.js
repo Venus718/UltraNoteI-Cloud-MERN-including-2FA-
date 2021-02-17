@@ -1,6 +1,6 @@
 /**
  *
- * AddressBook
+ * Messages
  *
  */
 
@@ -34,8 +34,7 @@ import makeSelectMyWallet from './selectors';
 import Images from '../../components/uiStyle/Images';
 
 // icons
-import contact from '../../images/icon/AddressBook/contact-details.png';
-import users from '../../images/icon/AddressBook/user-group.png';
+import message from '../../images/icon/message.png';
 
 
 import './style.scss';
@@ -44,11 +43,9 @@ import MoveCoin from '../../components/MoveCoin';
 import { isAmount } from '../../utils/commonFunctions';
 import SingleWallet from '../SingleWallet';
 import { toast } from 'react-toastify';
-import {selectUser, selectAllUsers} from '../../store/auth/auth.selectors';
-import {addContact, getContactList, getUsers} from '../../store/auth/auth.actions';
+import { selectUser, selectAllUsers } from '../../store/auth/auth.selectors';
+import { addContact, getContactList, getUsers } from '../../store/auth/auth.actions';
 
-import MyContact from '../MyContact';
-import UsersList from '../UsersList';
 
 function TabContainer(props) {
   return (
@@ -59,7 +56,7 @@ function TabContainer(props) {
 }
 
 /* eslint-disable react/prefer-stateless-function */
-export class AddressBook extends React.Component {
+export class Messages extends React.Component {
   state = {
     tab: 0
   };
@@ -70,51 +67,61 @@ export class AddressBook extends React.Component {
 
   render() {
     const { tab } = this.state;
-  
+
     return (
-      <Grid className="addressBookWrapper">
-      <Grid className="container">
-        <AppBar className="addressBookTabsBar" position="static" color="default">
-          <Typography className="addressBookTitle" component="p">
-          </Typography>
-          <Tabs
-            value={tab}
-            onChange={this.tabChangeHandler}
-            indicatorColor="primary"
-            textColor="primary"
-            variant="scrollable"
-            scrollButtons="auto"
-            className="tabsWrapper"
-          >
-            <Tab
-              disableRipple
-              label="Contact List"
-              icon={<Image src={contact} />}
-            />
-            <Tab
-              disableRipple
-              label="Users List"
-              icon={<Image src={users} />}
-            />
-          </Tabs>
-        </AppBar>
-        {tab === 0 && (
-          <TabContainer>
-            <MyContact />
-          </TabContainer>
-        )}
-        {tab === 1 && (
-          <TabContainer>
-            <UsersList />
-          </TabContainer>
-        )}
-      </Grid>
+      <Grid className="messageWrapper">
+        <Grid className="container">
+          <AppBar className="messageTabsBar" position="static" color="default">
+            <Typography className="messageTitle" component="p">
+            </Typography>
+            <Tabs
+              value={tab}
+              onChange={this.tabChangeHandler}
+              indicatorColor="primary"
+              textColor="primary"
+              variant="scrollable"
+              scrollButtons="auto"
+              className="tabsWrapper"
+            >
+              <Tab
+                disableRipple
+                label="Messages"
+                icon={<Image src={message} />}
+              />
+              <Tab
+                disableRipple
+                label="Messages"
+                icon={<Image src={message} />}
+              />
+            </Tabs>
+          </AppBar>
+          {tab === 0 && (
+            <TabContainer>
+
+            </TabContainer>
+          )}
+          {tab === 1 && (
+            <TabContainer>
+
+            </TabContainer>
+          )}
+          <Grid className="messageBody">
+            <Grid container alignItems="center" className="messageHeader">
+              <Grid item xs={12} sm={6}>
+                <Typography className="section-title" component="h4">
+                  Messages
+            </Typography>
+              </Grid>
+            </Grid>
+          </Grid>
+        </Grid>
+
       </Grid>
     );
   }
 }
 
-AddressBook.propTypes = {
+Messages.propTypes = {
   // dispatch: PropTypes.func.isRequired,
 };
 
@@ -130,11 +137,11 @@ const withConnect = connect(
   mapDispatchToProps,
 );
 
-const withReducer = injectReducer({ key: 'addressBook', reducer });
-const withSaga = injectSaga({ key: 'addressBook', saga });
+const withReducer = injectReducer({ key: 'messages', reducer });
+const withSaga = injectSaga({ key: 'messages', saga });
 
 export default compose(
   withReducer,
   withSaga,
   withConnect,
-)(AddressBook);
+)(Messages);
