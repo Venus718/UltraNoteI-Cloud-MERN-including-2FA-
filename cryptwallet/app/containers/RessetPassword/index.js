@@ -21,6 +21,7 @@ import {
 
 import Grid from '@material-ui/core/Grid';
 import { toast } from 'react-toastify';
+import ReCAPTCHA from "react-google-recaptcha";
 import Form from '../../components/uiStyle/Form';
 
 import makeSelectRessetPassword from './selectors';
@@ -38,6 +39,7 @@ export class RessetPassword extends React.Component {
     passwordShow: false,
     confirmPasswordShow: false,
     error: {},
+    verifiedCaptcha: null
   };
 
   handleClickShowPassword = current => {
@@ -73,7 +75,7 @@ export class RessetPassword extends React.Component {
     confirmPassword: Joi.string()
       .required()
       .min(8)
-      .regex(/^[a-zA-Z0-9]{3,30}$/)
+      .regex(/^[a-zA-Z0-9!@#$&()\\-`~.+,_]{3,30}$/)
       .error(errors => {
         errors.forEach(err => {
           switch (err.type) {
@@ -93,7 +95,7 @@ export class RessetPassword extends React.Component {
     currentPassword: Joi.string()
       .required()
       .min(8)
-      .regex(/^[a-zA-Z0-9]{3,30}$/)
+      .regex(/^[a-zA-Z0-9!@#$&()\\-`~.+,_]{3,30}$/)
       .error(errors => {
         errors.forEach(err => {
           switch (err.type) {
@@ -147,6 +149,12 @@ export class RessetPassword extends React.Component {
     for (const item of error.details) errors[item.path[0]] = item.message;
     return errors;
   };
+
+  onChangeCap = value => {
+    this.setState({
+      verifiedCaptcha: value
+    });
+  }
 
   submitHandler = event => {
     event.preventDefault();
@@ -272,7 +280,11 @@ export class RessetPassword extends React.Component {
                   : ''
               }
             />
-            <Button type="submit" className="formSubmitBtn">
+            <ReCAPTCHA className="recaptcha"
+              sitekey="6LdqlfoZAAAAAMLxltM3BSoqaFQInUh_lxtZ88cC"
+              onChange={this.onChangeCap}
+            />
+            <Button type="submit" className="formSubmitBtn" disabled={!this.state.verifiedCaptcha}>
               Save
             </Button>
           </Form>

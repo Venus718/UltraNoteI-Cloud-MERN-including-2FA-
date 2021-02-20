@@ -150,7 +150,7 @@ export class SingleWalletActivity extends React.Component {
             >
               <Tab
                 disableRipple
-                label="Deposit"
+                label="Withdraw"
                 classes={{
                   root: 'tabItem',
                   selected: 'tabSelected',
@@ -158,7 +158,7 @@ export class SingleWalletActivity extends React.Component {
               />
               <Tab
                 disableRipple
-                label="Withdraw"
+                label="Deposit"
                 classes={{
                   root: 'tabItem',
                   selected: 'tabSelected',

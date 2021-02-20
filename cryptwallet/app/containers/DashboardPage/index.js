@@ -119,7 +119,7 @@ export class DashboardPage extends React.Component {
           <Grid item xs={12} md={4}>
             <Grid className="card">
               <Typography className="section-title" component="h4">
-                Withdrawal Status
+                Deposit Status
               </Typography>
               <Grid className="victoryPieArea">
                 <VictoryPie
@@ -143,7 +143,7 @@ export class DashboardPage extends React.Component {
                 </Typography>
               </Grid>
               <Typography className="victoryPieTitle" component="p">
-                Withdraw : <span>{this.state.metric}%</span>
+                Deposit : <span>{this.state.metric}%</span>
               </Typography>
             </Grid>
           </Grid>
@@ -162,7 +162,7 @@ export class DashboardPage extends React.Component {
                       onClick={this.toggleHistory('deposite')}
                     >
                       <p />
-                      Deposite
+                      Withdraw
                     </Button>
                     <Button
                       disableRipple
@@ -170,7 +170,7 @@ export class DashboardPage extends React.Component {
                       onClick={this.toggleHistory('withDraw')}
                     >
                       <p />
-                      Withdraw
+                      Deposit
                     </Button>
                   </Grid>
                 </Grid>
@@ -224,18 +224,18 @@ export class DashboardPage extends React.Component {
               <Grid container>
                 <Grid item xs={12} sm={8}>
                   <Typography className="section-title" component="h4">
-                    Deposit & Withdrawal
+                      Withdrawal & Deposit
                   </Typography>
                 </Grid>
                 <Grid item xs={12} sm={4}>
                   <Grid className="barController lineChart">
                     <Button disableRipple>
                       <p />
-                      Deposite
+                      Withdraw
                     </Button>
                     <Button disableRipple className="withDraw">
                       <p />
-                      Withdraw
+                      Deposit
                     </Button>
                   </Grid>
                 </Grid>

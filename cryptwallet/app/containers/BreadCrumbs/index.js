@@ -91,7 +91,7 @@ class BreadCrumbs extends React.Component {
                 <Image src={BitCoinIcon} />
               </Grid>
               <Grid className="content">
-                <Typography component="p">Pending Withdrawal</Typography>
+                <Typography component="p">Unconfirmed Balance</Typography>
                 <List>
                   <ListItem>
                     <Typography component="span">0</Typography>

@@ -129,7 +129,10 @@ class Header extends React.Component {
                   <NavLink to="/address-book">Address Book</NavLink>
                 </ListItem>
                 <ListItem className="menuItem">
-                  <NavLink to="/">Homepage</NavLink>
+                  <NavLink to="/messages">Messages</NavLink>
+                </ListItem>
+                <ListItem className="menuItem">
+                  <NavLink to="/billing">Billing</NavLink>
                 </ListItem>
               </List>
             </Grid>
@@ -164,12 +167,6 @@ class Header extends React.Component {
                         <List className="profileMenuList">
                           <ListItem>
                             <NavLink to="/my-profile">My Profile</NavLink>
-                          </ListItem>
-                          <ListItem >
-                            <NavLink to="/messages">Messages</NavLink>
-                          </ListItem>
-                          <ListItem >
-                            <NavLink to="/billing">Billing</NavLink>
                           </ListItem>
                           {Auth ? (
                             <ListItem>

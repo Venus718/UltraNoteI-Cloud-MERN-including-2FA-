@@ -6,9 +6,7 @@ const bcrypt = require('bcrypt');
 module.exports = {
 
     async loginUser(req, res) {
-        console.log(req.body);
      if(!req.body.mail || !req.body.password) {
-         console.log(req.body)
          return res.status(400).json({message:"No empty fields allowed"});
      }
      await User.findOne({mail: req.body.mail}).then(user => {
@@ -37,6 +35,8 @@ module.exports = {
                         createdAt: user.creationDate,
                         two_fact_auth: user.two_fact_auth,
                         is_active: user.isActive,
+                        contacts: user.contacts,
+                        isWalletCreated: user.isWalletCreated,
                         id: user._id
                     }
                     tokenData = {
@@ -47,6 +47,7 @@ module.exports = {
                         creationDate: user.creationDate,
                         two_fact_auth: user.two_fact_auth,
                         isActive: user.isActive,
+                        contacts: user.contacts,
                         _id: user._id
                     }
 

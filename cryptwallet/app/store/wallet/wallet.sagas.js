@@ -1,6 +1,7 @@
 import { toast } from "react-toastify";
 import { all, call, put, takeLatest } from "redux-saga/effects";
 import { addWalletSuccess, updateWalletSuccess, getTransactionsByWalletAddressSuccess, getWalletSuccess, walletResetSuccess, withdrawWalletSuccess, throwError } from "./wallet.actions";
+import { getUserSuccess } from '../auth/auth.actions';
 import WalletTypes from "./wallet.types";
 import { clientHttp } from '../../utils/services/httpClient';
 
@@ -9,10 +10,11 @@ export function* addNewWalletAsync({payload}) {
     
     try {
         const result = yield clientHttp.post(`/wallets`, payload);
-        console.log('success');
+        console.log('success', result.data);
         if (result && result.data) {
             toast.success('Wallet added successfully !!');
-            yield put(addWalletSuccess(result.data.wallet));
+            yield put(addWalletSuccess(result.data.data[0]));
+            yield put(getUserSuccess(result.data.data[1]));
         }
     }
     catch(error) {

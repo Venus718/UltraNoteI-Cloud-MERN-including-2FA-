@@ -26,6 +26,7 @@ import Pass from '../../images/icon/eye2.svg';
 
 import '../SignupPage/account.scss';
 import { toast } from 'react-toastify';
+import ReCAPTCHA from "react-google-recaptcha";
 import { loginStart } from '../../store/auth/auth.actions';
 import { connect } from 'react-redux';
 
@@ -35,6 +36,7 @@ class LoginPage extends Component {
     password: '',
     passwordShow: false,
     error: {},
+    verifiedCaptcha: null
   };
 
   t(msg, values) {
@@ -69,7 +71,7 @@ class LoginPage extends Component {
     password: Joi.string()
       .required()
       .min(8)
-      .regex(/^[a-zA-Z0-9]{3,30}$/)
+      .regex(/^[a-zA-Z0-9!@#$&()\\-`~.+,_]{3,30}$/)
       .error(errors => ({
         message: 'Please Provide a strong password',
       })),
@@ -123,6 +125,12 @@ class LoginPage extends Component {
       login(this.state);
     }
   };
+
+  onChangeCap = value => {
+    this.setState({
+      verifiedCaptcha: value
+    });
+  }
 
   render() {
     const { email, password } = this.state;
@@ -194,10 +202,14 @@ class LoginPage extends Component {
                       this.state.error.password ? this.state.error.password : ''
                     }
                   />
+                  <ReCAPTCHA className="recaptcha"
+                      sitekey="6LdqlfoZAAAAAMLxltM3BSoqaFQInUh_lxtZ88cC"
+                      onChange={this.onChangeCap}
+                    />
                   <Grid className="forgotPassword">
                     <Link to="/forgot-password/reset">Forgot Password ?</Link>
                   </Grid>
-                  <Button type="submit" className="submitButton">
+                  <Button type="submit" className="submitButton" disabled={!this.state.verifiedCaptcha}>
                     Sign In
                   </Button>
                   <Typography variant="h6">

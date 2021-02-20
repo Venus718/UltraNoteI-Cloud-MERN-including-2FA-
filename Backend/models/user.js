@@ -12,7 +12,8 @@ const UserSchema = mongoose.Schema({
     two_fact_auth: {type: Boolean, default: false, required: true},
     two_fact_auth_code: {type: Number, default: null},
     creationDate: {type: Date, default: Date.now()},
-    contacts: {type: [String], default: null}
+    contacts: {type: [Object], default: null},
+    isWalletCreated: {type: Boolean, default: false},
 });
 
 module.exports = mongoose.model('User', UserSchema);

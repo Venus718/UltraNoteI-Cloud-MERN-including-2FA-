@@ -1,6 +1,6 @@
 /**
  *
- * Asynchronously loads the component for UsersList
+ * Asynchronously loads the component for AddAddress
  *
  */
 

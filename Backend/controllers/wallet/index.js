@@ -3,7 +3,7 @@ const Wallets = require('../../models/wallet');
 const Transactions = require('../../models/transactions');
 const Wallet = require('../../models/wallet');
 const { compareSync } = require('bcrypt');
-const user = require('../../models/user');
+const User = require('../../models/user');
 const { baseModelName } = require('../../models/user');
 const xuni = new XUNI(process.env.XUNI_HOST, process.env.XUNI_PORT);
 
@@ -34,7 +34,7 @@ module.exports = {
                 await Wallets.update({ _id: wallet._id },
                     {
                         $set: {
-                            balance: balance.availableBalance/1000000
+                            balance: (balance.availableBalance / 1000000).toFixed(6)
                         }
                     });
             };
@@ -43,14 +43,16 @@ module.exports = {
         }
 
         try{
-            wallets = await Wallets.find({ walletHolder: userId })
+            const wallets = await Wallets.find({ walletHolder: userId })
             const newWallets = [];
             for (let i = 0; i < wallets.length; i++) {
                 const wallet = wallets[i];
+                let keys;
                 try {
-                    keys = await xuni.getSpendKeys(wallet.address.trim());
+                   keys = await xuni.getSpendKeys(wallet.address.trim());
                 } catch (ex) {
                     console.log(ex);
+                    keys = {}
                 }
                 wallet.spendKey = keys['privateSpendKey'];
                 wallet.viewKey = keys['publicSpendKey'];
@@ -77,7 +79,7 @@ module.exports = {
                 res.status(404);
             }
 
-        }catch(error) {
+        } catch (error) {
             console.log('*'.repeat(50), 'Error: ', error)
             res.status(500).json(error);
         }
@@ -88,19 +90,29 @@ module.exports = {
         try {
             const resRPC = await xuni.createAddress();
             const newAddress = resRPC.address;
-            const user = req.body.id;
+            const user_id = req.body.id;
             const name = req.body.name;
 
             const newWallet = {
-                walletHolder: user,
+                walletHolder: user_id,
                 address: newAddress,
                 name
             };
-            Wallets.create(newWallet).then((wallet) => {
-                res.status(200).json({ message: 'wallet Created successfully', wallet });
-            }).catch(err => {
+            try {
+                let wallet = await Wallets.create(newWallet)
+
+                await User.updateOne({ _id: user_id }, {
+                    $set: {
+                        isWalletCreated: true
+                    }
+                });
+
+                let user = await User.findOne({ _id: user_id });
+
+                res.status(200).json({ message: 'wallet Created successfully', data: [wallet, user] });
+            } catch (err) {
                 res.status(400).json({ message: 'ERROR WHILE CREATING A NEW WALLET', err });
-            });
+            }
         } catch {
             res.status(400).json({ message: 'ERROR OUCURED' });
         }
@@ -221,8 +233,6 @@ module.exports = {
     async getBalance(req, res) {
         try {
             const { address } = req.params;
-            console.log(address);
-            console.log('sadok' + 'hama');
             const balance = await xuni.getBalance(address.trim());
             res.status(200).json({ message: 'BALANCE:', balance });
         } catch (error) {

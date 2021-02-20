@@ -129,12 +129,12 @@ export const authResetSuccess = () => ({
     type: AuthTypes.AUTH_RESET_SUCCESS
 });
 
-export const getUsers = () => ({
-    type: AuthTypes.GET_USERS
+export const getUser = () => ({
+    type: AuthTypes.GET_USER
 });
 
-export const getUsersSuccess = (payload) => ({
-    type: AuthTypes.GET_USERS_SUCCESS,
+export const getUserSuccess = (payload) => ({
+    type: AuthTypes.GET_USER_SUCCESS,
     payload
 });
 
@@ -148,12 +148,12 @@ export const addContactSuccess = (payload) => ({
     payload
 });
 
-export const getContactList = (payload) => ({
-    type: AuthTypes.GET_CONTACT_LIST,
+export const deleteContact = (payload) => ({
+    type: AuthTypes.DELETE_CONTACT,
     payload
 });
 
-export const getContactListSuccess = (payload) => ({
-    type: AuthTypes.GET_CONTACT_LIST_SUCCESS,
+export const deleteContactSuccess = (payload) => ({
+    type: AuthTypes.DELETE_CONTACT_SUCCESS,
     payload
 });

@@ -43,6 +43,7 @@ import SingleWallet from '../SingleWallet';
 import { toast } from 'react-toastify';
 import {selectUser} from '../../store/auth/auth.selectors';
 import {addWalletStart, updateWalletStart, getTransactionsByWalletAddressStart, getWalletStart} from '../../store/wallet/wallet.actions';
+import {getUser} from '../../store/auth/auth.actions';
 import { selectWallets } from '../../store/wallet/wallet.selectors';
 
 const Row = [
@@ -191,6 +192,7 @@ export class MyWallet extends React.Component {
 
     const {connectedUser} = this.props;
     const {addNewWallet} = this.props;
+    const {getUser} = this.props;
     const newWallet = {
       id: connectedUser.id,
       name: this.state.wallet_name,
@@ -206,6 +208,7 @@ export class MyWallet extends React.Component {
         awModalOpen: false,
       });
       addNewWallet(newWallet);
+      getUser();
     }
 
   };
@@ -346,8 +349,9 @@ export class MyWallet extends React.Component {
                     <Button
                       onClick={this.awHandleClickOpen}
                       className="btn btnBlue"
+                      disabled={this.props.connectedUser && this.props.connectedUser.isWalletCreated ? true: false }
                     >
-                      Add wallet
+                      Create Wallet
                     </Button>
                     <Button
                       onClick={this.mcHandleClickOpen}
@@ -452,7 +456,8 @@ const mapDispatchToProps = (dispatch) => ({
   addNewWallet: (payload) => dispatch(addWalletStart(payload)),
   getWallets: (id) => dispatch(getWalletStart(id)),
   getTransactionsByWallet: (address) => dispatch(getTransactionsByWalletAddressStart(address)),
-  updateWallet: (payload) => dispatch(updateWalletStart(payload))
+  updateWallet: (payload) => dispatch(updateWalletStart(payload)),
+  getUser: () => dispatch(getUser()),
 });
 
 const withConnect = connect(

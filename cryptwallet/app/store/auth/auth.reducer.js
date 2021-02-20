@@ -83,22 +83,29 @@ const authReducer = (state = INITIAL_STATE, action) => {
                 depositByDay: action.payload[3] 
             };
 
-        case AuthTypes.GET_USERS_SUCCESS:
-            console.log("payload", action.payload);
+        case AuthTypes.GET_USER_SUCCESS:
+            console.log("GET USER SUCCESS payload", action.payload);
+            localStorage.setItem('user', JSON.stringify(action.payload));
             return{
                 ...state,
-                users: action.payload
+                user: action.payload
             };
 
         case AuthTypes.ADD_CONTACT_SUCCESS:
-            return{
-                ...state
-            };
-
-        case AuthTypes.GET_CONTACT_LIST_SUCCESS:
+            console.log("ADD_CONTACT_SUCCESS payload", action.payload);
+            localStorage.setItem('user', JSON.stringify(action.payload));
             return{
                 ...state,
-                contactList: action.payload.data,
+                user: action.payload
+            };
+
+
+        case AuthTypes.DELETE_CONTACT_SUCCESS:
+            console.log("DELETE_CONTACT_SUCCESS payload", action.payload);
+            localStorage.setItem('user', JSON.stringify(action.payload));
+            return{
+                ...state,
+                user: action.payload
             };
 
         case AuthTypes.AUTH_RESET_SUCCESS:

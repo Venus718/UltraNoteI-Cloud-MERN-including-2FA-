@@ -18,6 +18,7 @@ const walletReducer = (state = INITIAL_STATE, action) => {
                 fetchedWallets.forEach(wallet => {
                 availableBalance += wallet.balance;
             });
+            availableBalance = availableBalance.toFixed(6)
             }
             return {
                 ...state,

@@ -51,7 +51,6 @@ module.exports = {
                 res.status(400).json({message: 'No token provided'});
             } else {
                 const decodedToken =  jwt.verify(token, process.env.TOKENCODE);
-                console.log(decodedToken);
                 await User.updateOne({_id: decodedToken.data._id}, {
                     $set: {
                         isActive: true
