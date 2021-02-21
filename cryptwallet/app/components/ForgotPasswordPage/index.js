@@ -19,6 +19,7 @@ import Logo from '../../images/logo_512x512.png';
 
 import '../SignupPage/account.scss'
 import { toast } from 'react-toastify';
+import ReCAPTCHA from "react-google-recaptcha";
 import { RessetPassword } from '../../containers/RessetPassword';
 import { requestEmailResetStart, resetPasswordStart } from '../../store/auth/auth.actions';
 import { connect } from 'react-redux';
@@ -33,6 +34,7 @@ class ForgotPasswordPage extends Component {
         mode: 'reset',
         email: '',
         error: {},
+        verifiedCaptcha: null
         token
       };
     }
@@ -228,7 +230,11 @@ class ForgotPasswordPage extends Component {
 
   }
 
-
+  onChangeCap = value => {
+    this.setState({
+      verifiedCaptcha: value
+    });
+  }
   render() {
     return (
       <Fragment>
@@ -263,6 +269,10 @@ class ForgotPasswordPage extends Component {
                     value={this.state.email}
                     helperText={this.state.error.email ? this.state.error.email : ""}
                   />
+                  <ReCAPTCHA className="recaptcha"
+                      sitekey="6LdqlfoZAAAAAMLxltM3BSoqaFQInUh_lxtZ88cC"
+                      onChange={this.onChangeCap}
+                    />
                   <Button
                     type="submit"
                     className="submitButton"
@@ -293,8 +303,10 @@ class ForgotPasswordPage extends Component {
                     />
                     <Button
                       type="submit"
-                      className="submitButton"
-                    >Send</Button>
+                      className="submitButton">
+                   <Button type="submit" className="submitButton" disabled={!this.state.verifiedCaptcha}>
+                   Send
+                   </Button>
                   </Form>)
                 }
               </Grid>
