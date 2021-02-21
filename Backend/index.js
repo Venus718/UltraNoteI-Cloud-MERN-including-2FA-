@@ -30,6 +30,6 @@ mongoose.connect(process.env.DB_HOST, {useNewUrlParser: true, useUnifiedTopology
 });
 
 //lancing the server
-app.listen(process.env.PORT, () => {
+app.listen(process.env.RUNNING_PORT, () => {
     console.log(`Listening on port: ${process.env.PORT} `);
 });
