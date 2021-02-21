@@ -144,7 +144,7 @@ export class SingleWalletWithdraw extends React.Component {
                   InputLabelProps={{
                     shrink: true,
                   }}
-                  label="Amount"
+                  label="Amount in bits, Ex: 1.000000"
                   helperText={errors.amount}
                   id="amount"
                   className="inputStyleBasic"
