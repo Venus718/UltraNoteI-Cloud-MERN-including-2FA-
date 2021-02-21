@@ -119,7 +119,7 @@ export class DashboardPage extends React.Component {
           <Grid item xs={12} md={4}>
             <Grid className="card">
               <Typography className="section-title" component="h4">
-                Deposit Status
+                Withdraw Status
               </Typography>
               <Grid className="victoryPieArea">
                 <VictoryPie
@@ -143,7 +143,7 @@ export class DashboardPage extends React.Component {
                 </Typography>
               </Grid>
               <Typography className="victoryPieTitle" component="p">
-                Deposit : <span>{this.state.metric}%</span>
+                Withdraw : <span>{this.state.metric}%</span>
               </Typography>
             </Grid>
           </Grid>
@@ -162,7 +162,7 @@ export class DashboardPage extends React.Component {
                       onClick={this.toggleHistory('deposite')}
                     >
                       <p />
-                      Withdraw
+                      Deposit
                     </Button>
                     <Button
                       disableRipple
@@ -170,7 +170,7 @@ export class DashboardPage extends React.Component {
                       onClick={this.toggleHistory('withDraw')}
                     >
                       <p />
-                      Deposit
+                      Withdraw
                     </Button>
                   </Grid>
                 </Grid>
@@ -231,11 +231,11 @@ export class DashboardPage extends React.Component {
                   <Grid className="barController lineChart">
                     <Button disableRipple>
                       <p />
-                      Withdraw
+                      Deposit
                     </Button>
                     <Button disableRipple className="withDraw">
                       <p />
-                      Deposit
+                      Withdraw
                     </Button>
                   </Grid>
                 </Grid>
