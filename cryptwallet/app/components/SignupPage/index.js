@@ -249,7 +249,7 @@ class SignupPage extends Component {
                     <ReactPhoneInput
                       inputExtraProps={{
                         name: 'phone',
-                        required: true,
+                        required: false,
                         autoFocus: false,
                       }}
                       searchPlaceholder="Search Country Code"

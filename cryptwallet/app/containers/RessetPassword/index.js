@@ -52,7 +52,7 @@ export class RessetPassword extends React.Component {
     password: Joi.string()
       .required()
       .min(8)
-      .regex(/^[a-zA-Z0-9]{3,30}$/)
+      .regex(/^[a-zA-Z0-9!@#$&()\\-`~.+,_]{3,30}$/)
       .error(errors => {
         errors.forEach(err => {
           switch (err.type) {

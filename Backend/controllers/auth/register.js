@@ -56,7 +56,7 @@ module.exports = {
                         isActive: true
                     }
                 }).then(()  => {
-                    res.redirect(`${process.env.HOST}:${process.env.PORT_FRONT}/login`);
+                    res.redirect(`${process.env.HOST}${process.env.PORT_FRONT}/login`);
 //                    res.status(200).json({message: "account activated successfully", user});
                 }).catch((error) => {
                     console.log(error);

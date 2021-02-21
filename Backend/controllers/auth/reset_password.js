@@ -41,7 +41,7 @@ module.exports = {
             } else {
                 const token = req.params.token;
                     res.status(200)
-                    .redirect(`${process.env.HOST}:${process.env.PORT_FRONT}/newpassword/`+token);
+                    .redirect(`${process.env.HOST}${process.env.PORT_FRONT}/newpassword/`+token);
             }
         } catch (error) {
             console.log(error);

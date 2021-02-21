@@ -19,6 +19,7 @@ import Logo from '../../images/logo_512x512.png';
 
 import '../SignupPage/account.scss'
 import { toast } from 'react-toastify';
+import ReCAPTCHA from "react-google-recaptcha";
 import { RessetPassword } from '../../containers/RessetPassword';
 import { requestEmailResetStart, resetPasswordStart } from '../../store/auth/auth.actions';
 import { connect } from 'react-redux';
@@ -75,7 +76,9 @@ class ForgotPasswordPage extends Component {
   }
 
   schemaChangePassword = {
-    password: Joi.string().required().min(8).error(errors => {
+    password: Joi.string().required().min(8)
+    .regex(/^[a-zA-Z0-9!@#$&()\\-`~.+,_]{3,30}$/)
+    .error(errors => {
       errors.forEach(err => {
         switch (err.type) {
           case "string.required":
@@ -93,7 +96,8 @@ class ForgotPasswordPage extends Component {
       
       return errors;
     }),
-    confirmPassword: Joi.string().required().min(8).error(errors => {
+    confirmPassword: Joi.string().required().min(8)
+    .regex(/^[a-zA-Z0-9!@#$&()\\-`~.+,_]{3,30}$/).error(errors => {
       errors.forEach(err => {
         switch (err.type) {
           case "string.required":
@@ -228,6 +232,11 @@ class ForgotPasswordPage extends Component {
 
   }
 
+  onChangeCap = value => {
+    this.setState({
+      verifiedCaptcha: value
+    });
+  }
 
   render() {
     return (
@@ -263,9 +272,14 @@ class ForgotPasswordPage extends Component {
                     value={this.state.email}
                     helperText={this.state.error.email ? this.state.error.email : ""}
                   />
+                   <ReCAPTCHA className="recaptcha"
+                      sitekey="6LdqlfoZAAAAAMLxltM3BSoqaFQInUh_lxtZ88cC"
+                      onChange={this.onChangeCap}
+                    />
                   <Button
                     type="submit"
                     className="submitButton"
+                    disabled={!this.state.verifiedCaptcha}
                   >Send</Button>
                 </Form>
                   )
@@ -291,9 +305,14 @@ class ForgotPasswordPage extends Component {
                       value={this.state.confirmPassword}
                       helperText={this.state.error.confirmPassword ? this.state.error.confirmPassword : ""}
                     />
+                     <ReCAPTCHA className="recaptcha"
+                      sitekey="6LdqlfoZAAAAAMLxltM3BSoqaFQInUh_lxtZ88cC"
+                      onChange={this.onChangeCap}
+                    />
                     <Button
                       type="submit"
                       className="submitButton"
+                      disabled={!this.state.verifiedCaptcha}
                     >Send</Button>
                   </Form>)
                 }
