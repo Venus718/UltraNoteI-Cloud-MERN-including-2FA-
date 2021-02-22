@@ -85,7 +85,7 @@ export class SingleWallet extends React.Component {
           </Tabs>
           <Button className="btn btnBlue" onClick={viewAllWalletOpenHandle}>
             <FontAwesome name="reply" />
-            All Wallets
+            Wallet
           </Button>
         </AppBar>
         {tab === 0 && (

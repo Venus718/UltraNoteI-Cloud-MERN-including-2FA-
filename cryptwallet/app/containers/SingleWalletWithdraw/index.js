@@ -144,7 +144,7 @@ export class SingleWalletWithdraw extends React.Component {
                   InputLabelProps={{
                     shrink: true,
                   }}
-                  label="Amount"
+                  label="Amount in bits, Ex: 1000000 = 1 XUNI coin"
                   helperText={errors.amount}
                   id="amount"
                   className="inputStyleBasic"
@@ -166,7 +166,7 @@ export class SingleWalletWithdraw extends React.Component {
                   className="inputStyleBasic"
                   name="note"
                   value={note}
-                  placeholder="Type your note here. . . . . ."
+                  placeholder="Must add your note here. . . . . ."
                   onChange={this.changeHandler}
                 />
               </FormControl>
