@@ -28,6 +28,7 @@ import reducer from './reducer';
 import saga from './saga';
 import messages from './messages';
 import Image from '../../components/uiStyle/Images';
+import {selectUser} from '../../store/auth/auth.selectors';
 
 import UserImage from '../../images/author/user-image-big.jpg';
 
@@ -43,8 +44,10 @@ const styles = theme => ({
 /* eslint-disable react/prefer-stateless-function */
 export class Profile extends React.Component {
   render() {
-    const { classes } = this.props;
-    const image = JSON.parse(localStorage.getItem('user')).image;
+    const { classes, connectedUser } = this.props;
+    console.log(localStorage.getItem('user'));
+    console.log(connectedUser);
+    const image = connectedUser.image;
     return (
       <Grid>
         <Grid className={classes.root} container spacing={32}>
@@ -52,8 +55,8 @@ export class Profile extends React.Component {
             <Grid className="userThumb">
               <Image src={image ? image : UserImage} />
             </Grid>
-            <Typography component="h5">{JSON.parse(localStorage.getItem('user')).firstName + " " + JSON.parse(localStorage.getItem('user')).lastName}</Typography>
-            <Typography component="p">{JSON.parse(localStorage.getItem('user')).mail}</Typography>
+            <Typography component="h5">{connectedUser.firstName + " " + connectedUser.lastName}</Typography>
+            <Typography component="p">{connectedUser.mail}</Typography>
             <Typography component="p">United States</Typography>
           </Grid>
           <Grid item sm={8} xs={12} className="userInfo">
@@ -67,7 +70,7 @@ export class Profile extends React.Component {
                   </TableCell>
 
                   <TableCell>
-                    <strong>{JSON.parse(localStorage.getItem('user')).firstName + " " + JSON.parse(localStorage.getItem('user')).lastName}</strong>
+                    <strong>{connectedUser.firstName + " " + connectedUser.lastName}</strong>
                   </TableCell>
                 </TableRow>
                 <TableRow>
@@ -89,7 +92,7 @@ export class Profile extends React.Component {
                   </TableCell>
 
                   <TableCell>
-                    <strong>{JSON.parse(localStorage.getItem('user')).mail}</strong>
+                    <strong>{connectedUser.mail}</strong>
                   </TableCell>
                 </TableRow>
                 <TableRow>
@@ -100,7 +103,7 @@ export class Profile extends React.Component {
                   </TableCell>
 
                   <TableCell>
-                    <strong className="danger">Pending</strong>
+                    <strong className="danger">{connectedUser.isActive == true ? "Active" : "Pending"}</strong>
                   </TableCell>
                 </TableRow>
                 <TableRow>
@@ -111,7 +114,7 @@ export class Profile extends React.Component {
                   </TableCell>
 
                   <TableCell>
-                    <strong>{JSON.parse(localStorage.getItem('user')).phone}</strong>
+                    <strong>{connectedUser.phone}</strong>
                   </TableCell>
                 </TableRow>
                 <TableRow>
@@ -149,8 +152,9 @@ Profile.propTypes = {
   dispatch: PropTypes.func.isRequired,
 };
 
-const mapStateToProps = createStructuredSelector({
+const mapStateToProps = state => ({
   profile: makeSelectProfile(),
+  connectedUser: selectUser(state),
 });
 
 function mapDispatchToProps(dispatch) {

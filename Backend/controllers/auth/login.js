@@ -34,7 +34,7 @@ module.exports = {
                         image: user.image,
                         createdAt: user.creationDate,
                         two_fact_auth: user.two_fact_auth,
-                        is_active: user.isActive,
+                        isActive: user.isActive,
                         contacts: user.contacts,
                         isWalletCreated: user.isWalletCreated,
                         id: user._id
@@ -50,7 +50,8 @@ module.exports = {
                         contacts: user.contacts,
                         _id: user._id
                     }
-
+                    
+                    console.log(userData);
                     const token = jwt.sign({data: tokenData } , process.env.TOKENCODE, {expiresIn: '72h'});
                     return res.status(200).json({message: 'login successful', user: userData, token});
                 }  

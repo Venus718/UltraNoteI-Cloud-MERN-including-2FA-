@@ -11,7 +11,7 @@ import { Helmet } from 'react-helmet';
 import { injectIntl } from 'react-intl';
 import { createStructuredSelector } from 'reselect';
 import { compose } from 'redux';
-import { NavLink, Redirect } from 'react-router-dom';
+import { NavLink, Redirect, Link as RouterLink } from 'react-router-dom';
 
 import injectSaga from 'utils/injectSaga';
 import injectReducer from 'utils/injectReducer';
@@ -96,7 +96,7 @@ const mainMenu = [
   { menu: 'Home', id: 'home' },
   { menu: 'About', id: 'about' },
   { menu: 'Features', id: 'features' },
-  // { menu: 'Login', id: 'demo' },
+  { menu: 'Login', id: '/login' },
   // { menu: 'Integration', id: 'integration' },
 ];
 
@@ -250,17 +250,11 @@ export class LandingPage extends Component {
             <Hidden smDown>
               <Grid item lg={6}>
                 <List className="mainMenu">
-                  {mainMenu.map(menu => <ListItem key={menu.id}>
-                      <Link activeClass="active" spy smooth offset={0} duration={1000} to={menu.id}>
-                        {menu.menu}
-                      </Link>
-                    </ListItem>)}
-                  <ListItem>
-                    <a spy smooth offset={0 // activeClass="active"
-                      } duration={1000} href={'/login'}>
-                      Login
-                    </a>
-                  </ListItem>
+                {mainMenu.map(menu => <ListItem key={menu.id}>
+                  {menu.menu != 'Login' ? <Link activeClass="active" spy smooth offset={0} duration={1000} to={menu.id}>
+                    {menu.menu}
+                  </Link> : <RouterLink to={menu.id} >{menu.menu}</RouterLink>}
+                </ListItem>)}
                 </List>
               </Grid>
             </Hidden>
@@ -279,10 +273,10 @@ export class LandingPage extends Component {
             <Typography onClick={this.sMenuHandleClose} component="div" className="backDrop" />
             <MenuList>
               {mainMenu.map(menu => <ListItem key={menu.id}>
-                  <Link activeClass="active" spy smooth offset={0} duration={1000} to={menu.id}>
+                {menu.menu != 'Login' ? <Link activeClass="active" spy smooth offset={0} duration={1000} to={menu.id}>
                     {menu.menu}
-                  </Link>
-                </ListItem>)}
+                </Link> : <RouterLink to={menu.id} >{menu.menu}</RouterLink>}
+              </ListItem>)}
             </MenuList>
           </Grid>
         </Hidden>

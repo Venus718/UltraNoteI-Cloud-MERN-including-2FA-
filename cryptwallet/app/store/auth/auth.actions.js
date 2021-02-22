@@ -101,7 +101,7 @@ export const updateProfileStart = (payload) => ({
     payload
 });
 
-export const updateProfileSuccess = () => ({
+export const updateProfileSuccess = (payload) => ({
     type: AuthTypes.UPDATE_PROFILE_SUCCESS,
     payload
 });

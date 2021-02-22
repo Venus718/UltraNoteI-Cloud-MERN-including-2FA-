@@ -94,6 +94,8 @@ class Header extends React.Component {
 
   render() {
     const { anchorEl, open, placement, sideMenu } = this.state;
+    const { connectedUser } = this.props;
+    console.log("connectedUser", this.props);
     const Auth = cookie.get('Auth');
     if (!Auth) {
       return <Redirect to="/login" />;
@@ -147,10 +149,10 @@ class Header extends React.Component {
                   onClick={this.handleClick('bottom-end')}
                 >
                   <Typography className="userImage" component="div">
-                    <Image src={user.image ? user.image : UserDefaultImage} />
+                    <Image src={connectedUser.image ? connectedUser.image : UserDefaultImage} />
                   </Typography>
                   <Typography className="userName" component="span">
-                     {user.firstName + " " + user.lastName}
+                     {connectedUser.firstName + " " + connectedUser.lastName}
                   </Typography>
                   <FontAwesome name={!open ? 'caret-down' : 'caret-up'} />
                 </Button>
@@ -238,7 +240,7 @@ class Header extends React.Component {
 
 const mapStateToProps = state => ({
   header: makeSelectHeader(state),
-  connectedUser: selectUser(state)
+  connectedUser: selectUser(state),
 });
 
 const mapDispatchToProps = (dispatch) =>  ({

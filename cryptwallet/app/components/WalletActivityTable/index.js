@@ -59,6 +59,7 @@ function WalletActivityTable({
                 <TableCell>Amount</TableCell>
                 <TableCell>Transaction Hash</TableCell>
                 <TableCell>Updated At</TableCell>
+                <TableCell>Note</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -72,6 +73,7 @@ function WalletActivityTable({
                     <p>{row.hash}</p>
                   </TableCell>
                   <TableCell className="dateTd">{moment(row.updatedAt).format('L LT')}</TableCell>
+                  <TableCell>{row.note}</TableCell>
                 </TableRow>
               ))}
             </TableBody>

@@ -353,12 +353,12 @@ export class MyWallet extends React.Component {
                     >
                       Create Wallet
                     </Button>
-                    <Button
+                    {/* <Button
                       onClick={this.mcHandleClickOpen}
                       className="btn btnSky"
                     >
                       Move Coin
-                    </Button>
+                    </Button> */}
                   </Grid>
                 </Grid>
               </Grid>

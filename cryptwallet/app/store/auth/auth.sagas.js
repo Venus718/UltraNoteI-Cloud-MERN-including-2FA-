@@ -3,7 +3,7 @@ import cookie from 'js-cookie';
 import { takeLatest, call, put, all } from 'redux-saga/effects';
 import { clientHttp } from '../../utils/services/httpClient';
 import { loginFailure, signupFailure, signupSuccess, loginSuccess, enableTwoAuthSuccess, sendTwoCodeFailure, sendTwoCodeSuccess,
-         updateProfileStart, updateProfileSuccess, updateProfileFailure, depositAndWithdrawSuccess, authResetSuccess, addContactSuccess, 
+         updateProfileSuccess, updateProfileFailure, depositAndWithdrawSuccess, authResetSuccess, addContactSuccess, 
          deleteContactSuccess } from './auth.actions';
 
 import AuthTypes from './auth.types';
@@ -49,11 +49,14 @@ export function* loginStartAsync({payload}) {
             }
             else {
                 cookie.set('Auth', true);
-            localStorage.setItem('user', JSON.stringify(result.data.user));
-            localStorage.setItem('token', result.data.token);
-            toast.success('Successfully login');
-            payload.history.push('/dashboard');
-            yield put(loginSuccess(result.data));
+                console.log(result.data.user);
+                yield put(loginSuccess(result.data));
+                //localStorage.setItem('user', JSON.stringify(result.data.user));
+                localStorage.setItem('token', result.data.token);
+                toast.success('Successfully login');
+                payload.history.push('/dashboard');
+                
+                
             }
         }
     }
@@ -104,7 +107,7 @@ export function* UpdateProfileAsync({payload}) {
         const result = yield clientHttp.post(`/update_profile/${token}`, requestData);
         if (result) {
             console.log("result", result);
-            localStorage.setItem('user', JSON.stringify(result.data.user));
+            yield put(updateProfileSuccess(result.data.userData));
             toast.success("Profile Successfuly Updated");
         }
     }

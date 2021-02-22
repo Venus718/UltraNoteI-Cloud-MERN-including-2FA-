@@ -29,7 +29,7 @@ import saga from './saga';
 import './style.scss';
 import DwLineChart from '../../components/DwLineChart';
 import {depositAndWithdrawStart} from '../../store/auth/auth.actions';
-import { selectWithdrawByMonth, selectDepositByMonth, selectWithdrawByDay, selectDepositByDay } from '../../store/auth/auth.selectors';
+import { selectUser, selectWithdrawByMonth, selectDepositByMonth, selectWithdrawByDay, selectDepositByDay } from '../../store/auth/auth.selectors';
 
 
 /* eslint-disable react/prefer-stateless-function */
@@ -41,8 +41,8 @@ export class DashboardPage extends React.Component {
   };
 
   componentDidMount() {
-    const {depositAndWithdrawData} = this.props;
-    const user_id = JSON.parse(localStorage.getItem('user')).id
+    const {connectedUser, depositAndWithdrawData} = this.props;
+    const user_id = connectedUser.id
     depositAndWithdrawData(user_id);
 
   }
@@ -257,6 +257,7 @@ DashboardPage.propTypes = {
 
 // const mapStateToProps = createStructuredSelector({
 const mapStateToProps = state => ({
+  connectedUser: selectUser(state),
   dashboardPage: makeSelectDashboardPage(),
   withdrawByMonth: selectWithdrawByMonth(state),
   depositByMonth: selectDepositByMonth(state),

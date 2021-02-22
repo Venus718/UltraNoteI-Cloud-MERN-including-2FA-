@@ -144,6 +144,7 @@ module.exports = {
             const senderId = req.body.id
             const senderAddress = req.body.sender.trim();
             const recipientAddress = req.body.recipient.trim();
+            const note = req.body.note.trim();
             const amount = +req.body.amount;
             const fee = 1;
             const anonymity = 2;
@@ -166,6 +167,7 @@ module.exports = {
                     senderAdress: senderAddress,
                     recipientAdress: recipientAddress,
                     amount: amount,
+                    note: note,
                     hash: transactionHash
                 }
                 Transactions.create(newTransaction).then(() => {

@@ -9,6 +9,7 @@ const TransactionsSchema = mongoose.Schema({
     createdAt: {type: Date, default: Date.now()},
     updatedAt: {type: Date, default: Date.now()},
     status: {type: String, default: 'pending'},
+    note: {type: String, required: true},
     hash: {type: String, required: true}
 });
 

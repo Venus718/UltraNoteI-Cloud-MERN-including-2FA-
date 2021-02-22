@@ -6,8 +6,6 @@ const INITIAL_STATE = {
     isLoggedIn: false,
     isLoading: false,
     user: null,
-    users: [],
-    contactList: [],
     token: '',
     withdrawByMonth: [],
     depositByMonth: [],
@@ -35,7 +33,9 @@ const authReducer = (state = INITIAL_STATE, action) => {
                 ...state,
                 isLoading: true
             };
-        case AuthTypes.LOGIN_SUCESS: 
+        case AuthTypes.LOGIN_SUCESS:
+            console.log("loginReducer", action.payload.user) 
+            localStorage.setItem('user', JSON.stringify(action.payload.user));
             return {
                 ...state,
                 isRegistred: true,
@@ -81,6 +81,14 @@ const authReducer = (state = INITIAL_STATE, action) => {
                 depositByMonth: action.payload[1],
                 withdrawByDay: action.payload[2],
                 depositByDay: action.payload[3] 
+            };
+
+        case AuthTypes.UPDATE_PROFILE_SUCCESS:
+            console.log("UPDATE_PROFILE_SUCCESS payload", action.payload);
+            localStorage.setItem('user', JSON.stringify(action.payload));
+            return{
+                ...state,
+                user: action.payload
             };
 
         case AuthTypes.GET_USER_SUCCESS:

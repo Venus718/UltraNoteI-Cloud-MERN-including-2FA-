@@ -72,7 +72,7 @@ module.exports = {
                 image: user.image,
                 createdAt: user.creationDate,
                 two_fact_auth: user.two_fact_auth,
-                is_active: user.isActive,
+                isActive: user.isActive,
                 contacts: user.contacts,
                 isWalletCreated: user.isWalletCreated,
                 id: user._id

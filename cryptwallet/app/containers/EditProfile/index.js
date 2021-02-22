@@ -26,6 +26,7 @@ import messages from './messages';
 import UserImage from '../../images/author/user-image-big.jpg';
 import Image from '../../components/uiStyle/Images';
 import { updateProfileStart } from '../../store/auth/auth.actions';
+import { selectUser } from '../../store/auth/auth.selectors';
 
 import './style.scss';
 import Form from '../../components/uiStyle/Form';
@@ -41,14 +42,20 @@ const styles = theme => ({
 
 /* eslint-disable react/prefer-stateless-function */
 export class EditProfile extends React.Component {
-  state = {
-    files: null,
-    imagesPreviewUrl: JSON.parse(localStorage.getItem('user')).image,
-    first_name: JSON.parse(localStorage.getItem('user')).firstName,
-    last_name: JSON.parse(localStorage.getItem('user')).lastName,
-    email: JSON.parse(localStorage.getItem('user')).mail,
-    error: {},
-  };
+
+  constructor(props) {
+    super(props);
+    const { connectedUser } = this.props;
+
+    this.state = {
+      files: null,
+      imagesPreviewUrl: connectedUser.image,
+      first_name: connectedUser.firstName,
+      last_name: connectedUser.lastName,
+      email: connectedUser.mail,
+      error: {},
+    };
+  }
 
   handleImageChange = e => {
     e.preventDefault();
@@ -58,15 +65,18 @@ export class EditProfile extends React.Component {
 
     files.forEach((file, i) => {
       const reader = new FileReader();
-
-      reader.onloadend = () => {
-        this.setState({
-          files: file,
-          imagesPreviewUrl: reader.result,
-        });
-      };
-
-      reader.readAsDataURL(file);
+      if(file.size > 2050000) {
+        toast.warn("Image size should be less than 2mb");
+      }
+      else{
+        reader.onloadend = () => {
+          this.setState({
+            files: file,
+            imagesPreviewUrl: reader.result,
+          });
+        };
+        reader.readAsDataURL(file);
+      }
     });
   };
 
@@ -228,8 +238,9 @@ EditProfile.propTypes = {
   // dispatch: PropTypes.func.isRequired,
 };
 
-const mapStateToProps = createStructuredSelector({
+const mapStateToProps = state => ({
   editProfile: makeSelectEditProfile(),
+  connectedUser: selectUser(state),
 });
 
 const mapDispatchToProps = (dispatch) => ({
