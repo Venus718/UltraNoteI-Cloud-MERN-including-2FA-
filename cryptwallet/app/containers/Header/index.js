@@ -101,8 +101,6 @@ class Header extends React.Component {
       return <Redirect to="/login" />;
     }
 
-    const user_data = localStorage.getItem('user');
-    const user = JSON.parse(user_data);
     return (
       <Grid className="mainHeadeArea">
         <Grid container alignItems="center" className="container">

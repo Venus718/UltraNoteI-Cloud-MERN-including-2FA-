@@ -142,7 +142,9 @@ export class MyWallet extends React.Component {
   constructor(props) {
     super(props);
     const {getWallets, connectedUser} = this.props;
-    getWallets(connectedUser.id);
+    if (connectedUser){
+      getWallets(connectedUser.id);
+    }
   }
 
   componentWillReceiveProps(nextProps) {
@@ -454,7 +456,7 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = (dispatch) => ({
   addNewWallet: (payload) => dispatch(addWalletStart(payload)),
-  getWallets: (id) => dispatch(getWalletStart(id)),
+  getWallets: (payload) => dispatch(getWalletStart(payload)),
   getTransactionsByWallet: (address) => dispatch(getTransactionsByWalletAddressStart(address)),
   updateWallet: (payload) => dispatch(updateWalletStart(payload)),
   getUser: () => dispatch(getUser()),

@@ -1,5 +1,7 @@
 const User = require('../../models/user');
+const UserActivity = require('../../models/user_activity');
 const Wallets = require('../../models/wallet');
+const geoip = require('geoip-lite');
 
 module.exports = {
 
@@ -8,6 +10,8 @@ module.exports = {
             let userId = req.body.id;
             let label = req.body.label;
             let address = req.body.address;
+            const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+            const geo = geoip.lookup(ip);
             
             let user = await User.findOne({_id: userId});
             if (user.contacts){
@@ -38,6 +42,17 @@ module.exports = {
                 id: user._id
             }
 
+            const newUserActivity = {
+                userId: userId,
+                action: 'Add Address',
+                source: 'Web',
+                ip: ip,
+                location: geo.city + " " + geo.country,
+                date: Date.now(),
+            }
+        
+            await UserActivity.create(newUserActivity);
+
             res.status(200).json({ message: 'Contact Added Successfully', userData });
         }
         
@@ -52,6 +67,8 @@ module.exports = {
         try{
             let id = req.body.id;
             let deletedContact = req.body.deleteRow;
+            const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+            const geo = geoip.lookup(ip);
 
             let user = await User.findOne({_id: id});
             let userContacts = user.contacts;
@@ -77,6 +94,17 @@ module.exports = {
                 isWalletCreated: user.isWalletCreated,
                 id: user._id
             }
+
+            const newUserActivity = {
+                userId: id,
+                action: 'Delete Address',
+                source: 'Web',
+                ip: ip,
+                location: geo.city + " " + geo.country,
+                date: Date.now(),
+            }
+        
+            await UserActivity.create(newUserActivity);
 
             res.status(200).json({ message: 'Contact Deleted Successfully', userData });
             

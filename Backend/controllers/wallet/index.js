@@ -4,8 +4,10 @@ const Transactions = require('../../models/transactions');
 const Wallet = require('../../models/wallet');
 const { compareSync } = require('bcrypt');
 const User = require('../../models/user');
+const UserActivity = require('../../models/user_activity');
 const { baseModelName } = require('../../models/user');
 const xuni = new XUNI(process.env.XUNI_HOST, process.env.XUNI_PORT);
+const geoip = require('geoip-lite');
 
 module.exports = {
     async getWalletStatus(req, res) {
@@ -19,7 +21,8 @@ module.exports = {
     },
 
     async getAllWallets(req, res) {
-        const userId = req.params.id;
+        const userId = req.body.id;
+        let unconfirmedBalance = 0; 
         try {
             const wallets = await Wallets.find({ walletHolder: userId });
             for (let i = 0; i < wallets.length; i++) {
@@ -30,6 +33,19 @@ module.exports = {
                 } catch (ex) {
                     console.log(ex);
                 }
+
+                try {
+                    const unconfirmedTransactionHashe = await xuni.getUnconfirmedTransactionHashes([wallet.address.trim()]);
+                    console.log(unconfirmedTransactionHashe);
+                    if (unconfirmedTransactionHashe.transactionHashes.length > 0)  {
+                        console.log(unconfirmedTransactionHashe.transactionHashes.toString())
+                        const transaction = await Transactions.findOne({ hash: unconfirmedTransactionHashe.transactionHashes.toString()});
+                        console.log(transaction);
+                        unconfirmedBalance = (transaction.amount / 1000000 ).toFixed(6); }
+                } catch (ex) {
+                    console.log(ex);
+                }
+
 
                 await Wallets.update({ _id: wallet._id },
                     {
@@ -73,7 +89,7 @@ module.exports = {
             }
 
             if (wallets) {
-                res.status(200).json(newWallets);
+                res.status(200).json([newWallets, unconfirmedBalance]);
             }
             else {
                 res.status(404);
@@ -92,6 +108,8 @@ module.exports = {
             const newAddress = resRPC.address;
             const user_id = req.body.id;
             const name = req.body.name;
+            const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+            const geo = geoip.lookup(ip);
 
             const newWallet = {
                 walletHolder: user_id,
@@ -109,11 +127,24 @@ module.exports = {
 
                 let user = await User.findOne({ _id: user_id });
 
+                const newUserActivity = {
+                    userId: user_id,
+                    action: 'Create Wallet',
+                    source: 'Web',
+                    ip: ip,
+                    location: geo.city + " " + geo.country,
+                    date: Date.now(),
+                }
+            
+                await UserActivity.create(newUserActivity);
+
                 res.status(200).json({ message: 'wallet Created successfully', data: [wallet, user] });
             } catch (err) {
+                console.log(err);
                 res.status(400).json({ message: 'ERROR WHILE CREATING A NEW WALLET', err });
             }
-        } catch {
+        } catch (err) {
+            console.log(err);
             res.status(400).json({ message: 'ERROR OUCURED' });
         }
     },
@@ -122,6 +153,10 @@ module.exports = {
             const resRPC = await xuni.createAddress();
             const newAddress = resRPC.address;
             const id = req.body.id;
+            const userId = req.body.user_id;
+            const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+            const geo = geoip.lookup(ip);
+
             const updateWallet = {
                 address: newAddress,
                 updatedAt: Date.now(),
@@ -134,6 +169,17 @@ module.exports = {
                     console.log(err);
                     res.status(400).json({ message: 'ERROR WHILE GENERATING A NEW ADDRESS', err });
                 });
+
+            const newUserActivity = {
+                userId: userId,
+                action: 'Generate New Address',
+                source: 'Web',
+                ip: ip,
+                location: geo.city + " " + geo.country,
+                date: Date.now(),
+            }
+
+            await UserActivity.create(newUserActivity);
         } catch (ex) {
             console.log(ex);
             res.status(400).json({ message: 'ERROR OUCURED' });
@@ -148,6 +194,9 @@ module.exports = {
             const amount = +req.body.amount;
             const fee = 1;
             const anonymity = 2;
+            const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+            const geo = geoip.lookup(ip);
+
             const transactionOptions = {
                 addresses: [senderAddress],
                 anonymity: anonymity,
@@ -179,6 +228,17 @@ module.exports = {
                 console.log(err);
                 res.status(400).json({ message: 'ERROR WHILE SENDING THE TRANSACTION' });
             });
+
+            const newUserActivity = {
+                userId: senderId,
+                action: 'Withdraw Transaction',
+                source: 'Web',
+                ip: ip,
+                location: geo.city + " " + geo.country,
+                date: Date.now(),
+            }
+
+            await UserActivity.create(newUserActivity);
 
         } catch (error) {
             res.status(500).json(error)

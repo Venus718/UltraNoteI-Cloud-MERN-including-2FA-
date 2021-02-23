@@ -6,6 +6,7 @@ const INITIAL_STATE = {
     isLoggedIn: false,
     isLoading: false,
     user: null,
+    userActivity: [],
     token: '',
     withdrawByMonth: [],
     depositByMonth: [],
@@ -45,6 +46,7 @@ const authReducer = (state = INITIAL_STATE, action) => {
                 token: action.payload.token
             };
         case AuthTypes.AUTO_LOGIN: 
+            console.log(action.payload)
             return {
                 ...state,
                 isRegistred: true,
@@ -114,6 +116,13 @@ const authReducer = (state = INITIAL_STATE, action) => {
             return{
                 ...state,
                 user: action.payload
+            };
+
+        case AuthTypes.USER_ACTIVITY_SUCCESS:
+            console.log("USER_ACTIVITY_SUCCESS payload", action.payload);
+            return{
+                ...state,
+                userActivity: action.payload
             };
 
         case AuthTypes.AUTH_RESET_SUCCESS:

@@ -18,7 +18,7 @@ export function* addNewWalletAsync({payload}) {
         }
     }
     catch(error) {
-        console.log('error');
+        console.log(error);
         yield put(throwError(error));
     }
 }
@@ -39,7 +39,7 @@ export function* updateWalletAsync({payload}) {
         }
     }
     catch(error) {
-        console.log('error');
+        console.log(error);
         yield put(throwError(error));
     }
 }
@@ -60,7 +60,7 @@ export function* withdrawWalletAsync({payload}) {
         }
     }
     catch(error) {
-        console.log('error');
+        console.log(error);
         yield put(throwError(error));
     }
 }
@@ -74,8 +74,10 @@ export function* onWithdrawWallet() {
 export function* getWalletsAsync({payload}) {
     
     try {
-        const result = yield clientHttp.get(`/wallets/${payload}`);
+        console.log("Payload", payload)
+        const result = yield clientHttp.post(`/wallets/my-wallet`, {id: payload});
         if (result && result.data) {
+            console.log("Result", result.data)
             yield put(getWalletSuccess(result.data));
         }
     }

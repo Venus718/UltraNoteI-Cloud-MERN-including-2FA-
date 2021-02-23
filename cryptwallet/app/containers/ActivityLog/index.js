@@ -25,6 +25,7 @@ import injectReducer from 'utils/injectReducer';
 import makeSelectActivityLog from './selectors';
 import reducer from './reducer';
 import saga from './saga';
+import moment from 'moment';
 
 import messages from './messages';
 
@@ -32,6 +33,8 @@ import './style.scss';
 import { IdVarification } from '../IdVarification';
 import Typography from '@material-ui/core/Typography';
 import { List, ListItem } from '@material-ui/core';
+import { userActivity } from '../../store/auth/auth.actions';
+import { selectUser, selectUserActivity } from '../../store/auth/auth.selectors';
 
 const Row = [
   {
@@ -96,12 +99,30 @@ const styles = theme => ({});
 
 /* eslint-disable react/prefer-stateless-function */
 export class ActivityLog extends React.Component {
-  state = {
-    row: Row,
+
+  constructor(props){
+    super(props);
+    console.log("Activity Props", this.props)
+    const {connectedUser, getUserActivity} = this.props;
+    const id = connectedUser.id; 
+
+    getUserActivity(id);    
+  
+  this.state = {
+    row: [],
     currentPage: 1,
-    rowsPerPage: 2,
+    rowsPerPage: 4,
     pageNumberOfPage: 1,
   };
+}
+
+componentWillReceiveProps(nextProps){
+  console.log("nextProps Props", nextProps)
+  const {userActivity} = nextProps;
+  this.setState({
+    row: userActivity,
+  });
+}
 
   paginateHandler = prop => event => {
     this.setState({
@@ -157,9 +178,9 @@ export class ActivityLog extends React.Component {
                   <TableRow key={index}>
                     <TableCell>{row.action}</TableCell>
                     <TableCell>{row.source}</TableCell>
-                    <TableCell>{row.ip_address}</TableCell>
+                    <TableCell>{row.ip}</TableCell>
                     <TableCell>{row.location}</TableCell>
-                    <TableCell>{row.updated_at}</TableCell>
+                    <TableCell>{moment(row.date).format('L LT')}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>
@@ -178,15 +199,15 @@ ActivityLog.propTypes = {
   // dispatch: PropTypes.func.isRequired,
 };
 
-const mapStateToProps = createStructuredSelector({
+const mapStateToProps = state => ({
   activityLog: makeSelectActivityLog(),
+  connectedUser: selectUser(state),
+  userActivity: selectUserActivity(state),
 });
 
-function mapDispatchToProps(dispatch) {
-  return {
-    dispatch,
-  };
-}
+const mapDispatchToProps = (dispatch) => ({
+  getUserActivity: (payload) => dispatch(userActivity(payload)),
+})
 
 const withConnect = connect(
   mapStateToProps,

@@ -157,3 +157,18 @@ export const deleteContactSuccess = (payload) => ({
     type: AuthTypes.DELETE_CONTACT_SUCCESS,
     payload
 });
+
+export const userActivity = (payload) => ({
+    type: AuthTypes.USER_ACTIVITY,
+    payload
+});
+
+export const userActivitySuccess = (payload) => ({
+    type: AuthTypes.USER_ACTIVITY_SUCCESS,
+    payload
+});
+
+export const throwError = (error) => ({
+    type: AuthTypes.ERROR,
+    payload: error
+});

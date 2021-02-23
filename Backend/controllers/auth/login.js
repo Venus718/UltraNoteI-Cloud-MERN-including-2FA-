@@ -1,11 +1,17 @@
 const User = require('../../models/user');
+const UserActivity = require('../../models/user_activity');
 const jwt = require('jsonwebtoken');
 const twoFactAuth = require('../../controllers/auth/two_fact_auth');
 const bcrypt = require('bcrypt');
+const geoip = require('geoip-lite');
 
 module.exports = {
 
     async loginUser(req, res) {
+    try {
+        const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+        const geo = geoip.lookup(ip);
+        console.log(geo);
      if(!req.body.mail || !req.body.password) {
          return res.status(400).json({message:"No empty fields allowed"});
      }
@@ -50,15 +56,33 @@ module.exports = {
                         contacts: user.contacts,
                         _id: user._id
                     }
-                    
+
+                    const newUserActivity = {
+                        userId: user._id,
+                        action: 'Login',
+                        source: 'Web',
+                        ip: ip,
+                        location: geo.city + " " + geo.country,
+                        date: Date.now(),
+                    }
+                
+                    UserActivity.create(newUserActivity);
+
                     console.log(userData);
                     const token = jwt.sign({data: tokenData } , process.env.TOKENCODE, {expiresIn: '72h'});
                     return res.status(200).json({message: 'login successful', user: userData, token});
-                }  
-            })
+                }
+                  
+            });
+
         }).catch (err => {
             console.log(err);
         return res.status(400).json({message: 'ERROR WHILE LOGGING IN', err});
      });
+
+    } catch(error){
+        console.log(error);
+        return res.status(400).json({message: 'ERROR WHILE LOGGING IN', err});
+    }
     }
 }

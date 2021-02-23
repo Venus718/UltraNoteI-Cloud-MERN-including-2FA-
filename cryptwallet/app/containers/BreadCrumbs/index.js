@@ -23,7 +23,7 @@ import saga from './saga';
 import './style.scss';
 import FontAwesome from 'components/uiStyle/FontAwesome';
 import {getWalletStart} from '../../store/wallet/wallet.actions';
-import { selectAvailableBalance, selectWallets } from '../../store/wallet/wallet.selectors';
+import { selectAvailableBalance, selectWallets, selectUnconfirmedBalance } from '../../store/wallet/wallet.selectors';
 import { selectUser } from '../../store/auth/auth.selectors';
 
 /* eslint-disable react/prefer-stateless-function */
@@ -38,7 +38,6 @@ class BreadCrumbs extends React.Component {
     const {getWallets, connectedUser} = this.props;
     if (connectedUser){
       getWallets(connectedUser.id);
-      
     }
   }
 
@@ -50,7 +49,7 @@ class BreadCrumbs extends React.Component {
   }
 
   render() {    
-    const {availableBalance} = this.props;
+    const {availableBalance, unconfirmedBalance} = this.props;
     return (
       <Grid className="breadCrumbs">
         <Grid container alignItems="center" className="container">
@@ -94,7 +93,7 @@ class BreadCrumbs extends React.Component {
                 <Typography component="p">Unconfirmed Balance</Typography>
                 <List>
                   <ListItem>
-                    <Typography component="span">0</Typography>
+                    <Typography component="span">{unconfirmedBalance}</Typography>
                     XUNI
                   </ListItem>
                   <ListItem>
@@ -118,6 +117,7 @@ BreadCrumbs.propTypes = {
 const mapStateToProps = state => ({
   breadCrumbs: makeSelectBreadCrumbs(state),
   availableBalance: selectAvailableBalance(state),
+  unconfirmedBalance: selectUnconfirmedBalance(state),
   connectedUser: selectUser(state)
 });
 

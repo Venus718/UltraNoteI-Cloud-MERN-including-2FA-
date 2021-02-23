@@ -4,7 +4,7 @@ import { takeLatest, call, put, all } from 'redux-saga/effects';
 import { clientHttp } from '../../utils/services/httpClient';
 import { loginFailure, signupFailure, signupSuccess, loginSuccess, enableTwoAuthSuccess, sendTwoCodeFailure, sendTwoCodeSuccess,
          updateProfileSuccess, updateProfileFailure, depositAndWithdrawSuccess, authResetSuccess, addContactSuccess, 
-         deleteContactSuccess } from './auth.actions';
+         deleteContactSuccess, userActivitySuccess, throwError } from './auth.actions';
 
 import AuthTypes from './auth.types';
 
@@ -85,7 +85,7 @@ export function* resetPasswordAsync({payload}) {
         }
     }
     catch(error) {
-        yield put(resetPasswordFailure(error));
+        yield put(throwError(error));
     }
 }
 
@@ -136,7 +136,7 @@ export function* requestEmailResetAsync({payload}) {
         }
     }
     catch(error) {
-        yield put(requestEmailResetFailure(error));
+        yield put(throwError(error));
     }
 }
 
@@ -263,6 +263,25 @@ export function* onDeleteContact() {
 }
 
 
+export function* userActivityAsync({payload}) {
+    try {
+        console.log("payload", payload);
+        const result = yield clientHttp.post(`/user/user_activity`, {id: payload});
+        if (result && result.data) {
+            console.log("result", result)
+            yield put(userActivitySuccess(result.data));
+        }
+    }
+    catch(error) {
+        yield put(throwError(error));
+    }
+}
+
+export function* onUserActivity() {
+    yield takeLatest(AuthTypes.USER_ACTIVITY, userActivityAsync);
+}
+
+
 export function* authSagas() {
     yield all([
         call(onSignupStart),
@@ -275,6 +294,7 @@ export function* authSagas() {
         call(onDepositAndWithdraw),
         call(onAuthReset),
         call(onAddContact),
-        call(onDeleteContact)
+        call(onDeleteContact),
+        call(onUserActivity),
     ]);
 };

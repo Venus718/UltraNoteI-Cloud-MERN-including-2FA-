@@ -40,6 +40,7 @@ import { List, ListItem } from '@material-ui/core';
 
 import Images from '../../components/uiStyle/Images';
 import './style.scss';
+import { address } from 'ip';
 
 /* eslint-disable react/prefer-stateless-function */
 export class SingleWalletDeposite extends React.Component {
@@ -71,6 +72,7 @@ export class SingleWalletDeposite extends React.Component {
   componentWillReceiveProps(nextProps) {
     const {row} = nextProps;
     const data = row.address;
+    console.log("New address", data);
     QRCode.toDataURL(data | 'No address for this wallet ! ')
       .then(url => {
         this.setState({

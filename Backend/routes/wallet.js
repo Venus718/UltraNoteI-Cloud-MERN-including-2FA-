@@ -10,7 +10,7 @@ router
     .get('/keys/:address', walletCtr.getSpendKeys)
     .get('/status', walletCtr.getWalletStatus)
     .get('/balance/:address', walletCtr.getBalance)
-    .get('/:id', walletCtr.getAllWallets)
+    .post('/my-wallet', walletCtr.getAllWallets)
 
 
 module.exports = router;

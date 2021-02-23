@@ -1,8 +1,10 @@
 const user = require('../../models/user');
+const UserActivity = require('../../models/user_activity');
 const User = require('../../models/user');
 const Helpers = require('../../helpers/resetPasswordMail');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
+const geoip = require('geoip-lite');
 
 
 module.exports = {
@@ -53,6 +55,8 @@ module.exports = {
 
     async resetPassword_newPassword(req, res) {
         try {
+            const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+            const geo = geoip.lookup(ip);
             if (!req.body.password || !req.params.token) {
                 res.status(400).json({message: 'No empty field allowed'});
             } else {
@@ -62,7 +66,7 @@ module.exports = {
                 const id = payload.data._id;
                 const salt = await bcrypt.genSalt(10);
                 const passwordHash = await bcrypt.hash(password, salt);
-                User.updateOne({_id: id}, {
+                await User.updateOne({_id: id}, {
                     $set: {
                         password: passwordHash
                     }
@@ -71,6 +75,17 @@ module.exports = {
                 }).catch(error => {
                     res.status(400).json({message: 'ERROR WHILE SETTING THE NEW PASSWORD', error});
                 });
+
+                const newUserActivity = {
+                    userId: id,
+                    action: 'Password Reset',
+                    source: 'Web',
+                    ip: ip,
+                    location: geo.city + " " + geo.country,
+                    date: Date.now(),
+                }
+            
+                await UserActivity.create(newUserActivity);
             }
         } catch (error) {
             console.log(error);

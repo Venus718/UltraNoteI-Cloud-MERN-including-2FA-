@@ -1,5 +1,7 @@
 const User = require('../../models/user');
+const UserActivity = require('../../models/user_activity');
 const jwt = require('jsonwebtoken');
+const geoip = require('geoip-lite');
 
 module.exports = {
     async update_profile(req, res) {
@@ -11,6 +13,9 @@ module.exports = {
             const email = req.body.email;
             const payload = jwt.verify(token, process.env.TOKENCODE);
             const id = payload.data._id;
+            const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+            const geo = geoip.lookup(ip);
+
             User.updateOne({ _id: id }, {
                 $set: {
                     image: image,
@@ -38,6 +43,17 @@ module.exports = {
             }).catch(error => {
                 res.status(400).json({ message: 'ERROR WHILE UPDATING PROFILE', error });
             });
+
+            const newUserActivity = {
+                userId: id,
+                action: 'Profile Update',
+                source: 'Web',
+                ip: ip,
+                location: geo.city + " " + geo.country,
+                date: Date.now(),
+            }
+
+            await UserActivity.create(newUserActivity);
         }
         catch (error) {
             console.log(error);
