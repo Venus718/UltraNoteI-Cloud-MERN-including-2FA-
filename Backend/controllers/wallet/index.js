@@ -7,7 +7,9 @@ const User = require('../../models/user');
 const UserActivity = require('../../models/user_activity');
 const { baseModelName } = require('../../models/user');
 const xuni = new XUNI(process.env.XUNI_HOST, process.env.XUNI_PORT);
+const requestIp = require('request-ip');
 const geoip = require('geoip-lite');
+const fetch = require('node-fetch');
 
 module.exports = {
     async getWalletStatus(req, res) {
@@ -22,7 +24,10 @@ module.exports = {
 
     async getAllWallets(req, res) {
         const userId = req.body.id;
-        let unconfirmedBalance = 0; 
+        let unconfirmedBalance = 0;
+        let availableBalance = 0;
+        let usdAvailabeBalance = 0;
+        let usdUnconfirmedBalance = 0;
         try {
             const wallets = await Wallets.find({ walletHolder: userId });
             for (let i = 0; i < wallets.length; i++) {
@@ -36,27 +41,31 @@ module.exports = {
 
                 try {
                     const unconfirmedTransactionHashe = await xuni.getUnconfirmedTransactionHashes([wallet.address.trim()]);
-                    console.log(unconfirmedTransactionHashe);
                     if (unconfirmedTransactionHashe.transactionHashes.length > 0)  {
-                        console.log(unconfirmedTransactionHashe.transactionHashes.toString())
                         const transaction = await Transactions.findOne({ hash: unconfirmedTransactionHashe.transactionHashes.toString()});
-                        console.log(transaction);
-                        unconfirmedBalance = (transaction.amount / 1000000 ).toFixed(6); }
+                        unconfirmedBalance = transaction.amount / 1000000;
+                    }
                 } catch (ex) {
                     console.log(ex);
                 }
 
 
                 await Wallets.update({ _id: wallet._id },
-                    {
-                        $set: {
-                            balance: (balance.availableBalance / 1000000).toFixed(6)
-                        }
-                    });
+                {
+                    $set: {
+                        balance: balance.availableBalance / 1000000
+                    }
+                });
+                availableBalance = balance.availableBalance / 1000000
             };
         } catch (ex) {
             console.log(ex);
         }
+
+        const response = await fetch('https://localcryptos.club/api/coin/xuni');
+        const data = await response.json();
+        usdAvailabeBalance = availableBalance / data.data[0].XUNI.price.USD;
+        usdUnconfirmedBalance = unconfirmedBalance / data.data[0].XUNI.price.USD;
 
         try{
             const wallets = await Wallets.find({ walletHolder: userId })
@@ -66,6 +75,7 @@ module.exports = {
                 let keys;
                 try {
                    keys = await xuni.getSpendKeys(wallet.address.trim());
+
                 } catch (ex) {
                     console.log(ex);
                     keys = {}
@@ -89,7 +99,8 @@ module.exports = {
             }
 
             if (wallets) {
-                res.status(200).json([newWallets, unconfirmedBalance]);
+                res.status(200).json([newWallets, unconfirmedBalance, usdAvailabeBalance, usdUnconfirmedBalance]);
+
             }
             else {
                 res.status(404);
@@ -108,8 +119,8 @@ module.exports = {
             const newAddress = resRPC.address;
             const user_id = req.body.id;
             const name = req.body.name;
-            const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-            const geo = geoip.lookup(ip);
+            const ip = requestIp.getClientIp(req);
+            const geo = geoip.lookup(ip) || {city: '', country: ''};
 
             const newWallet = {
                 walletHolder: user_id,
@@ -127,6 +138,20 @@ module.exports = {
 
                 let user = await User.findOne({ _id: user_id });
 
+                const userData = {
+                    firstName: user.firstName,
+                    lastName: user.lastName,
+                    mail: user.mail,
+                    phone: user.phone,
+                    image: user.image,
+                    createdAt: user.creationDate,
+                    two_fact_auth: user.two_fact_auth,
+                    isActive: user.isActive,
+                    contacts: user.contacts,
+                    isWalletCreated: user.isWalletCreated,
+                    id: user._id
+                }
+
                 const newUserActivity = {
                     userId: user_id,
                     action: 'Create Wallet',
@@ -138,7 +163,7 @@ module.exports = {
             
                 await UserActivity.create(newUserActivity);
 
-                res.status(200).json({ message: 'wallet Created successfully', data: [wallet, user] });
+                res.status(200).json({ message: 'wallet Created successfully', data: [wallet, userData] });
             } catch (err) {
                 console.log(err);
                 res.status(400).json({ message: 'ERROR WHILE CREATING A NEW WALLET', err });
@@ -154,8 +179,8 @@ module.exports = {
             const newAddress = resRPC.address;
             const id = req.body.id;
             const userId = req.body.user_id;
-            const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-            const geo = geoip.lookup(ip);
+            const ip = requestIp.getClientIp(req);
+            const geo = geoip.lookup(ip) || {city: '', country: ''};
 
             const updateWallet = {
                 address: newAddress,
@@ -194,8 +219,8 @@ module.exports = {
             const amount = +req.body.amount;
             const fee = 1;
             const anonymity = 2;
-            const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-            const geo = geoip.lookup(ip);
+            const ip = requestIp.getClientIp(req);
+            const geo = geoip.lookup(ip) || {city: '', country: ''};
 
             const transactionOptions = {
                 addresses: [senderAddress],

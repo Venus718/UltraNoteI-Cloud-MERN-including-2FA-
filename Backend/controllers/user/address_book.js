@@ -1,6 +1,7 @@
 const User = require('../../models/user');
 const UserActivity = require('../../models/user_activity');
 const Wallets = require('../../models/wallet');
+const requestIp = require('request-ip');
 const geoip = require('geoip-lite');
 
 module.exports = {
@@ -10,8 +11,8 @@ module.exports = {
             let userId = req.body.id;
             let label = req.body.label;
             let address = req.body.address;
-            const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-            const geo = geoip.lookup(ip);
+            const ip = requestIp.getClientIp(req);
+            const geo = geoip.lookup(ip) || {city: '', country: ''};
             
             let user = await User.findOne({_id: userId});
             if (user.contacts){
@@ -67,8 +68,8 @@ module.exports = {
         try{
             let id = req.body.id;
             let deletedContact = req.body.deleteRow;
-            const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-            const geo = geoip.lookup(ip);
+            const ip = requestIp.getClientIp(req);
+            const geo = geoip.lookup(ip) || {city: '', country: ''};
 
             let user = await User.findOne({_id: id});
             let userContacts = user.contacts;

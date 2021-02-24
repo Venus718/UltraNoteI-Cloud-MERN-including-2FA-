@@ -72,8 +72,7 @@ export class SingleWalletDeposite extends React.Component {
   componentWillReceiveProps(nextProps) {
     const {row} = nextProps;
     const data = row.address;
-    console.log("New address", data);
-    QRCode.toDataURL(data | 'No address for this wallet ! ')
+    QRCode.toDataURL(data || 'No address for this wallet ! ')
       .then(url => {
         this.setState({
           qr_code: url,

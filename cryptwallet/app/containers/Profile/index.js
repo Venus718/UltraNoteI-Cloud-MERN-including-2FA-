@@ -45,8 +45,6 @@ const styles = theme => ({
 export class Profile extends React.Component {
   render() {
     const { classes, connectedUser } = this.props;
-    console.log(localStorage.getItem('user'));
-    console.log(connectedUser);
     const image = connectedUser.image;
     return (
       <Grid>

@@ -1,6 +1,7 @@
 const User = require('../../models/user');
 const UserActivity = require('../../models/user_activity');
 const jwt = require('jsonwebtoken');
+const requestIp = require('request-ip');
 const geoip = require('geoip-lite');
 
 module.exports = {
@@ -13,8 +14,8 @@ module.exports = {
             const email = req.body.email;
             const payload = jwt.verify(token, process.env.TOKENCODE);
             const id = payload.data._id;
-            const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-            const geo = geoip.lookup(ip);
+            const ip = requestIp.getClientIp(req);
+            const geo = geoip.lookup(ip) || {city: '', country: ''};
 
             User.updateOne({ _id: id }, {
                 $set: {

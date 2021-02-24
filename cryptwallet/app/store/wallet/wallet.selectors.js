@@ -20,6 +20,16 @@ export const selectUnconfirmedBalance = createSelector(
   (wallets) => wallets.unconfirmedBalance
 );
 
+export const selectUSDAvailableBalance = createSelector(
+  [walletSelector],
+  (wallets) => wallets.usdAvailabeBalance
+);
+
+export const selectUSDUnconfirmedBalance = createSelector(
+  [walletSelector],
+  (wallets) => wallets.usdUnconfirmedBalance
+);
+
 export const selectTransactions = createSelector(
   [walletSelector],
   (wallets) => wallets.transactions

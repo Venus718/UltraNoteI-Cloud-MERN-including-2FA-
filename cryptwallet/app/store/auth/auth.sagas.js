@@ -49,7 +49,6 @@ export function* loginStartAsync({payload}) {
             }
             else {
                 cookie.set('Auth', true);
-                console.log(result.data.user);
                 yield put(loginSuccess(result.data));
                 //localStorage.setItem('user', JSON.stringify(result.data.user));
                 localStorage.setItem('token', result.data.token);
@@ -106,7 +105,6 @@ export function* UpdateProfileAsync({payload}) {
     try {
         const result = yield clientHttp.post(`/update_profile/${token}`, requestData);
         if (result) {
-            console.log("result", result);
             yield put(updateProfileSuccess(result.data.userData));
             toast.success("Profile Successfuly Updated");
         }
@@ -122,7 +120,6 @@ export function* onUpdateProfileStart() {
 }
 
 export function* requestEmailResetAsync({payload}) {
-    console.log(payload);
     const requestData = {
         mail: payload.email
     };
@@ -147,7 +144,6 @@ export function* onRequestEmailResetPasswordStart() {
 
 
 export function* enableTwoAuthAsync({payload}) {
-    console.log(payload);
     try {
         const result = yield clientHttp.post('/settings/change2fa', payload);
         if (result) {
@@ -265,10 +261,8 @@ export function* onDeleteContact() {
 
 export function* userActivityAsync({payload}) {
     try {
-        console.log("payload", payload);
         const result = yield clientHttp.post(`/user/user_activity`, {id: payload});
         if (result && result.data) {
-            console.log("result", result)
             yield put(userActivitySuccess(result.data));
         }
     }

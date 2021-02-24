@@ -5,6 +5,7 @@ const jwt = require('jsonwebtoken');
 const user = require('../../models/user');
 const UserActivity = require('../../models/user_activity');
 const { request } = require('express');
+const requestIp = require('request-ip');
 const geoip = require('geoip-lite');
 
 
@@ -48,8 +49,8 @@ module.exports = {
 
     async activateAccount(req, res) {
         try {
-            const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-            const geo = geoip.lookup(ip);
+            const ip = requestIp.getClientIp(req);
+            const geo = geoip.lookup(ip) || {city: '', country: ''};
             const token = req.params.token;
             if (!token) {
                 res.status(400).json({ message: 'No token provided' });

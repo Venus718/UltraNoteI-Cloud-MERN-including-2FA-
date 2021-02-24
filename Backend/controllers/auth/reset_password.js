@@ -4,6 +4,7 @@ const User = require('../../models/user');
 const Helpers = require('../../helpers/resetPasswordMail');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
+const requestIp = require('request-ip');
 const geoip = require('geoip-lite');
 
 
@@ -55,8 +56,8 @@ module.exports = {
 
     async resetPassword_newPassword(req, res) {
         try {
-            const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-            const geo = geoip.lookup(ip);
+            const ip = requestIp.getClientIp(req);
+            const geo = geoip.lookup(ip) || {city: '', country: ''};
             if (!req.body.password || !req.params.token) {
                 res.status(400).json({message: 'No empty field allowed'});
             } else {

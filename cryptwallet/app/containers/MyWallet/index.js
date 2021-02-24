@@ -153,7 +153,7 @@ export class MyWallet extends React.Component {
       if (this.state.selectedWallet) {
         let newSelectedWallet;
         wallets.forEach(wallet => {
-          if(this.state.selectedWallet.id == wallet.id) {
+          if(this.state.selectedWallet.id == wallet._id || this.state.selectedWallet.id == wallet.id) {
             newSelectedWallet = wallet;
           }
         });

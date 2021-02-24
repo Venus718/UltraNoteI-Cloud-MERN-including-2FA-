@@ -102,7 +102,6 @@ export class ActivityLog extends React.Component {
 
   constructor(props){
     super(props);
-    console.log("Activity Props", this.props)
     const {connectedUser, getUserActivity} = this.props;
     const id = connectedUser.id; 
 
@@ -117,7 +116,6 @@ export class ActivityLog extends React.Component {
 }
 
 componentWillReceiveProps(nextProps){
-  console.log("nextProps Props", nextProps)
   const {userActivity} = nextProps;
   this.setState({
     row: userActivity,

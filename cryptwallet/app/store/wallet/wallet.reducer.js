@@ -4,6 +4,8 @@ const INITIAL_STATE = {
     wallets: [],
     availableBalance: 0,
     unconfirmedBalance: 0,
+    usdAvailabeBalance: 0,
+    usdUnconfirmedBalance: 0,
     selectedWallet: {},
     transactions: {deposit: [], withdraw: []},
     error: null
@@ -13,21 +15,26 @@ const INITIAL_STATE = {
 const walletReducer = (state = INITIAL_STATE, action) => {
     switch(action.type) {
         case WalletTypes.GET_ALL_WALLETS_SUCCESS:
-            console.log("reducer", action.payload);
             const fetchedWallets = action.payload[0];
             let availableBalance = 0;
             let unconfirmedBalance = 0;
+            let usdAvailabeBalance = 0;
+            let usdUnconfirmedBalance = 0;
             if (fetchedWallets && fetchedWallets.length) {
                 fetchedWallets.forEach(wallet => {
                 availableBalance += wallet.balance;
             });
-            availableBalance = availableBalance.toFixed(6)
-            unconfirmedBalance = action.payload[1];
+            availableBalance = availableBalance.toFixed(6);
+            unconfirmedBalance = action.payload[1].toFixed(6);
+            usdAvailabeBalance = action.payload[2].toFixed(6);
+            usdUnconfirmedBalance = action.payload[3].toFixed(6);
             }
             return {
                 ...state,
                 availableBalance,
                 unconfirmedBalance,
+                usdAvailabeBalance,
+                usdUnconfirmedBalance,
                 wallets: fetchedWallets
             };
         case WalletTypes.GET_TRANSACTIONS_BY_WALLET_SUCCESS:
@@ -50,7 +57,6 @@ const walletReducer = (state = INITIAL_STATE, action) => {
                     walletsAfterUpdate[i] = action.payload[0];
                 }
             }
-            console.log(walletsAfterUpdate)
             return {
                 ...state,
                 wallets: walletsAfterUpdate

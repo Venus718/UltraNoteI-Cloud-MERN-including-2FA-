@@ -35,7 +35,6 @@ const authReducer = (state = INITIAL_STATE, action) => {
                 isLoading: true
             };
         case AuthTypes.LOGIN_SUCESS:
-            console.log("loginReducer", action.payload.user) 
             localStorage.setItem('user', JSON.stringify(action.payload.user));
             return {
                 ...state,
@@ -46,7 +45,6 @@ const authReducer = (state = INITIAL_STATE, action) => {
                 token: action.payload.token
             };
         case AuthTypes.AUTO_LOGIN: 
-            console.log(action.payload)
             return {
                 ...state,
                 isRegistred: true,
@@ -86,7 +84,6 @@ const authReducer = (state = INITIAL_STATE, action) => {
             };
 
         case AuthTypes.UPDATE_PROFILE_SUCCESS:
-            console.log("UPDATE_PROFILE_SUCCESS payload", action.payload);
             localStorage.setItem('user', JSON.stringify(action.payload));
             return{
                 ...state,
@@ -94,7 +91,6 @@ const authReducer = (state = INITIAL_STATE, action) => {
             };
 
         case AuthTypes.GET_USER_SUCCESS:
-            console.log("GET USER SUCCESS payload", action.payload);
             localStorage.setItem('user', JSON.stringify(action.payload));
             return{
                 ...state,
@@ -102,7 +98,6 @@ const authReducer = (state = INITIAL_STATE, action) => {
             };
 
         case AuthTypes.ADD_CONTACT_SUCCESS:
-            console.log("ADD_CONTACT_SUCCESS payload", action.payload);
             localStorage.setItem('user', JSON.stringify(action.payload));
             return{
                 ...state,
@@ -111,7 +106,6 @@ const authReducer = (state = INITIAL_STATE, action) => {
 
 
         case AuthTypes.DELETE_CONTACT_SUCCESS:
-            console.log("DELETE_CONTACT_SUCCESS payload", action.payload);
             localStorage.setItem('user', JSON.stringify(action.payload));
             return{
                 ...state,
@@ -119,7 +113,6 @@ const authReducer = (state = INITIAL_STATE, action) => {
             };
 
         case AuthTypes.USER_ACTIVITY_SUCCESS:
-            console.log("USER_ACTIVITY_SUCCESS payload", action.payload);
             return{
                 ...state,
                 userActivity: action.payload

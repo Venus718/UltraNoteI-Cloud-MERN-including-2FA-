@@ -9,8 +9,7 @@ import { clientHttp } from '../../utils/services/httpClient';
 export function* addNewWalletAsync({payload}) {
     
     try {
-        const result = yield clientHttp.post(`/wallets`, payload);
-        console.log('success', result.data);
+        const result = yield clientHttp.post(`/wallets/`, payload);
         if (result && result.data) {
             toast.success('Wallet added successfully !!');
             yield put(addWalletSuccess(result.data.data[0]));
@@ -32,7 +31,6 @@ export function* updateWalletAsync({payload}) {
 
     try {
         const result = yield clientHttp.post(`/wallets/update_wallet`, payload);
-        console.log('success');
         if (result && result.data) {
             toast.success('Wallet updated successfully !!');
             yield put(updateWalletSuccess(result.data.wallet));
@@ -74,10 +72,8 @@ export function* onWithdrawWallet() {
 export function* getWalletsAsync({payload}) {
     
     try {
-        console.log("Payload", payload)
         const result = yield clientHttp.post(`/wallets/my-wallet`, {id: payload});
         if (result && result.data) {
-            console.log("Result", result.data)
             yield put(getWalletSuccess(result.data));
         }
     }
@@ -104,7 +100,6 @@ export function* getTransactionsByWalletAddressAsync({payload}) {
     try {
         const result = yield clientHttp.get(`/wallets/transactions/${payload}`);
         if (result && result.data) {
-            console.log('SUCCESS');
             yield put(getTransactionsByWalletAddressSuccess(result.data));
         }
     }

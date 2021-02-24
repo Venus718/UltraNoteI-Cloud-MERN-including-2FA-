@@ -280,7 +280,7 @@ export class RessetPassword extends React.Component {
                   : ''
               }
             />
-            <ReCAPTCHA className="recaptcha"
+            <ReCAPTCHA className="recaptcha" style={{display: 'flex', justifyContent: 'center', marginBottom: '2rem'}}
               sitekey="6LdqlfoZAAAAAMLxltM3BSoqaFQInUh_lxtZ88cC"
               onChange={this.onChangeCap}
             />

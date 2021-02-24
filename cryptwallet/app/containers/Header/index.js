@@ -95,7 +95,6 @@ class Header extends React.Component {
   render() {
     const { anchorEl, open, placement, sideMenu } = this.state;
     const { connectedUser } = this.props;
-    console.log("connectedUser", this.props);
     const Auth = cookie.get('Auth');
     if (!Auth) {
       return <Redirect to="/login" />;

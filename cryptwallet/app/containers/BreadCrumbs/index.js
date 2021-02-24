@@ -23,7 +23,7 @@ import saga from './saga';
 import './style.scss';
 import FontAwesome from 'components/uiStyle/FontAwesome';
 import {getWalletStart} from '../../store/wallet/wallet.actions';
-import { selectAvailableBalance, selectWallets, selectUnconfirmedBalance } from '../../store/wallet/wallet.selectors';
+import { selectAvailableBalance, selectWallets, selectUnconfirmedBalance, selectUSDAvailableBalance, selectUSDUnconfirmedBalance } from '../../store/wallet/wallet.selectors';
 import { selectUser } from '../../store/auth/auth.selectors';
 
 /* eslint-disable react/prefer-stateless-function */
@@ -38,6 +38,7 @@ class BreadCrumbs extends React.Component {
     const {getWallets, connectedUser} = this.props;
     if (connectedUser){
       getWallets(connectedUser.id);
+
     }
   }
 
@@ -49,7 +50,7 @@ class BreadCrumbs extends React.Component {
   }
 
   render() {    
-    const {availableBalance, unconfirmedBalance} = this.props;
+    const {availableBalance, unconfirmedBalance, usdAvailableBalance, usdUnconfirmedBalance} = this.props;
     return (
       <Grid className="breadCrumbs">
         <Grid container alignItems="center" className="container">
@@ -79,7 +80,7 @@ class BreadCrumbs extends React.Component {
                     XUNI
                   </ListItem>
                   <ListItem>
-                    <Typography component="span">0</Typography>
+                    <Typography component="span">{usdAvailableBalance}</Typography>
                     USD
                   </ListItem>
                 </List>
@@ -97,7 +98,7 @@ class BreadCrumbs extends React.Component {
                     XUNI
                   </ListItem>
                   <ListItem>
-                    <Typography component="span">0</Typography>
+                    <Typography component="span">{usdUnconfirmedBalance}</Typography>
                     USD
                   </ListItem>
                 </List>
@@ -118,6 +119,8 @@ const mapStateToProps = state => ({
   breadCrumbs: makeSelectBreadCrumbs(state),
   availableBalance: selectAvailableBalance(state),
   unconfirmedBalance: selectUnconfirmedBalance(state),
+  usdAvailableBalance: selectUSDAvailableBalance(state),
+  usdUnconfirmedBalance: selectUSDUnconfirmedBalance(state),
   connectedUser: selectUser(state)
 });
 
