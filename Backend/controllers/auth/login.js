@@ -28,8 +28,35 @@ module.exports = {
                 }
                 if (user.two_fact_auth === true) {
                     twoFactAuth.two_fact_auth(user).then(() => {
-                        const token = jwt.sign({data: user } , process.env.TOKENCODE, {expiresIn: '72h'});
-                        return res.status(200).json({message: '2FA steps', twoFA: user.two_fact_auth, token});
+
+                        const userData = {
+                            firstName: user.firstName,
+                            lastName: user.lastName,
+                            mail: user.mail,
+                            phone: user.phone,
+                            image: user.image,
+                            createdAt: user.creationDate,
+                            two_fact_auth: user.two_fact_auth,
+                            isActive: user.isActive,
+                            contacts: user.contacts,
+                            isWalletCreated: user.isWalletCreated,
+                            id: user._id
+                        }
+
+                        const tokenData = {
+                            firstName: user.firstName,
+                            lastName: user.lastName,
+                            email: user.mail,
+                            phone: user.phone,
+                            creationDate: user.creationDate,
+                            two_fact_auth: user.two_fact_auth,
+                            isActive: user.isActive,
+                            contacts: user.contacts,
+                            _id: user._id
+                        }
+
+                        const token = jwt.sign({data: tokenData } , process.env.TOKENCODE, {expiresIn: '72h'});
+                        return res.status(200).json({message: '2FA steps', twoFA: user.two_fact_auth, user: userData, token});
                     });
                 } else {
                     const userData = {
@@ -45,7 +72,7 @@ module.exports = {
                         isWalletCreated: user.isWalletCreated,
                         id: user._id
                     }
-                    tokenData = {
+                    const tokenData = {
                         firstName: user.firstName,
                         lastName: user.lastName,
                         email: user.mail,
@@ -57,20 +84,20 @@ module.exports = {
                         _id: user._id
                     }
 
-                    const newUserActivity = {
-                        userId: user._id,
-                        action: 'Login',
-                        source: 'Web',
-                        ip: ip,
-                        location: geo.city + " " + geo.country,
-                        date: Date.now(),
-                    }
-                
-                    UserActivity.create(newUserActivity);
-
                     const token = jwt.sign({data: tokenData } , process.env.TOKENCODE, {expiresIn: '72h'});
                     return res.status(200).json({message: 'login successful', user: userData, token});
                 }
+
+                const newUserActivity = {
+                    userId: user._id,
+                    action: 'Login',
+                    source: 'Web',
+                    ip: ip,
+                    location: geo.city + " " + geo.country,
+                    date: Date.now(),
+                }
+            
+                UserActivity.create(newUserActivity);
                   
             });
 

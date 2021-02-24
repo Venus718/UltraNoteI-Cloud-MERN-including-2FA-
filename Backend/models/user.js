@@ -14,6 +14,7 @@ const UserSchema = mongoose.Schema({
     creationDate: {type: Date, default: Date.now()},
     contacts: {type: [Object], default: null},
     isWalletCreated: {type: Boolean, default: false},
+    currency: {type: String, default: 'usd'},
 });
 
 module.exports = mongoose.model('User', UserSchema);

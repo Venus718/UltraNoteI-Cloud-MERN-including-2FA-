@@ -23,7 +23,7 @@ import { connect } from 'react-redux';
 
 class ConfirmCodePage extends Component {
   state = {
-    code: '1234',
+    code: '',
     token: this.props.match.params.token
   };
 
@@ -50,6 +50,7 @@ class ConfirmCodePage extends Component {
   }
 
   render() {
+    console.log(this.props);
     return (
       <Fragment>
         <Helmet>
@@ -64,9 +65,9 @@ class ConfirmCodePage extends Component {
             </Grid>
             <Grid item lg={6} xs={12}>
               <Grid className="accountContent">
-                <Typography variant="h3">Code varification</Typography>
+                <Typography variant="h3">Code Verification</Typography>
                 <Typography className="text" paragraph>
-                  Enter the varification code which was{' '}
+                  Enter the verification code which was{' '}
                   <Typography component="span">sent to your email.</Typography>
                 </Typography>
                 <Form onSubmit={this.submitHandler}>

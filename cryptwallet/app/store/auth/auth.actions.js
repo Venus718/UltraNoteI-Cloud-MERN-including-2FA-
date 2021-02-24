@@ -75,6 +75,16 @@ export const enableTwoAuthFailure = (payload) => ({
     payload
 });
 
+export const changeCurrencyStart = (payload) => ({
+    type: AuthTypes.CHANGE_CURRENCY,
+    payload
+});
+
+export const changeCurrencySuccess = (payload) => ({
+    type: AuthTypes.CHANGE_CURRENCY_SUCCESS,
+    payload
+});
+
 export const autoLogin = (payload) => ({
     type: AuthTypes.AUTO_LOGIN,
     payload

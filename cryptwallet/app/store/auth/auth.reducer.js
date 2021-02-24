@@ -1,3 +1,4 @@
+import { sendTwoCodeFailure } from './auth.actions';
 import AuthTypes from './auth.types';
 
 
@@ -57,13 +58,25 @@ const authReducer = (state = INITIAL_STATE, action) => {
         case AuthTypes.ENABLE_TWO_AUTH_SUCCESS:
             const userUpdated = state.user;
             userUpdated.two_fact_auth = action.payload.isActive;
-            localStorage.setItem('user', JSON.parse(userUpdated));
+            console.log("userUpdated", userUpdated);
+            localStorage.setItem('user', JSON.stringify(userUpdated));
             return {
                 ...state,
                 user: userUpdated
             } ;
 
+        case AuthTypes.CHANGE_CURRENCY_SUCCESS:
+            const userCurrencyUpdated = state.user;
+            userCurrencyUpdated.currency = action.payload.currency;
+            console.log("userCurrencyUpdated", userCurrencyUpdated);
+            localStorage.setItem('user', JSON.stringify(userCurrencyUpdated));
+            return {
+                ...state,
+                user: userCurrencyUpdated
+            };
+
         case AuthTypes.SEND_CODE_TWO_AUTH_SUCCESS: 
+            console.log("reducer sendTwoCode", action.payload.user )
             return {
                 ...state,
                 isRegistred: true,

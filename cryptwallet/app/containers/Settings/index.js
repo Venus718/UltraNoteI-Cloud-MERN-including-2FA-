@@ -41,7 +41,9 @@ import AuthLock from '../../images/auth-lock-icon.png';
 import './style.scss';
 import { toast } from 'react-toastify';
 import { selectUser } from '../../store/auth/auth.selectors';
-import { enableTwoAuthStart } from '../../store/auth/auth.actions';
+import { enableTwoAuthStart, changeCurrencyStart } from '../../store/auth/auth.actions';
+import Redirect from 'react-router-dom/es/Redirect';
+import {getWalletStart} from '../../store/wallet/wallet.actions';
 
 const styles = theme => ({
   colorBar: {},
@@ -86,16 +88,28 @@ const styles = theme => ({
 
 /* eslint-disable react/prefer-stateless-function */
 export class Settings extends React.Component {
-  state = {
+
+  constructor(props){
+    super(props);
+
+    const {connectedUser} = this.props;
+
+  this.state = {
     checked: this.props.connectedUser.two_fact_auth,
     language: 'english',
-    currency: 'usd',
+    currency: connectedUser.currency,
   };
+}
 
   handleChange = event => {
     this.setState({ checked: event.target.checked });
   };
 
+  componentDidMount(){
+    console.log("checked", this.state.checked);
+    const {connectedUser} = this.props;
+    
+  }
   authSubmitHandler = e => {
     e.preventDefault();
     
@@ -106,6 +120,7 @@ export class Settings extends React.Component {
       _id: connectedUser.id
     };
     changeTwoAuthStatus(payload);
+    console.log("payload", payload)
   };
 
   ChangeHandler = e => {
@@ -117,18 +132,26 @@ export class Settings extends React.Component {
   preferenceSubmitHandler = e => {
     e.preventDefault();
 
-    const data = {
+    const {changeCurrency, connectedUser, getWallets} = this.props;
+    const payload = {
+      id: connectedUser.id,
       language: this.state.language,
       currency: this.state.currency,
     };
 
-    toast.success("Settings saved");
+    changeCurrency(payload);
+    getWallets(connectedUser.id);
   };
 
   render() {
     const { classes } = this.props;
     const { language, currency } = this.state;
 
+    console.log(this.props.connectedUser)
+    if (!this.props.connectedUser) {
+      return <Redirect to='/login' />;
+    };
+    
     return (
       <Grid className="settingsArea">
         <Grid className="container">
@@ -251,7 +274,9 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = (dispatch) => ({
-  changeTwoAuthStatus: (payload) => dispatch(enableTwoAuthStart(payload))
+  changeTwoAuthStatus: (payload) => dispatch(enableTwoAuthStart(payload)),
+  changeCurrency: (payload) => dispatch(changeCurrencyStart(payload)),
+  getWallets: (payload) => dispatch(getWalletStart(payload))
 })
 
 const withConnect = connect(

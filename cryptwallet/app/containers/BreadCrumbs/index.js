@@ -81,7 +81,7 @@ class BreadCrumbs extends React.Component {
                   </ListItem>
                   <ListItem>
                     <Typography component="span">{usdAvailableBalance}</Typography>
-                    USD
+                    {this.props.connectedUser.currency == 'btc' ?  "BTC" : "USD"}
                   </ListItem>
                 </List>
               </Grid>
@@ -99,7 +99,7 @@ class BreadCrumbs extends React.Component {
                   </ListItem>
                   <ListItem>
                     <Typography component="span">{usdUnconfirmedBalance}</Typography>
-                    USD
+                    {this.props.connectedUser.currency == 'btc' ?  "BTC" : "USD"}
                   </ListItem>
                 </List>
               </Grid>

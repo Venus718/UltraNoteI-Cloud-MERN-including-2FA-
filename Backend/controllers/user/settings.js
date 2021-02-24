@@ -17,5 +17,19 @@ module.exports = {
         } catch (error) {
             res.status(400).json({message: 'ERROR OUCURED'})
         }
+    },
+
+    async change_currency(req, res){
+        try {
+            const id = req.body.id;
+            const currency = req.body.currency;
+
+            await User.findByIdAndUpdate({_id: id}, { currency: currency });
+            res.status(200).json({message: 'currency changed'});
+
+        } catch (error){
+            console.log(error);
+            res.status(400).json({message: 'ERROR OUCURED'})
+        }
     }
 }

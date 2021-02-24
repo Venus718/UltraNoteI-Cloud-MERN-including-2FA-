@@ -12,12 +12,15 @@ module.exports = {
                 mailer2FA.twoFactorAuthMail(user, val).then(() => {
                     return 'mail sent'
                 }).catch((err) => {
+                    console.log(err)
                     throw err
                 });
             }).catch((err) => {
+                console.log(err)
                 throw err
             });
         } catch (error) {
+            console.log(error)
             throw error
         }
     },
@@ -37,16 +40,22 @@ module.exports = {
                             two_fact_auth_code: null
                         }
                     }).then(() => {
-                        const newuser= {
+                        const userData = {
                             firstName: user.firstName,
                             lastName: user.lastName,
+                            mail: user.mail,
                             phone: user.phone,
+                            image: user.image,
+                            createdAt: user.creationDate,
                             two_fact_auth: user.two_fact_auth,
-                            id: user._id,
-                            createdAt: user.creationDate
+                            isActive: user.isActive,
+                            contacts: user.contacts,
+                            isWalletCreated: user.isWalletCreated,
+                            id: user._id
                         }
-                        res.status(200).json({message: 'acces garanted', user: newuser, token});
+                        res.status(200).json({message: 'acces garanted', user: userData, token});
                     }).catch((err) => {
+                        console.log(err)
                         res.status(400).json({message: 'acces denied'});
                     });
                 } else {
@@ -54,6 +63,7 @@ module.exports = {
                 }
             }
         } catch (error) {
+            console.log(error)
             res.status(400).json({message: 'ERROR OUCURED', error});
         }
     }

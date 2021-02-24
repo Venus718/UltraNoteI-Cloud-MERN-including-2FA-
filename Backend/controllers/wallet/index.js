@@ -10,6 +10,7 @@ const xuni = new XUNI(process.env.XUNI_HOST, process.env.XUNI_PORT);
 const requestIp = require('request-ip');
 const geoip = require('geoip-lite');
 const fetch = require('node-fetch');
+const user = require('../../models/user');
 
 module.exports = {
     async getWalletStatus(req, res) {
@@ -64,8 +65,15 @@ module.exports = {
 
         const response = await fetch('https://localcryptos.club/api/coin/xuni');
         const data = await response.json();
-        usdAvailabeBalance = availableBalance / data.data[0].XUNI.price.USD;
-        usdUnconfirmedBalance = unconfirmedBalance / data.data[0].XUNI.price.USD;
+        const user = await User.findOne({_id: userId});
+        if (user.currency == 'usd'){
+            usdAvailabeBalance = availableBalance * data.data[0].XUNI.price.USD;
+            usdUnconfirmedBalance = unconfirmedBalance * data.data[0].XUNI.price.USD;
+        } 
+        if (user.currency == 'btc') {
+            usdAvailabeBalance = availableBalance * data.data[0].XUNI.price.BTC;
+            usdUnconfirmedBalance = unconfirmedBalance * data.data[0].XUNI.price.BTC;
+        }
 
         try{
             const wallets = await Wallets.find({ walletHolder: userId })

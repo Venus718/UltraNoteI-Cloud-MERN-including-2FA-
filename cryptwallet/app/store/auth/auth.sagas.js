@@ -4,7 +4,7 @@ import { takeLatest, call, put, all } from 'redux-saga/effects';
 import { clientHttp } from '../../utils/services/httpClient';
 import { loginFailure, signupFailure, signupSuccess, loginSuccess, enableTwoAuthSuccess, sendTwoCodeFailure, sendTwoCodeSuccess,
          updateProfileSuccess, updateProfileFailure, depositAndWithdrawSuccess, authResetSuccess, addContactSuccess, 
-         deleteContactSuccess, userActivitySuccess, throwError } from './auth.actions';
+         deleteContactSuccess, userActivitySuccess, throwError, changeCurrencySuccess } from './auth.actions';
 
 import AuthTypes from './auth.types';
 
@@ -145,8 +145,9 @@ export function* onRequestEmailResetPasswordStart() {
 
 export function* enableTwoAuthAsync({payload}) {
     try {
-        const result = yield clientHttp.post('/settings/change2fa', payload);
+        const result = yield clientHttp.post('/user/change2fa', payload);
         if (result) {
+            console.log(result);
             const msg = payload.isActive ? 'Authenticator app is enabled' : 'Authenticator app is disabled'; 
             toast.success(msg);
             yield put(enableTwoAuthSuccess(payload))
@@ -162,6 +163,24 @@ export function* onEnableTwoAuth() {
     yield takeLatest(AuthTypes.ENABLE_TWO_AUTH, enableTwoAuthAsync);
 }
 
+export function* changeCurrencyAsync({payload}) {
+    try {
+        const result = yield clientHttp.post('/user/change_currency', payload);
+        if (result) {
+            console.log(result);
+            yield put(changeCurrencySuccess(payload))
+            toast.success("Currency Changed Successfully");
+        }
+    }
+    catch(error) {
+        yield put(throwError(error));
+    }
+}
+
+
+export function* onChangeCurrency() {
+    yield takeLatest(AuthTypes.CHANGE_CURRENCY, changeCurrencyAsync);
+}
 
 export function* sendTwoAuthVerifAsync({payload}) {
     
@@ -170,7 +189,9 @@ export function* sendTwoAuthVerifAsync({payload}) {
             code: payload.code,
         }
         const result = yield clientHttp.post(`/twofacode/${payload.token}`, requestData);
+        console.log( "result", result);
         if (result && result.data) {
+            
             const {user, token} = result.data;
             cookie.set('Auth', true);
             localStorage.setItem('user', JSON.stringify(result.data.user));
@@ -181,6 +202,7 @@ export function* sendTwoAuthVerifAsync({payload}) {
         }
     }
     catch(error) {
+        console.log("error", error);
         yield put(sendTwoCodeFailure(error));
     }
 }
@@ -284,6 +306,7 @@ export function* authSagas() {
         call(onUpdateProfileStart),
         call(onRequestEmailResetPasswordStart),
         call(onEnableTwoAuth),
+        call(onChangeCurrency),
         call(onSendTwoAuthVerif),
         call(onDepositAndWithdraw),
         call(onAuthReset),

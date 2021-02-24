@@ -82,13 +82,14 @@ class Header extends React.Component {
   };
 
   logOutHandler = () => {
-    this.props.walletReset();
-    this.props.authReset();
+    
     cookie.remove('Auth');
 
     toast.warn("You have been loged out!");
 
     this.setState({ state: this.state });
+    this.props.walletReset();
+    this.props.authReset();
   };
   
 
