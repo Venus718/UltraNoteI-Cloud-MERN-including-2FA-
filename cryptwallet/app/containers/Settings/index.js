@@ -95,7 +95,7 @@ export class Settings extends React.Component {
     const {connectedUser} = this.props;
 
   this.state = {
-    checked: this.props.connectedUser.two_fact_auth,
+    checked: connectedUser.two_fact_auth,
     language: 'english',
     currency: connectedUser.currency,
   };
@@ -105,11 +105,6 @@ export class Settings extends React.Component {
     this.setState({ checked: event.target.checked });
   };
 
-  componentDidMount(){
-    console.log("checked", this.state.checked);
-    const {connectedUser} = this.props;
-    
-  }
   authSubmitHandler = e => {
     e.preventDefault();
     
@@ -120,7 +115,6 @@ export class Settings extends React.Component {
       _id: connectedUser.id
     };
     changeTwoAuthStatus(payload);
-    console.log("payload", payload)
   };
 
   ChangeHandler = e => {
@@ -147,7 +141,6 @@ export class Settings extends React.Component {
     const { classes } = this.props;
     const { language, currency } = this.state;
 
-    console.log(this.props.connectedUser)
     if (!this.props.connectedUser) {
       return <Redirect to='/login' />;
     };

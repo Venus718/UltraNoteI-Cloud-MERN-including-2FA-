@@ -101,7 +101,6 @@ export class DashboardPage extends React.Component {
         });
       }
       if (this.state[prop].length === 0) {
-        console.log('called');
         this.setState({
           [prop]: this.state.withdrawData,
         });

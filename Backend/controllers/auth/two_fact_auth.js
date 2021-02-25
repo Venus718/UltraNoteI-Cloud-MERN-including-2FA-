@@ -1,6 +1,10 @@
 const User = require('../../models/user');
+const UserActivity = require('../../models/user_activity');
+const user_data = require('../user/user_data');
 const mailer2FA = require('../../helpers/twoFactorAuth');
 const jwt = require('jsonwebtoken');
+const requestIp = require('request-ip');
+const geoip = require('geoip-lite');
 
 
 module.exports = {
@@ -27,6 +31,8 @@ module.exports = {
 
     async permmision(req, res) {
         try {
+            const ip = requestIp.getClientIp(req);
+            const geo = geoip.lookup(ip) || {city: '', country: ''};
             if (!req.body.code || !req.params.token) {
                 res.status(400).json({message: 'No token or code provided'});
             } else {
@@ -40,19 +46,19 @@ module.exports = {
                             two_fact_auth_code: null
                         }
                     }).then(() => {
-                        const userData = {
-                            firstName: user.firstName,
-                            lastName: user.lastName,
-                            mail: user.mail,
-                            phone: user.phone,
-                            image: user.image,
-                            createdAt: user.creationDate,
-                            two_fact_auth: user.two_fact_auth,
-                            isActive: user.isActive,
-                            contacts: user.contacts,
-                            isWalletCreated: user.isWalletCreated,
-                            id: user._id
+                        
+                        const userData = user_data(user);
+
+                        const newUserActivity = {
+                            userId: user._id,
+                            action: 'Login',
+                            source: 'Web',
+                            ip: ip,
+                            location: geo.city + " " + geo.country,
+                            date: Date.now(),
                         }
+                    
+                        UserActivity.create(newUserActivity);
                         res.status(200).json({message: 'acces garanted', user: userData, token});
                     }).catch((err) => {
                         console.log(err)

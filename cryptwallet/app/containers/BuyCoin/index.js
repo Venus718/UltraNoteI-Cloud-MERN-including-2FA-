@@ -100,7 +100,6 @@ export class BuyCoin extends React.Component {
       qrCode: null,
       address: '',
     });
-    console.log(this.state);
   };
 
   submitHandler = e => {
@@ -123,7 +122,6 @@ export class BuyCoin extends React.Component {
           });
         });
     }
-    console.log(this.state);
 
     const {coin_amount, payment_type, files, fileName, fileType, fileSize, holder_name, card_number, cvv_number, expaire_date, qrOpen, address} = this.state;
     
@@ -193,7 +191,6 @@ export class BuyCoin extends React.Component {
       }
     }
 
-    console.log(payment_type)
   };
 
   handleImageChange = e => {

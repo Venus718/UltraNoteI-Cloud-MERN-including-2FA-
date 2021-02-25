@@ -19,6 +19,7 @@ import BitCoinIcon from 'images/icon/wallet/bitcoin.svg';
 import makeSelectBreadCrumbs from './selectors';
 import reducer from './reducer';
 import saga from './saga';
+import Redirect from 'react-router-dom/es/Redirect';
 
 import './style.scss';
 import FontAwesome from 'components/uiStyle/FontAwesome';
@@ -49,7 +50,10 @@ class BreadCrumbs extends React.Component {
     }
   }
 
-  render() {    
+  render() {  
+    if (!this.props.connectedUser) {
+      return <Redirect to='/login' />;
+    };  
     const {availableBalance, unconfirmedBalance, usdAvailableBalance, usdUnconfirmedBalance} = this.props;
     return (
       <Grid className="breadCrumbs">

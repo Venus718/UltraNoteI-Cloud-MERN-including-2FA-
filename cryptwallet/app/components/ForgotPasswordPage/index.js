@@ -48,7 +48,6 @@ class ForgotPasswordPage extends Component {
     }
 
     
-    console.log(this.state);
   }
 
   
@@ -210,7 +209,6 @@ class ForgotPasswordPage extends Component {
 
   submitHandlerChangePassword = event => {
     event.preventDefault();  
-    console.log(this.state);   
     const error = this.validateChangePassword();
     if (this.state.password === "" || this.state.confirmPassword === "") {
       this.setState({

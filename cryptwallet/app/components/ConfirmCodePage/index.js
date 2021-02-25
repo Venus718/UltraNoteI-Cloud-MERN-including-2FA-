@@ -50,7 +50,6 @@ class ConfirmCodePage extends Component {
   }
 
   render() {
-    console.log(this.props);
     return (
       <Fragment>
         <Helmet>

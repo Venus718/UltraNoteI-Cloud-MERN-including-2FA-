@@ -5,12 +5,12 @@ const Wallet = require('../../models/wallet');
 const { compareSync } = require('bcrypt');
 const User = require('../../models/user');
 const UserActivity = require('../../models/user_activity');
+const user_data = require('../user/user_data');
 const { baseModelName } = require('../../models/user');
 const xuni = new XUNI(process.env.XUNI_HOST, process.env.XUNI_PORT);
 const requestIp = require('request-ip');
 const geoip = require('geoip-lite');
 const fetch = require('node-fetch');
-const user = require('../../models/user');
 
 module.exports = {
     async getWalletStatus(req, res) {
@@ -66,13 +66,18 @@ module.exports = {
         const response = await fetch('https://localcryptos.club/api/coin/xuni');
         const data = await response.json();
         const user = await User.findOne({_id: userId});
-        if (user.currency == 'usd'){
+        try {
+            if (user.currency == 'usd'){
+                usdAvailabeBalance = availableBalance * data.data[0].XUNI.price.USD;
+                usdUnconfirmedBalance = unconfirmedBalance * data.data[0].XUNI.price.USD;
+            } 
+            if (user.currency == 'btc') {
+                usdAvailabeBalance = availableBalance * data.data[0].XUNI.price.BTC;
+                usdUnconfirmedBalance = unconfirmedBalance * data.data[0].XUNI.price.BTC;
+            }
+        } catch {
             usdAvailabeBalance = availableBalance * data.data[0].XUNI.price.USD;
             usdUnconfirmedBalance = unconfirmedBalance * data.data[0].XUNI.price.USD;
-        } 
-        if (user.currency == 'btc') {
-            usdAvailabeBalance = availableBalance * data.data[0].XUNI.price.BTC;
-            usdUnconfirmedBalance = unconfirmedBalance * data.data[0].XUNI.price.BTC;
         }
 
         try{
@@ -146,19 +151,7 @@ module.exports = {
 
                 let user = await User.findOne({ _id: user_id });
 
-                const userData = {
-                    firstName: user.firstName,
-                    lastName: user.lastName,
-                    mail: user.mail,
-                    phone: user.phone,
-                    image: user.image,
-                    createdAt: user.creationDate,
-                    two_fact_auth: user.two_fact_auth,
-                    isActive: user.isActive,
-                    contacts: user.contacts,
-                    isWalletCreated: user.isWalletCreated,
-                    id: user._id
-                }
+                const userData = user_data(user);
 
                 const newUserActivity = {
                     userId: user_id,

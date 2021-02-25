@@ -1,5 +1,6 @@
 const User = require('../../models/user');
 const UserActivity = require('../../models/user_activity');
+const user_data = require('./user_data');
 const Wallets = require('../../models/wallet');
 const requestIp = require('request-ip');
 const geoip = require('geoip-lite');
@@ -29,20 +30,7 @@ module.exports = {
 
             user = await User.findOne({ _id: userId });
 
-            const userData = {
-                firstName: user.firstName,
-                lastName: user.lastName,
-                mail: user.mail,
-                phone: user.phone,
-                image: user.image,
-                createdAt: user.creationDate,
-                two_fact_auth: user.two_fact_auth,
-                is_active: user.isActive,
-                contacts: user.contacts,
-                isWalletCreated: user.isWalletCreated,
-                id: user._id
-            }
-
+            const userData = user_data(user);
             const newUserActivity = {
                 userId: userId,
                 action: 'Add Address',
@@ -82,19 +70,7 @@ module.exports = {
 
             user = await User.findOne({ _id: id });
 
-            const userData = {
-                firstName: user.firstName,
-                lastName: user.lastName,
-                mail: user.mail,
-                phone: user.phone,
-                image: user.image,
-                createdAt: user.creationDate,
-                two_fact_auth: user.two_fact_auth,
-                isActive: user.isActive,
-                contacts: user.contacts,
-                isWalletCreated: user.isWalletCreated,
-                id: user._id
-            }
+            const userData = user_data(user);
 
             const newUserActivity = {
                 userId: id,

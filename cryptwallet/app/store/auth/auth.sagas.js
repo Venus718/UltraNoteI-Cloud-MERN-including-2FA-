@@ -147,7 +147,6 @@ export function* enableTwoAuthAsync({payload}) {
     try {
         const result = yield clientHttp.post('/user/change2fa', payload);
         if (result) {
-            console.log(result);
             const msg = payload.isActive ? 'Authenticator app is enabled' : 'Authenticator app is disabled'; 
             toast.success(msg);
             yield put(enableTwoAuthSuccess(payload))
@@ -167,7 +166,6 @@ export function* changeCurrencyAsync({payload}) {
     try {
         const result = yield clientHttp.post('/user/change_currency', payload);
         if (result) {
-            console.log(result);
             yield put(changeCurrencySuccess(payload))
             toast.success("Currency Changed Successfully");
         }
@@ -189,7 +187,6 @@ export function* sendTwoAuthVerifAsync({payload}) {
             code: payload.code,
         }
         const result = yield clientHttp.post(`/twofacode/${payload.token}`, requestData);
-        console.log( "result", result);
         if (result && result.data) {
             
             const {user, token} = result.data;
@@ -197,8 +194,8 @@ export function* sendTwoAuthVerifAsync({payload}) {
             localStorage.setItem('user', JSON.stringify(result.data.user));
             localStorage.setItem('token', result.data.token);
             toast.success('Successfully login');
-            payload.history.push('/dashboard');
             yield put(sendTwoCodeSuccess({user, token}));
+            payload.history.push('/dashboard');
         }
     }
     catch(error) {
