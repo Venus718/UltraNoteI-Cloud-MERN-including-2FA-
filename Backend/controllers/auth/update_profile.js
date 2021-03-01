@@ -4,6 +4,8 @@ const user_data = require('../user/user_data');
 const jwt = require('jsonwebtoken');
 const requestIp = require('request-ip');
 const geoip = require('geoip-lite');
+const uniqid = require('uniqid');
+const fs = require('file-system')
 
 module.exports = {
     async update_profile(req, res) {
@@ -18,9 +20,12 @@ module.exports = {
             const ip = requestIp.getClientIp(req);
             const geo = geoip.lookup(ip) || {city: '', country: ''};
 
+            let filename = uniqid();
+            fs.writeFile(process.env.DATA_DIR + filename + '.png', image)
+
             User.updateOne({ _id: id }, {
                 $set: {
-                    image: image,
+                    image: filename,
                     firstName: first_name,
                     lastName: last_name,
                     mail: email

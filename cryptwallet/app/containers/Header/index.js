@@ -211,9 +211,9 @@ class Header extends React.Component {
               <MenuItem>
                 <NavLink to="/dashboard">Dashboard</NavLink>
               </MenuItem>
-              <MenuItem>
+              {/* <MenuItem>
                 <NavLink to="/buy-coin">Buy Coin</NavLink>
-              </MenuItem>
+              </MenuItem> */}
               <MenuItem>
                 <NavLink to="/my-wallet">My Wallet</NavLink>
               </MenuItem>
@@ -224,8 +224,17 @@ class Header extends React.Component {
                 <NavLink to="/settings">Settings</NavLink>
               </MenuItem>
               <MenuItem>
-                <NavLink to="/referral">Referral</NavLink>
+                <NavLink to="/address-book">Address Book</NavLink>
               </MenuItem>
+              <MenuItem>
+                <NavLink to="/messages">Messages</NavLink>
+              </MenuItem>
+              <MenuItem>
+                <NavLink to="/billing">Billing</NavLink>
+              </MenuItem>
+              {/* <MenuItem>
+                <NavLink to="/referral">Referral</NavLink>
+              </MenuItem> */}
             </MenuList>
           </Grid>
         </Hidden>
