@@ -29,10 +29,12 @@ module.exports = {
         let availableBalance = 0;
         let usdAvailabeBalance = 0;
         let usdUnconfirmedBalance = 0;
+        let walletsList = []
         try {
             const wallets = await Wallets.find({ walletHolder: userId });
             for (let i = 0; i < wallets.length; i++) {
                 const wallet = wallets[i];
+                walletsList.push(wallet.address)
                 let balance = 0;
                 try {
                     balance = await xuni.getBalance(wallet.address.trim());
@@ -41,11 +43,14 @@ module.exports = {
                 }
 
                 try {
-                    const unconfirmedTransactionHashe = await xuni.getUnconfirmedTransactionHashes([wallet.address.trim()]);
-                    if (unconfirmedTransactionHashe.transactionHashes.length > 0)  {
-                        const transaction = await Transactions.findOne({ hash: unconfirmedTransactionHashe.transactionHashes.toString()});
-                        unconfirmedBalance = transaction.amount / 1000000;
-                    }
+                    const unconfirmedTransactionHashes = await xuni.getUnconfirmedTransactionHashes(walletsList);
+                    if (unconfirmedTransactionHashes.transactionHashes.length > 0)  {
+                        for (let i = 0; i < unconfirmedTransactionHashes.transactionHashes.length; i++) {
+                            const transaction = await Transactions.findOne({ hash: unconfirmedTransactionHashes.transactionHashes[i]});
+                            console.log(transaction);
+                            unconfirmedBalance += transaction.amount / 1000000;
+                        }
+                    }   
                 } catch (ex) {
                     console.log(ex);
                 }
