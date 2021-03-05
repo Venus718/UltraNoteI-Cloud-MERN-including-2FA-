@@ -9,6 +9,7 @@ UltraNote Infinity Cloud Wallet
 - chown -R www-data:www-data /var/www
 
 Edit .htaccess file and activate https
+- nano /var/www/Cloud/.htaccess
 
 ## Building Backend 
 
