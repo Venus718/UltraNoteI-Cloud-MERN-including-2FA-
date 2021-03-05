@@ -1,5 +1,5 @@
 const XUNI = require('ultranotei-api');
-const xuni = new XUNI('http://localhost', '6070');
+const xuni = new XUNI('http://localhost', '6090');
 const User = require('../models/user');
 const Wallet = require('../models/wallet');
 const Transaction = require('../models/transactions');
