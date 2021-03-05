@@ -66,7 +66,7 @@ function WalletActivityTable({
               {currentRows.map((row, index) => (
                 <TableRow key={index}>
                   <TableCell className="dateTd">
-                    <p>{type === 'deposit'? row.senderAdress : row.recipientAdress}</p>
+                    <p>{row.recipientAdress}</p>
                   </TableCell>
                   <TableCell>{row.amount}</TableCell>
                   <TableCell>

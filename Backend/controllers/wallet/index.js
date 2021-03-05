@@ -47,8 +47,10 @@ module.exports = {
                     if (unconfirmedTransactionHashes.transactionHashes.length > 0)  {
                         for (let i = 0; i < unconfirmedTransactionHashes.transactionHashes.length; i++) {
                             const transaction = await Transactions.findOne({ hash: unconfirmedTransactionHashes.transactionHashes[i]});
-                            console.log(transaction);
-                            unconfirmedBalance += transaction.amount / 1000000;
+
+                            if (transaction.senderID != userId) {
+                                unconfirmedBalance += transaction.amount / 1000000;
+                            }
                         }
                     }   
                 } catch (ex) {
@@ -246,6 +248,8 @@ module.exports = {
                     senderID: senderId,
                     senderAdress: senderAddress,
                     recipientAdress: recipientAddress,
+                    createdAt: Date.now(),
+                    updatedAt: Date.now(),
                     amount: amount,
                     note: note,
                     hash: transactionHash
