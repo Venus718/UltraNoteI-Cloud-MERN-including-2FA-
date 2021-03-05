@@ -7,7 +7,7 @@ const mongoose = require("mongoose");
 const uniqid = require('uniqid');
 
 
-const db = 'mongodb+srv://test:test1234@test.iocw1.mongodb.net/UltraNote?retryWrites=true&w=majority'
+const db = 'mongodb://localhost:27017/cloud'
 
 async function main() {
     await mongoose.connect(db, { useNewUrlParser: true, useUnifiedTopology: true }).then(() => {
