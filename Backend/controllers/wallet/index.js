@@ -11,6 +11,7 @@ const xuni = new XUNI(process.env.XUNI_HOST, process.env.XUNI_PORT);
 const requestIp = require('request-ip');
 const geoip = require('geoip-lite');
 const fetch = require('node-fetch');
+const uniqid = require('uniqid');
 
 module.exports = {
     async getWalletStatus(req, res) {
@@ -292,28 +293,77 @@ module.exports = {
     },
     async getTransactions(req, res) {
         // try {
-
         const walletAddress = req.params.address;
-        Transactions.find({
-            $or: [
-                { recipientAdress: walletAddress },
-                { senderAdress: walletAddress }
-            ]
-        })
-            .then((transactions) => {
-                const deposit = [];
-                const withdraw = [];
-                if (transactions && transactions.length) {
-                    transactions.forEach((transaction) => {
-                        if (transaction.senderAdress === walletAddress) withdraw.push(transaction);
-                        if (transaction.recipientAdress === walletAddress) deposit.push(transaction);
-                    });
+
+        const opts = {
+            firstBlockIndex: 203000,
+            blockCount: 500000,
+            addresses: [walletAddress],
+        }
+
+        const data = await xuni.getTransactions(opts);
+        const totalTransactions = [];
+
+        for (let i = 0; i < data.items.length; i++){
+            const item = data.items[i];
+            for (let i = 0; i < item.transactions.length; i++){
+
+                const transaction = item.transactions[i];
+                const recipientAddress = transaction.transfers[0].address;
+                var senderAddress = transaction.transfers[1].address;
+
+                if(senderAddress=='')   { senderAddress = uniqid(); }    
+
+                transactionObj = {
+                    senderAdress: senderAddress,
+                    recipientAdress: recipientAddress,
+                    updatedAt: (new Date(transaction.timestamp*1000)).toISOString(),
+                    amount: Math.abs(transaction.transfers[0].amount),
+                    note: '',
+                    hash: transaction.transactionHash
                 }
-                res.status(200).json({ deposit, withdraw });
-            })
-            .catch((error) => {
-                res.status(500).json({ message: 'An error has been occured !' });
-            })
+                totalTransactions.push(transactionObj);
+            }        
+        }
+
+        const transactions = totalTransactions;
+        const deposit = [];
+        const withdraw = [];
+        if (transactions && transactions.length) {
+            transactions.forEach((transaction) => {
+                
+                if (transaction.senderAdress === walletAddress)
+                withdraw.push(transaction);
+
+                if (transaction.recipientAdress === walletAddress) 
+                deposit.push(transaction);
+     
+            });
+        }
+        res.status(200).json({ deposit, withdraw });
+
+        // Transactions.find({
+        //     $or: [
+        //         { recipientAdress: walletAddress },
+        //         { senderAdress: walletAddress }
+        //     ]
+        // })
+        //     .then((transactions) => {
+        //         const deposit = [];
+        //         const withdraw = [];
+        //         if (transactions && transactions.length) {
+        //             transactions.forEach((transaction) => {
+        //                 if (transaction.senderAdress === walletAddress)
+        //                 withdraw.push(transaction);
+        //                 if (transaction.recipientAdress === walletAddress) 
+        //                 deposit.push(transaction);
+        //             });
+        //         }
+        //         res.status(200).json({ deposit, withdraw });
+        //     })
+        //     .catch((error) => {
+        //         res.status(500).json({ message: 'An error has been occured !' });
+        //     })
 
         //     const { blockCount } = await xuni.status()
 
