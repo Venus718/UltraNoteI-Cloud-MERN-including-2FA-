@@ -13,9 +13,9 @@ export default defineMessages({
         id: `${scope}.adduser`,
         defaultMessage: 'Add user',
     },
-    fristName: {
-        id: `${scope}.fristName`,
-        defaultMessage: 'Frist Naame',
+    firstName: {
+        id: `${scope}.firstName`,
+        defaultMessage: 'First Name',
     },
     lastName: {
         id: `${scope}.lastName`,
