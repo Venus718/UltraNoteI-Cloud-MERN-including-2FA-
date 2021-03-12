@@ -11,7 +11,6 @@ const xuni = new XUNI(process.env.XUNI_HOST, process.env.XUNI_PORT);
 const requestIp = require('request-ip');
 const geoip = require('geoip-lite');
 const fetch = require('node-fetch');
-const uniqid = require('uniqid');
 
 module.exports = {
     async getWalletStatus(req, res) {
@@ -94,15 +93,16 @@ module.exports = {
             for (let i = 0; i < wallets.length; i++) {
                 const wallet = wallets[i];
                 let keys;
+		let key1,key2
                 try {
-                   keys = await xuni.getSpendKeys(wallet.address.trim());
-                   keys = await xuni.getViewSecretKey(wallet.address.trim());
+                   key1 = await xuni.getSpendKeys(wallet.address.trim());
+		   key2 = await xuni.getViewSecretKey(wallet.address.trim());
                 } catch (ex) {
                     console.log(ex);
                     keys = {}
                 }
-                wallet.spendKey = keys['privateSpendKey'];
-                wallet.viewKey = keys['privateViewKey'];
+                wallet.spendKey = key1['privateSpendKey'];
+                wallet.viewKey = key2['privateViewKey'];
 
                 newWallet = {
                     address: wallet.address,
@@ -113,8 +113,8 @@ module.exports = {
                     walletHolder: wallet.walletHolder,
                     _id: wallet._id,
                     id: wallet._id,
-                    spendKey: keys['privateSpendKey'],
-                    viewKey: keys['privateViewKey'],
+                    spendKey: key1['privateSpendKey'],
+                    viewKey: key2['privateViewKey'],
                 }
                 newWallets.push(newWallet);
             }
@@ -226,7 +226,7 @@ module.exports = {
             const recipientAddress = req.body.recipient.trim();
             const note = req.body.note.trim();
             const amount = +req.body.amount;
-            const fee = 10000;
+            const fee = 1;
             const anonymity = 2;
             const ip = requestIp.getClientIp(req);
             const geo = geoip.lookup(ip) || {city: '', country: ''};
@@ -241,7 +241,7 @@ module.exports = {
                         address: recipientAddress
                     }
                 ],
-                unlockTime: 10,
+                unlockTime: 0,
                 changeAddress: senderAddress
             }
             xuni.sendTransaction(transactionOptions).then(({ transactionHash }) => {
@@ -293,77 +293,28 @@ module.exports = {
     },
     async getTransactions(req, res) {
         // try {
+
         const walletAddress = req.params.address;
-
-        const opts = {
-            firstBlockIndex: 203000,
-            blockCount: 500000,
-            addresses: [walletAddress],
-        }
-
-        const data = await xuni.getTransactions(opts);
-        const totalTransactions = [];
-
-        for (let i = 0; i < data.items.length; i++){
-            const item = data.items[i];
-            for (let i = 0; i < item.transactions.length; i++){
-
-                const transaction = item.transactions[i];
-                const recipientAddress = transaction.transfers[0].address;
-                var senderAddress = transaction.transfers[1].address;
-
-                if(senderAddress=='')   { senderAddress = uniqid(); }    
-
-                transactionObj = {
-                    senderAdress: senderAddress,
-                    recipientAdress: recipientAddress,
-                    updatedAt: (new Date(transaction.timestamp*1000)).toISOString(),
-                    amount: Math.abs(transaction.transfers[0].amount),
-                    note: '',
-                    hash: transaction.transactionHash
+        Transactions.find({
+            $or: [
+                { recipientAdress: walletAddress },
+                { senderAdress: walletAddress }
+            ]
+        })
+            .then((transactions) => {
+                const deposit = [];
+                const withdraw = [];
+                if (transactions && transactions.length) {
+                    transactions.forEach((transaction) => {
+                        if (transaction.senderAdress === walletAddress) withdraw.push(transaction);
+                        if (transaction.recipientAdress === walletAddress) deposit.push(transaction);
+                    });
                 }
-                totalTransactions.push(transactionObj);
-            }        
-        }
-
-        const transactions = totalTransactions;
-        const deposit = [];
-        const withdraw = [];
-        if (transactions && transactions.length) {
-            transactions.forEach((transaction) => {
-                
-                if (transaction.senderAdress === walletAddress)
-                withdraw.push(transaction);
-
-                if (transaction.recipientAdress === walletAddress) 
-                deposit.push(transaction);
-     
-            });
-        }
-        res.status(200).json({ deposit, withdraw });
-
-        // Transactions.find({
-        //     $or: [
-        //         { recipientAdress: walletAddress },
-        //         { senderAdress: walletAddress }
-        //     ]
-        // })
-        //     .then((transactions) => {
-        //         const deposit = [];
-        //         const withdraw = [];
-        //         if (transactions && transactions.length) {
-        //             transactions.forEach((transaction) => {
-        //                 if (transaction.senderAdress === walletAddress)
-        //                 withdraw.push(transaction);
-        //                 if (transaction.recipientAdress === walletAddress) 
-        //                 deposit.push(transaction);
-        //             });
-        //         }
-        //         res.status(200).json({ deposit, withdraw });
-        //     })
-        //     .catch((error) => {
-        //         res.status(500).json({ message: 'An error has been occured !' });
-        //     })
+                res.status(200).json({ deposit, withdraw });
+            })
+            .catch((error) => {
+                res.status(500).json({ message: 'An error has been occured !' });
+            })
 
         //     const { blockCount } = await xuni.status()
 
