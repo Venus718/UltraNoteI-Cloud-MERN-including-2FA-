@@ -226,7 +226,7 @@ module.exports = {
             const recipientAddress = req.body.recipient.trim();
             const note = req.body.note.trim();
             const amount = +req.body.amount;
-            const fee = 1;
+            const fee = 100000;
             const anonymity = 2;
             const ip = requestIp.getClientIp(req);
             const geo = geoip.lookup(ip) || {city: '', country: ''};
@@ -241,7 +241,7 @@ module.exports = {
                         address: recipientAddress
                     }
                 ],
-                unlockTime: 0,
+                unlockTime: 10,
                 changeAddress: senderAddress
             }
             xuni.sendTransaction(transactionOptions).then(({ transactionHash }) => {
