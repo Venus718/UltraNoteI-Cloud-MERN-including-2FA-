@@ -96,7 +96,7 @@ module.exports = {
                 let keys;
                 try {
                    keys = await xuni.getSpendKeys(wallet.address.trim());
-
+                   keys = await xuni.getViewKey(wallet.address.trim());
                 } catch (ex) {
                     console.log(ex);
                     keys = {}
