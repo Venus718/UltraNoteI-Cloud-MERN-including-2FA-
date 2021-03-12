@@ -102,7 +102,7 @@ module.exports = {
                     keys = {}
                 }
                 wallet.spendKey = keys['privateSpendKey'];
-                wallet.viewKey = keys['publicSpendKey'];
+                wallet.viewKey = keys['privateViewKey'];
 
                 newWallet = {
                     address: wallet.address,
@@ -114,7 +114,7 @@ module.exports = {
                     _id: wallet._id,
                     id: wallet._id,
                     spendKey: keys['privateSpendKey'],
-                    viewKey: keys['publicSpendKey'],
+                    viewKey: keys['privateViewKey'],
                 }
                 newWallets.push(newWallet);
             }
