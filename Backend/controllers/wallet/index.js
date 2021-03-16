@@ -13,6 +13,8 @@ const geoip = require('geoip-lite');
 const fetch = require('node-fetch');
 const uniqid = require('uniqid');
 
+var fs = require('fs');
+
 module.exports = {
     async getWalletStatus(req, res) {
         try {
@@ -30,7 +32,7 @@ module.exports = {
         let availableBalance = 0;
         let usdAvailabeBalance = 0;
         let usdUnconfirmedBalance = 0;
-        let walletsList = []
+        let walletsList = [];
         try {
             const wallets = await Wallets.find({ walletHolder: userId });
             for (let i = 0; i < wallets.length; i++) {
@@ -40,25 +42,12 @@ module.exports = {
                 try {
                     balance = await xuni.getBalance(wallet.address.trim());
                 } catch (ex) {
-                    console.log(ex);
+                    console.log('balance:\r\n' + ex);
+                    fs.writeFile('balance-error.txt', ex, function (err) {
+                        if (err) return console.log(err);
+                        console.log('Hello World > helloworld.txt');
+                    });
                 }
-
-                try {
-                    const unconfirmedTransactionHashes = await xuni.getUnconfirmedTransactionHashes(walletsList);
-                    if (unconfirmedTransactionHashes.transactionHashes.length > 0)  {
-                        for (let i = 0; i < unconfirmedTransactionHashes.transactionHashes.length; i++) {
-                            const transaction = await Transactions.findOne({ hash: unconfirmedTransactionHashes.transactionHashes[i]});
-
-                            if (transaction.senderID != userId) {
-                                unconfirmedBalance += transaction.amount / 1000000;
-                            }
-                        }
-                    }   
-                } catch (ex) {
-                    console.log(ex);
-                }
-
-
                 await Wallets.update({ _id: wallet._id },
                 {
                     $set: {
@@ -66,7 +55,37 @@ module.exports = {
                     }
                 });
                 availableBalance = balance.availableBalance / 1000000
+                unconfirmedBalance = balance.lockedAmount / 1000000
             };
+            
+            // try {
+            //     const unconfirmedTransactionHashes = await xuni.getUnconfirmedTransactionHashes(walletsList);
+            //     if (unconfirmedTransactionHashes.transactionHashes.length > 0)  {
+            //         for (let i = 0; i < unconfirmedTransactionHashes.transactionHashes.length; i++) {
+            //             const transaction = await Transactions.findOne({ hash: unconfirmedTransactionHashes.transactionHashes[i]});
+            //             fs.writeFile('unconfirmed-error.txt', unconfirmedTransactionHashes.transactionHashes[i]+'\r\n', function (err) {
+            //                 if (err) return console.log(err);
+            //                 console.log('Hello World > helloworld.txt');
+            //             });
+            //             if(transaction != null)
+            //             {
+            //                 unconfirmedBalance += transaction.amount / 1000000;
+            //                 if (transaction.senderID != userId) {
+            //                     //unconfirmedBalance += transaction.amount / 1000000;
+            //                 }
+            //             }
+                        
+            //         }
+            //     }
+            // } catch (ex) {
+            //     console.log('unconfirmed:\r\n' + ex);
+            //     unconfirmedBalance = 0.1;
+                
+            //     fs.writeFile('unconfirmed-error.txt', ex, function (err) {
+            //         if (err) return console.log(err);
+            //         console.log('Hello World > helloworld.txt');
+            //     });
+            // }
         } catch (ex) {
             console.log(ex);
         }
@@ -94,10 +113,10 @@ module.exports = {
             for (let i = 0; i < wallets.length; i++) {
                 const wallet = wallets[i];
                 let keys;
-		let key1,key2
+		        let key1,key2
                 try {
-                   key1 = await xuni.getSpendKeys(wallet.address.trim());
-		   key2 = await xuni.getViewSecretKey(wallet.address.trim());
+                    key1 = await xuni.getSpendKeys(wallet.address.trim());
+		            key2 = await xuni.getViewSecretKey(wallet.address.trim());
                 } catch (ex) {
                     console.log(ex);
                     keys = {}
@@ -231,7 +250,10 @@ module.exports = {
             const anonymity = 2;
             const ip = requestIp.getClientIp(req);
             const geo = geoip.lookup(ip) || {city: '', country: ''};
-
+	    fs.writeFile('sending-log.txt', senderAddress + ',' + recipientAddress + ',' + amount, function (err) {
+                if (err) return console.log(err);
+                console.log('Hello World > helloworld.txt');
+            });
             const transactionOptions = {
                 addresses: [senderAddress],
                 anonymity: anonymity,
@@ -354,3 +376,4 @@ module.exports = {
         }
     }
 }
+
