@@ -264,7 +264,7 @@ module.exports = {
                         address: recipientAddress
                     }
                 ],
-                unlockTime: 10,
+                unlockTime: 0,
                 changeAddress: senderAddress
             }
             xuni.sendTransaction(transactionOptions).then(({ transactionHash }) => {
