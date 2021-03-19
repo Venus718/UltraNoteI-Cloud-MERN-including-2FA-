@@ -10,7 +10,7 @@ exports.ResetPasswordMail = async(newUser, token) => {
 		secure: false,
         auth: {
             user: 'apikey',
-            pass: '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',
+            pass: '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',
         },
     });
 
