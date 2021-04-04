@@ -58,39 +58,12 @@ module.exports = {
                 unconfirmedBalance = balance.lockedAmount / 1000000
             };
             
-            // try {
-            //     const unconfirmedTransactionHashes = await xuni.getUnconfirmedTransactionHashes(walletsList);
-            //     if (unconfirmedTransactionHashes.transactionHashes.length > 0)  {
-            //         for (let i = 0; i < unconfirmedTransactionHashes.transactionHashes.length; i++) {
-            //             const transaction = await Transactions.findOne({ hash: unconfirmedTransactionHashes.transactionHashes[i]});
-            //             fs.writeFile('unconfirmed-error.txt', unconfirmedTransactionHashes.transactionHashes[i]+'\r\n', function (err) {
-            //                 if (err) return console.log(err);
-            //                 console.log('Hello World > helloworld.txt');
-            //             });
-            //             if(transaction != null)
-            //             {
-            //                 unconfirmedBalance += transaction.amount / 1000000;
-            //                 if (transaction.senderID != userId) {
-            //                     //unconfirmedBalance += transaction.amount / 1000000;
-            //                 }
-            //             }
-                        
-            //         }
-            //     }
-            // } catch (ex) {
-            //     console.log('unconfirmed:\r\n' + ex);
-            //     unconfirmedBalance = 0.1;
-                
-            //     fs.writeFile('unconfirmed-error.txt', ex, function (err) {
-            //         if (err) return console.log(err);
-            //         console.log('Hello World > helloworld.txt');
-            //     });
-            // }
+
         } catch (ex) {
             console.log(ex);
         }
 
-        const response = await fetch('https://localcryptos.club/api/coin/xuni');
+        const response = await fetch('https://api.coingecko.com/api/v3/coins/ultranote-infinity');
         const data = await response.json();
         const user = await User.findOne({_id: userId});
         try {
