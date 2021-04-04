@@ -68,16 +68,16 @@ module.exports = {
         const user = await User.findOne({_id: userId});
         try {
             if (user.currency == 'usd'){
-                usdAvailabeBalance = availableBalance * data.data[0].XUNI.price.USD;
-                usdUnconfirmedBalance = unconfirmedBalance * data.data[0].XUNI.price.USD;
+                usdAvailabeBalance = availableBalance * data.market_data.current_price.usd;
+                usdUnconfirmedBalance = unconfirmedBalance * data.market_data.current_price.usd;
             } 
             if (user.currency == 'btc') {
-                usdAvailabeBalance = availableBalance * data.data[0].XUNI.price.BTC;
-                usdUnconfirmedBalance = unconfirmedBalance * data.data[0].XUNI.price.BTC;
+                usdAvailabeBalance = availableBalance * data.market_data.current_price.btc;
+                usdUnconfirmedBalance = unconfirmedBalance * data.market_data.current_price.btc;
             }
         } catch {
-            usdAvailabeBalance = availableBalance * data.data[0].XUNI.price.USD;
-            usdUnconfirmedBalance = unconfirmedBalance * data.data[0].XUNI.price.USD;
+            usdAvailabeBalance = availableBalance * data.market_data.current_price.usd;
+            usdUnconfirmedBalance = unconfirmedBalance * data.market_data.current_price.usd;
         }
 
         try{
