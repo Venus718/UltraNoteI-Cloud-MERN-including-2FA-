@@ -1,6 +1,11 @@
 /* eslint consistent-return:0 import/order:0 */
 
 const express = require('express');
+const mongoose = require('mongoose');
+const BodyParser = require('body-parser');
+const cors = require('cors');
+require('dotenv').config();
+
 const logger = require('./logger');
 
 const argv = require('./argv');
@@ -13,9 +18,7 @@ const ngrok =
     : false;
 const { resolve } = require('path');
 const app = express();
-const apiRoute = require("./routes/auth");
-
-
+const apiRoute = require('./routes/auth');
 
 // If you need a backend, e.g. an API, add your custom backend-specific middleware here
 // app.use('/api', myApi);
@@ -25,6 +28,10 @@ setup(app, {
   outputPath: resolve(process.cwd(), 'build'),
   publicPath: '/',
 });
+
+app.use(cors());
+app.use(BodyParser.json({ limit: '50mb' }));
+app.use(BodyParser.urlencoded({ limit: '50mb', extended: true }));
 
 //routing
 app.use('/api', apiRoute);
@@ -47,7 +54,19 @@ app.listen(port, host, async err => {
     return logger.error(err.message);
   }
 
-
+  // Connect to the database
+  //Mongoose DataBase connection
+  mongoose
+    .connect(process.env.DB_HOST, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    })
+    .then(() => {
+      console.log('DATABASE CONNECTED');
+    })
+    .catch(error => {
+      console.log('ERROR OUCCURED', error);
+    });
 
   // Connect to ngrok in dev mode
   if (ngrok) {
