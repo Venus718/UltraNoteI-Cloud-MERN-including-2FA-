@@ -113,6 +113,7 @@
         "react-dropzone-uploader": "^2.10.1",
         "react-full-screen": "^0.2.4",
         "react-google-maps": "^9.4.5",
+        "react-google-recaptcha": "^2.1.0",
         "react-helmet": "6.0.0-beta",
         "react-highcharts": "^16.0.2",
         "react-image-lightbox": "^5.1.0",
