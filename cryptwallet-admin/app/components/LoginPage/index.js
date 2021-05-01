@@ -118,11 +118,13 @@ class LoginPage extends Component {
     this.setState({
       error: error || {},
     });
-    const { email, password } = this.state;
+
     const { login } = this.props;
     if (!error) {
       this.state.history = this.props.history;
-      login({ email, password });
+      const { email, password, history } = this.state;
+
+      login({ email, password, history });
     }
   };
 

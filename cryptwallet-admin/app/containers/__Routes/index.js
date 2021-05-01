@@ -8,6 +8,7 @@ import PublicRoute from 'containers/_PublicRoute';
 // PublicRoute
 import LoginPage from 'components/LoginPage/Loadable';
 import SignupPage from 'components/SignupPage/Loadable';
+import ForgotPasswordPage from 'components/ForgotPasswordPage/Loadable';
 // Private components
 import Dashboard from 'containers/Dashboard/Loadable';
 import UserComponent from 'containers/UserComponent/Loadable';
@@ -182,6 +183,10 @@ const Routes = () => {
       />
       <PublicRoute exact path="/login" component={LoginPage} />
       <PublicRoute path="/signup" component={SignupPage} />
+      <PublicRoute
+        path="/forgot-password/:token"
+        component={ForgotPasswordPage}
+      />
     </Switch>
   );
 };

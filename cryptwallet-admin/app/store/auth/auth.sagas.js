@@ -7,8 +7,6 @@ import { loginFailure, loginSuccess, throwError } from './auth.actions';
 import AuthTypes from './auth.types';
 
 export function* loginStartAsync({ payload }) {
-  console.log('payload of data', { payload });
-
   try {
     const requestData = {
       mail: payload.email,
@@ -61,6 +59,46 @@ export function* onResetPasswordStart() {
   yield takeLatest(AuthTypes.RESET_PASSWORD, resetPasswordAsync);
 }
 
+export function* requestEmailResetAsync({ payload }) {
+  const requestData = {
+    mail: payload.email,
+  };
+
+  try {
+    const result = yield clientHttp.post('/resetmail', requestData);
+    if (result) {
+      toast.info(
+        "You should soon receive an email allowing you to reset your password. Please make sure to check your spam and trash if you can't find the email.",
+      );
+      const { history } = payload;
+      history.push('/login');
+    }
+  } catch (error) {
+    yield put(throwError(error));
+  }
+}
+
+export function* onRequestEmailResetPasswordStart() {
+  yield takeLatest(AuthTypes.REQUEST_EMAIL_RESET, requestEmailResetAsync);
+}
+
+export function* authResetAsync() {
+  try {
+    yield put(authResetSuccess());
+  } catch (error) {
+    yield put(throwError(error));
+  }
+}
+
+export function* onAuthReset() {
+  yield takeLatest(AuthTypes.AUTH_RESET, authResetAsync);
+}
+
 export function* authSagas() {
-  yield all([call(onLoginStart), call(onResetPasswordStart)]);
+  yield all([
+    call(onLoginStart),
+    call(onResetPasswordStart),
+    call(onRequestEmailResetPasswordStart),
+    call(onAuthReset),
+  ]);
 }

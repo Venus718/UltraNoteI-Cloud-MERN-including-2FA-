@@ -26,7 +26,8 @@ const authReducer = (state = INITIAL_STATE, action) => {
         user: action.payload.user,
         token: action.payload.token,
       };
-
+    case AuthTypes.AUTH_RESET_SUCCESS:
+      return { ...INITIAL_STATE };
     case AuthTypes.ERROR:
       return {
         ...state,

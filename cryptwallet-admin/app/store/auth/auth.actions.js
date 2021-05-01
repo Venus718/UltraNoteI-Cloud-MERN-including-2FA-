@@ -30,6 +30,28 @@ export const resetPasswordFailure = payload => ({
   payload,
 });
 
+export const requestEmailResetStart = payload => ({
+  type: AuthTypes.REQUEST_EMAIL_RESET,
+  payload,
+});
+
+export const requestEmailResetSuccess = payload => ({
+  type: AuthTypes.REQUEST_EMAIL_RESET_SUCCESS,
+  payload,
+});
+
+export const requestEmailResetFailure = payload => ({
+  type: AuthTypes.ERROR,
+  payload,
+});
+export const authReset = () => ({
+  type: AuthTypes.AUTH_RESET,
+});
+
+export const authResetSuccess = () => ({
+  type: AuthTypes.AUTH_RESET_SUCCESS,
+});
+
 export const throwError = error => ({
   type: AuthTypes.ERROR,
   payload: error,
