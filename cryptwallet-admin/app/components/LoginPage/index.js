@@ -122,7 +122,7 @@ class LoginPage extends Component {
     const { login } = this.props;
     if (!error) {
       this.state.history = this.props.history;
-      login(this.state);
+      login({ email, password });
     }
   };
 
@@ -137,8 +137,7 @@ class LoginPage extends Component {
 
     const auth = cookie.get('Auth');
     if (auth) {
-      toast.info('You are Loged in');
-      return <Redirect to="/dashboard" />;
+      return <Redirect to="/" />;
     }
 
     return (

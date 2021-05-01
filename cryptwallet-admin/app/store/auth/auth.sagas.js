@@ -7,13 +7,15 @@ import { loginFailure, loginSuccess, throwError } from './auth.actions';
 import AuthTypes from './auth.types';
 
 export function* loginStartAsync({ payload }) {
+  console.log('payload of data', { payload });
+
   try {
     const requestData = {
       mail: payload.email,
       password: payload.password,
     };
 
-    const result = yield clientHttp.post('/signin', requestData);
+    const result = yield clientHttp.post('/login', requestData);
     if (result && result.data) {
       const { twoFA, token } = result.data;
       if (twoFA) {
@@ -60,9 +62,5 @@ export function* onResetPasswordStart() {
 }
 
 export function* authSagas() {
-  yield all([
-    call(onLoginStart),
-    call(onResetPasswordStart),
-    call(onAuthReset),
-  ]);
+  yield all([call(onLoginStart), call(onResetPasswordStart)]);
 }

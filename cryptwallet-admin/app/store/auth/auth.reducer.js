@@ -5,12 +5,7 @@ const INITIAL_STATE = {
   isLoggedIn: false,
   isLoading: false,
   user: null,
-  userActivity: [],
   token: '',
-  withdrawByMonth: [],
-  depositByMonth: [],
-  withdrawByDay: [],
-  depositByDay: [],
   error: null,
 };
 

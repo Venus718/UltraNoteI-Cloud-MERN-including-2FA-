@@ -110,7 +110,10 @@ export class DashboardPage extends React.Component {
 
   render() {
 
-    const { withDraw, deposite } = this.state;
+    const auth = cookie.get('Auth');
+    if (!auth) {
+      return <Redirect to="/login" />;
+    }
 
     return (
       <Grid className="mainBody">
