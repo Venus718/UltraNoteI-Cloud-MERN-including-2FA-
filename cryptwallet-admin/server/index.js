@@ -60,6 +60,8 @@ app.listen(port, host, async err => {
     .connect(process.env.DB_HOST, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
+      useFindAndModify: false,
+      useCreateIndex: true,
     })
     .then(() => {
       console.log('DATABASE CONNECTED');
