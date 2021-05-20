@@ -22,7 +22,7 @@ export function* loginStartAsync({ payload }) {
       } else {
         cookie.set('Auth', true);
         yield put(loginSuccess(result.data));
-        //localStorage.setItem('user', JSON.stringify(result.data.user));
+        localStorage.setItem('user', JSON.stringify(result.data.user));
         localStorage.setItem('token', result.data.token);
         toast.success('Successfully login');
         payload.history.push('/');

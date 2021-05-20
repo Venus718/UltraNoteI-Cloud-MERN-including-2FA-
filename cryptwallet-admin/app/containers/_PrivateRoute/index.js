@@ -1,67 +1,70 @@
 import React, { useState, Fragment } from 'react';
-import { Route } from 'react-router-dom';
+import { Route, Redirect } from 'react-router-dom';
+import cookie from 'js-cookie';
 
 import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
 import { compose } from 'redux';
-import { Grid } from '@material-ui/core'
-import SidebarNav from 'containers/SidebarNav/Loadable'
-import HeaderComponent from 'containers/HeaderComponent/Loadable'
-import './style.scss'
+import { Grid } from '@material-ui/core';
+import SidebarNav from 'containers/SidebarNav/Loadable';
+import HeaderComponent from 'containers/HeaderComponent/Loadable';
+import './style.scss';
 
+const PrivateRoute = props => {
+  const [colupsMenu, setColupsMenu] = useState(false);
 
-const PrivateRoute = (props) => {
-    const [colupsMenu, setColupsMenu] = useState(false)
+  const colupsMenuHandler = () => {
+    setColupsMenu(!colupsMenu);
+  };
 
-    const colupsMenuHandler = () => {
-        setColupsMenu(!colupsMenu)
-    }
+  const auth = JSON.parse(cookie.get('Auth'));
+  if (!auth) {
+    return <Redirect to="/login" />;
+  }
 
-    return (
-        <Fragment>
-            <Grid className={colupsMenu ? 'mainContainerArea mainContainerAreaColups' : 'mainContainerArea'}>
-                <SidebarNav
-                    colupsMenuHandler={colupsMenuHandler}
-                />
-                <Grid className="mainContainer">
-                    <HeaderComponent
-                        colupsMenuHandler={colupsMenuHandler}
-                    />
+  return (
+    <Fragment>
+      <Grid
+        className={
+          colupsMenu
+            ? 'mainContainerArea mainContainerAreaColups'
+            : 'mainContainerArea'
+        }
+      >
+        <SidebarNav colupsMenuHandler={colupsMenuHandler} />
+        <Grid className="mainContainer">
+          <HeaderComponent colupsMenuHandler={colupsMenuHandler} />
 
-                    <Grid className="mainContentRouter">
-                        {props.titles && <ul className="breadCumbWrap">
-                            {props.titles.map((item, i) => (
-                                <li key={i}>{item}</li>
-                            ))}
-                        </ul>}
+          <Grid className="mainContentRouter">
+            {props.titles && (
+              <ul className="breadCumbWrap">
+                {props.titles.map((item, i) => (
+                  <li key={i}>{item}</li>
+                ))}
+              </ul>
+            )}
 
-                        <Route
-                            {...props}
-                            exact
-                            render={props =>
-                                <Component {...props} />
-                            }
-                        />
-                    </Grid>
-
-                </Grid>
-            </Grid>
-        </Fragment >
-    );
-}
+            <Route
+              {...props}
+              exact
+              render={props => <Component {...props} />}
+            />
+          </Grid>
+        </Grid>
+      </Grid>
+    </Fragment>
+  );
+};
 
 function mapDispatchToProps(dispatch) {
-    return {
-    };
+  return {};
 }
 
-const mapStateToProps = createStructuredSelector({
-
-});
+const mapStateToProps = createStructuredSelector({});
 
 const withConnect = connect(
-    mapStateToProps,
-    mapDispatchToProps,
+  mapStateToProps,
+  mapDispatchToProps,
 );
 
 export default compose(withConnect)(PrivateRoute);

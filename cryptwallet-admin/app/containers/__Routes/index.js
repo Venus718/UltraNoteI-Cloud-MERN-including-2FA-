@@ -49,19 +49,14 @@ const Routes = () => {
         component={UserComponent}
         titles={['User management', 'User']}
       />
-      <PrivateRoute
-        exact
-        path="/pending-id-varification"
-        component={PendingIdVarification}
-        titles={['Reports', ' KYC Pending']}
-      />
+
       <PrivateRoute
         exact
         path="/id-varification/:id"
         component={IdVarification}
         titles={['User management', ' Pending ID varification']}
       />
-      <PrivateRoute
+      {/* <PrivateRoute
         exact
         path="/user-wallet-list/:id"
         component={UserWalletList}
@@ -72,7 +67,7 @@ const Routes = () => {
         path="/user-wallet-list/user-wallet-transaction/:id"
         component={UserWalletTransaction}
         titles={['Wallet List', 'Wallet Transaction']}
-      />
+      /> */}
       <PrivateRoute
         exact
         path="/user-profile/:id"
@@ -85,12 +80,6 @@ const Routes = () => {
         component={UserProfileEdit}
         titles={['User', 'User Profile Edit']}
       />
-      {/* <PrivateRoute
-                exact
-                path="/node-history"
-                component={NodeHistory}
-                titles={['Crypt wallet', 'Node history']}
-            /> */}
       <PrivateRoute
         exact
         path="/user-wallets"
@@ -105,18 +94,6 @@ const Routes = () => {
       />
       <PrivateRoute
         exact
-        path="/pending-withdrawal"
-        component={PendingWithdrawal}
-        titles={['Crypt wallet', 'Pending Withdrawal']}
-      />
-      <PrivateRoute
-        exact
-        path="/order-list"
-        component={BuyCoinOrderList}
-        titles={['Order List']}
-      />
-      <PrivateRoute
-        exact
         path="/profile"
         component={ProfileComponent}
         titles={['Profile']}
@@ -127,42 +104,7 @@ const Routes = () => {
         component={GeneralSetting}
         titles={['Settings ', 'General settings']}
       />
-      <PrivateRoute
-        exact
-        path="/landing-page"
-        component={LandingPageSetting}
-        titles={['Settings ', 'Landing Page']}
-      />
-      <PrivateRoute
-        exact
-        path="/static-content-edit/:id"
-        component={EditStaticContent}
-        titles={['Settings ', 'Add Static Content']}
-      />
-      <PrivateRoute
-        exact
-        path="/custom-page"
-        component={CustomPage}
-        titles={['Settings ', 'Custom Page']}
-      />
-      <PrivateRoute
-        exact
-        path="/custom-page-add"
-        component={CustomPageAdd}
-        titles={['Custom Page ', 'Add Custom Page']}
-      />
-      <PrivateRoute
-        exact
-        path="/faqs"
-        component={FaqsComponent}
-        titles={['Settings ', 'FAQs']}
-      />
-      <PrivateRoute
-        exact
-        path="/add-faqs"
-        component={AddFaqs}
-        titles={['FAQs ', 'Add FAQs']}
-      />
+
       <PrivateRoute
         exact
         path="/bulk-email"

@@ -10,17 +10,14 @@ import 'react-toastify/dist/ReactToastify.min.css';
 import theme from '../../material-theme';
 import GlobalStyle from '../../global-styles';
 
-const App = (props) => {
-    return (
-
-        <MuiThemeProvider theme={theme}>
-            <GlobalStyle />
-            <Helmet
-                defaultTitle="Crypt Wallet"
-            />
-            <Routes />
-            <ToastContainer position="top-center" />
-        </MuiThemeProvider>
-    );
-}
-export default App
+const App = props => {
+  return (
+    <MuiThemeProvider theme={theme}>
+      <GlobalStyle />
+      <Helmet defaultTitle="Crypt Wallet" />
+      <Routes />
+      <ToastContainer position="top-center" />
+    </MuiThemeProvider>
+  );
+};
+export default App;

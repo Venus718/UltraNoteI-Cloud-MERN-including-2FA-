@@ -137,7 +137,7 @@ class LoginPage extends Component {
   render() {
     const { email, password } = this.state;
 
-    const auth = cookie.get('Auth');
+    const auth = JSON.parse(cookie.get('Auth'));
     if (auth) {
       return <Redirect to="/" />;
     }
