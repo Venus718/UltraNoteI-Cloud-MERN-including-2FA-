@@ -17,8 +17,13 @@ const PrivateRoute = props => {
     setColupsMenu(!colupsMenu);
   };
 
-  const auth = JSON.parse(cookie.get('Auth'));
-  if (!auth) {
+  let token = '';
+  try {
+    token = localStorage.getItem('token');
+  } catch (err) {
+    console.log('un able to read token', err);
+  }
+  if (!token) {
     return <Redirect to="/login" />;
   }
 

@@ -116,7 +116,6 @@ const HeaderComponent = props => {
   };
 
   const resetData = () => {
-    cookie.set('Auth', null);
     localStorage.clear();
   };
 

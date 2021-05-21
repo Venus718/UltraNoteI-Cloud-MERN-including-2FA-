@@ -1,5 +1,4 @@
 import { toast } from 'react-toastify';
-import cookie from 'js-cookie';
 import { takeLatest, call, put, all } from 'redux-saga/effects';
 import { clientHttp } from '../../utils/services/httpClient';
 import { loginFailure, loginSuccess, throwError } from './auth.actions';
@@ -20,7 +19,6 @@ export function* loginStartAsync({ payload }) {
         toast.info('4-digit verication code is sent to your email');
         payload.history.push(`/confirm-code/${token}`);
       } else {
-        cookie.set('Auth', true);
         yield put(loginSuccess(result.data));
         localStorage.setItem('user', JSON.stringify(result.data.user));
         localStorage.setItem('token', result.data.token);

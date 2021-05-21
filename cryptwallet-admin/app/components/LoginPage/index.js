@@ -2,7 +2,6 @@ import React, { Component, Fragment } from 'react';
 import { injectIntl } from 'react-intl';
 import { Link, withRouter, Redirect } from 'react-router-dom';
 import Joi from 'joi-browser';
-import cookie from 'js-cookie';
 
 import {
   Grid,
@@ -136,9 +135,13 @@ class LoginPage extends Component {
 
   render() {
     const { email, password } = this.state;
-
-    const auth = JSON.parse(cookie.get('Auth'));
-    if (auth) {
+    let token = '';
+    try {
+      token = localStorage.getItem('token');
+    } catch (err) {
+      console.log('un able to read token', err);
+    }
+    if (token) {
       return <Redirect to="/" />;
     }
 
