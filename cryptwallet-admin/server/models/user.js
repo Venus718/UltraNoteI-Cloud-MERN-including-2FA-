@@ -3,11 +3,18 @@ const mongoose = require('mongoose');
 const UserSchema = mongoose.Schema({
   firstName: { type: String, required: true },
   lastName: { type: String, required: true },
-  userName: { type: String, required: true },
-  mail: { type: String, required: true, unique: true },
-  password: { type: String, required: true, min: 8, max: 18 },
-  role: { type: String, required: true, default: 'admin' },
-  //isActive: { type: String, required: true, default: false },
+  mail: { type: String, required: true },
+  phone: { type: String, required: false },
+  password: { type: String, min: 8, max: 18, required: true },
+  role: { type: String, required: true, default: 'user' },
+  image: { type: String, require: false },
+  isActive: { type: Boolean, default: false, required: true },
+  two_fact_auth: { type: Boolean, default: false, required: true },
+  two_fact_auth_code: { type: Number, default: null },
+  creationDate: { type: Date, default: Date.now() },
+  contacts: { type: [Object], default: null },
+  isWalletCreated: { type: Boolean, default: false },
+  currency: { type: String, default: 'usd' },
 });
 
 module.exports = mongoose.model('User', UserSchema);
