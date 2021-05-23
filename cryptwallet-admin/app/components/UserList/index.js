@@ -92,12 +92,18 @@ class UserList extends Component {
   }
 
   userList = async () => {
-    const response = await clientHttp.post('/users/user_list');
-    const userList = response.data.users;
-    console.log(userList);
-    this.setState({
-      pageOfItems: userList,
-    });
+    try {
+      const response = await clientHttp.post('/users/user_list');
+      const userList = response.data.users;
+      console.log(userList);
+      this.setState({
+        pageOfItems: userList,
+      });
+    } catch (err) {
+      this.setState({
+        pageOfItems: [],
+      });
+    }
   };
 
   render() {

@@ -19,7 +19,7 @@ const ngrok =
 const { resolve } = require('path');
 const app = express();
 const apiRoute = require('./routes/auth');
-const userRoute = require('./routes/users');
+const usersRoute = require('./routes/users');
 
 // If you need a backend, e.g. an API, add your custom backend-specific middleware here
 // app.use('/api', myApi);
@@ -36,7 +36,7 @@ app.use(BodyParser.urlencoded({ limit: '50mb', extended: true }));
 
 //routing
 app.use('/api', apiRoute);
-app.use('/api/users', userRoute);
+app.use('/api/users', usersRoute);
 
 // get the intended host and port number, use localhost and port 3000 if not provided
 const customHost = argv.host || process.env.HOST;
