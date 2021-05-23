@@ -56,7 +56,7 @@ const Routes = () => {
         component={IdVarification}
         titles={['User management', ' Pending ID varification']}
       />
-      {/* <PrivateRoute
+      <PrivateRoute
         exact
         path="/user-wallet-list/:id"
         component={UserWalletList}
@@ -67,7 +67,7 @@ const Routes = () => {
         path="/user-wallet-list/user-wallet-transaction/:id"
         component={UserWalletTransaction}
         titles={['Wallet List', 'Wallet Transaction']}
-      /> */}
+      />
       <PrivateRoute
         exact
         path="/user-profile/:id"
