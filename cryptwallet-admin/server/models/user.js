@@ -22,6 +22,8 @@ const UserSchema = mongoose.Schema(
     contacts: { type: [Object], default: null },
     isWalletCreated: { type: Boolean, default: false },
     currency: { type: String, default: 'usd' },
+    suspended: { type: Boolean, default: false },
+    deleted: { type: Boolean, default: false },
   },
   { timestamps: true },
 );
