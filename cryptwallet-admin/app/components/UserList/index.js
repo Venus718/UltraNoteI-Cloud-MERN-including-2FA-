@@ -45,22 +45,7 @@ class UserList extends Component {
       [e.target.name]: e.target.value,
     });
   };
-  deleteCartHandler = id => {
-    let userList = this.state.pageOfItems.filter(item => item.id !== id);
-    this.setState({
-      pageOfItems: userList,
-      delete: false,
-    });
-    toast.success('user delete successfully');
-  };
-  suspendedCartHandler = id => {
-    let userList = this.state.pageOfItems.filter(item => item.id !== id);
-    this.setState({
-      pageOfItems: userList,
-      suspend: false,
-    });
-    toast.success('user suspended successfully');
-  };
+
   onChangePage = pageOfItems => {
     this.setState({ pageOfItems: pageOfItems });
   };
@@ -106,8 +91,20 @@ class UserList extends Component {
     }
   };
 
+  actionOnUserHandler = async (userId, action) => {
+    try {
+      const response = await clientHttp.put(`/users/${action}`, { userId });
+      const { message } = response.data;
+      toast.success(message);
+      this.suspendModalClose();
+      this.deleteModalClose();
+    } catch (err) {
+      toast.error(err.message);
+      this.suspendModalClose();
+      this.deleteModalClos;
+    }
+  };
   render() {
-    console.log(this.state.pageOfItems);
     return (
       <Fragment>
         <Grid className="userTableWrap">
@@ -150,21 +147,21 @@ class UserList extends Component {
                       <TableCell>{item.firstName}</TableCell>
                       <TableCell>{item.lastName}</TableCell>
                       <TableCell>{item.mail}</TableCell>
-                      <TableCell>{item.updatedAt}</TableCell>
+                      <TableCell>{item._id}</TableCell>
                       <TableCell>
                         <ul className="activityList">
                           <li>
-                            <Link to={`/user-profile/${item.id}`}>
+                            <Link to={`/user-profile/${item._id}`}>
                               <img src={view} alt="" />
                             </Link>
                           </li>
                           <li>
-                            <Link to={`/user-profile-edit/${item.id}`}>
+                            <Link to={`/user-profile-edit/${item._id}`}>
                               <img src={edit} alt="" />
                             </Link>
                           </li>
                           <li>
-                            <Link to={`/user-wallet-list/${item.id}`}>
+                            <Link to={`/user-wallet-list/${item._id}`}>
                               <img src={wallet} alt="" />
                             </Link>
                           </li>
@@ -181,7 +178,9 @@ class UserList extends Component {
                           html
                           text="Do you want to delete ?"
                           type="error"
-                          onConfirm={() => this.deleteCartHandler(item.id)}
+                          onConfirm={() =>
+                            this.actionOnUserHandler(item._id, 'delete_user')
+                          }
                           onCancel={this.deleteModalClose}
                           showCancelButton={true}
                           showLoaderOnConfirm={true}
@@ -194,7 +193,9 @@ class UserList extends Component {
                           showCancelButton={true}
                           text="Do you want to Suspend ?"
                           type="warning"
-                          onConfirm={() => this.suspendedCartHandler(item.id)}
+                          onConfirm={() =>
+                            this.actionOnUserHandler(item._id, 'suspend_user')
+                          }
                           onCancel={this.suspendModalClose}
                           showLoaderOnConfirm={true}
                           confirmButtonText="Suspend"

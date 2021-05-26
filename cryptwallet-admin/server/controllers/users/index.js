@@ -1,3 +1,5 @@
+const { Types } = require('mongoose');
+const { ObjectId } = Types;
 const User = require('../../models/user');
 
 module.exports = {
@@ -89,17 +91,15 @@ module.exports = {
         });
       }
       const { userId } = req.body;
+      console.log({ userId });
       const suspendedUser = await User.findOneAndUpdate(
-        { _id: userId },
-        { suspended: true },
-        {
-          new: true,
-        },
+        { _id: ObjectId(userId) },
+        { $set: { suspended: true } },
       );
+      console.log({ suspendedUser });
       if (!suspendedUser)
         return res.status(400).json({ message: "user doesn't exist!" });
-
-      res.status(200).json({ message: 'User suspended successfully' });
+      else res.status(200).json({ message: 'User suspended successfully' });
     } catch (error) {
       res.status(400).json({ message: 'ERROR WHILE ADDING USER', error });
     }
@@ -122,8 +122,7 @@ module.exports = {
       );
       if (!deletedUser)
         return res.status(400).json({ message: "user doesn't exist!" });
-
-      res.status(200).json({ message: 'User deleted successfully' });
+      else res.status(200).json({ message: 'User deleted successfully' });
     } catch (error) {
       res.status(400).json({ message: 'ERROR WHILE ADDING USER', error });
     }
@@ -145,10 +144,67 @@ module.exports = {
       );
       if (!pendingEmail)
         return res.status(400).json({ message: "user doesn't exist!" });
-
-      res.status(200).json({ message: 'User activated successfully' });
+      else res.status(200).json({ message: 'User activated successfully' });
     } catch (error) {
       res.status(400).json({ message: 'ERROR WHILE ADDING USER', error });
+    }
+  },
+  async userProfile(req, res) {
+    try {
+      if (!req.body.userId) {
+        return res.status(400).json({
+          message: 'UserId  is required',
+        });
+      }
+      const { userId } = req.body;
+      const userProfile = await User.findById(ObjectId(userId));
+      if (!userProfile)
+        return res.status(400).json({ message: "user doesn't exist!" });
+      else res.status(200).json({ user: userProfile });
+    } catch (error) {
+      res.status(400).json({ message: 'ERROR WHILE ADDING USER', error });
+    }
+  },
+  async userProfileUpdate(req, res) {
+    try {
+      if (!req.body.userId) {
+        return res.status(400).json({
+          message: 'UserId  is required',
+        });
+      }
+      const { userId } = req.body;
+      console.log({ userId });
+      const suspendedUser = await User.findOneAndUpdate(
+        { _id: ObjectId(userId) },
+        { $set: { suspended: true } },
+      );
+      console.log({ suspendedUser });
+      if (!suspendedUser)
+        return res.status(400).json({ message: "user doesn't exist!" });
+      else res.status(200).json({ message: 'User updated successfully' });
+    } catch (error) {
+      res.status(400).json({ message: 'ERROR WHILE UPDATING USER', error });
+    }
+    profileUpdate;
+  },
+  async profileUpdate(req, res) {
+    try {
+      if (!req.body.userId) {
+        return res.status(400).json({
+          message: 'UserId  is required',
+        });
+      }
+      const { userId, firstName, lastName, phone, country } = req.body;
+
+      const profileUpdated = await User.findOneAndUpdate(
+        { _id: ObjectId(userId) },
+        { $set: { firstName, lastName, phone, country } },
+      );
+      if (!profileUpdated)
+        return res.status(400).json({ message: "user doesn't exist!" });
+      else res.status(200).json({ message: 'User updated successfully' });
+    } catch (error) {
+      res.status(400).json({ message: 'ERROR WHILE UPDATING USER', error });
     }
   },
 };

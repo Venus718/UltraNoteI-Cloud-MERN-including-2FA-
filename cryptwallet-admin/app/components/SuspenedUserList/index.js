@@ -28,6 +28,7 @@ import edit from 'images/icon/edit.svg';
 import blockUser from 'images/icon/block-user.svg';
 import active from 'images/icon/tabs/active.svg';
 import wallet from 'images/icon/wallet.svg';
+import { clientHttp } from '../../utils/services/httpClient';
 
 const searchingFor = search => user =>
   user.firstName.toLowerCase().includes(search.toLowerCase()) || !search;
@@ -85,7 +86,24 @@ class SuspenedUserList extends Component {
       active: false,
     });
   };
+  componentDidMount() {
+    this.userList();
+  }
 
+  userList = async () => {
+    try {
+      const response = await clientHttp.post('/users/suspended_user');
+      const userList = response.data.users;
+      console.log(userList);
+      this.setState({
+        pageOfItems: userList,
+      });
+    } catch (err) {
+      this.setState({
+        pageOfItems: [],
+      });
+    }
+  };
   render() {
     return (
       <Fragment>
@@ -133,17 +151,17 @@ class SuspenedUserList extends Component {
                       <TableCell>
                         <ul className="activityList">
                           <li>
-                            <Link to={`/user-profile/${item.id}`}>
+                            <Link to={`/user-profile/${item._id}`}>
                               <img src={view} alt="" />
                             </Link>
                           </li>
                           <li>
-                            <Link to={`/user-profile-edit/${item.id}`}>
+                            <Link to={`/user-profile-edit/${item._id}`}>
                               <img src={edit} alt="" />
                             </Link>
                           </li>
                           <li>
-                            <Link to={`/user-wallet-list/${item.id}`}>
+                            <Link to={`/user-wallet-list/${item._id}`}>
                               <img src={wallet} alt="" />
                             </Link>
                           </li>
@@ -160,7 +178,7 @@ class SuspenedUserList extends Component {
                           html
                           text="Do you want to delete ?"
                           type="error"
-                          onConfirm={() => this.deleteCartHandler(item.id)}
+                          onConfirm={() => this.deleteCartHandler(item._id)}
                           onCancel={this.deleteModalClose}
                           showCancelButton={true}
                           showLoaderOnConfirm={true}
@@ -172,7 +190,7 @@ class SuspenedUserList extends Component {
                           html
                           text="Do you want to  active ?"
                           type="success"
-                          onConfirm={() => this.activeCartHandler(item.id)}
+                          onConfirm={() => this.activeCartHandler(item._id)}
                           onCancel={this.activeModalClose}
                           showCancelButton={true}
                           showLoaderOnConfirm={true}

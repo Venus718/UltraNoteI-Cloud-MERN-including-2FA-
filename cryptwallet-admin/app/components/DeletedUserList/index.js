@@ -27,6 +27,7 @@ import view from 'images/icon/view.svg';
 import active from 'images/icon/tabs/active.svg';
 import edit from 'images/icon/edit.svg';
 import wallet from 'images/icon/wallet.svg';
+import { clientHttp } from '../../utils/services/httpClient';
 
 const searchingFor = search => user =>
   user.firstName.toLowerCase().includes(search.toLowerCase()) || !search;
@@ -65,6 +66,24 @@ class DeletedUserList extends Component {
     });
   };
 
+  componentDidMount() {
+    this.userList();
+  }
+
+  userList = async () => {
+    try {
+      const response = await clientHttp.post('/users/deleted_user');
+      const userList = response.data.users;
+      console.log(userList);
+      this.setState({
+        pageOfItems: userList,
+      });
+    } catch (err) {
+      this.setState({
+        pageOfItems: [],
+      });
+    }
+  };
   render() {
     return (
       <Fragment>
@@ -112,17 +131,17 @@ class DeletedUserList extends Component {
                       <TableCell>
                         <ul className="activityList">
                           <li>
-                            <Link to={`/user-profile/${item.id}`}>
+                            <Link to={`/user-profile/${item._id}`}>
                               <img src={view} alt="" />
                             </Link>
                           </li>
                           <li>
-                            <Link to={`/user-profile-edit/${item.id}`}>
+                            <Link to={`/user-profile-edit/${item._id}`}>
                               <img src={edit} alt="" />
                             </Link>
                           </li>
                           <li>
-                            <Link to={`/user-wallet-list/${item.id}`}>
+                            <Link to={`/user-wallet-list/${item._id}`}>
                               <img src={wallet} alt="" />
                             </Link>
                           </li>
@@ -136,7 +155,7 @@ class DeletedUserList extends Component {
                           html
                           text="Do you want to  active ?"
                           type="success"
-                          onConfirm={() => this.activeCartHandler(item.id)}
+                          onConfirm={() => this.activeCartHandler(item._id)}
                           onCancel={this.activeModalClose}
                           showCancelButton={true}
                           showLoaderOnConfirm={true}
