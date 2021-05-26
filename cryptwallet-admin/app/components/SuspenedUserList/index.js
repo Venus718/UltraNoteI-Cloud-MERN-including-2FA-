@@ -36,7 +36,7 @@ const searchingFor = search => user =>
 class SuspenedUserList extends Component {
   state = {
     search: '',
-    pageOfItems: [],
+    suspendedUsers: [],
     delete: false,
     active: false,
   };
@@ -46,23 +46,23 @@ class SuspenedUserList extends Component {
     });
   };
   deleteCartHandler = id => {
-    let userList = this.state.pageOfItems.filter(item => item.id !== id);
+    let userList = this.state.suspendedUsers.filter(item => item.id !== id);
     this.setState({
-      pageOfItems: userList,
+      suspendedUsers: userList,
       delete: false,
     });
     toast.success('user delete successfully');
   };
   activeCartHandler = id => {
-    let userList = this.state.pageOfItems.filter(item => item.id !== id);
+    let userList = this.state.suspendedUsers.filter(item => item.id !== id);
     this.setState({
-      pageOfItems: userList,
+      suspendedUsers: userList,
       active: false,
     });
     toast.success('user active successfully');
   };
-  onChangePage = pageOfItems => {
-    this.setState({ pageOfItems: pageOfItems });
+  onChangePage = suspendedUsers => {
+    this.setState({ suspendedUsers });
   };
 
   deleteModalShow = () => {
@@ -96,11 +96,11 @@ class SuspenedUserList extends Component {
       const userList = response.data.users;
       console.log(userList);
       this.setState({
-        pageOfItems: userList,
+        suspendedUsers: userList,
       });
     } catch (err) {
       this.setState({
-        pageOfItems: [],
+        suspendedUsers: [],
       });
     }
   };
@@ -140,14 +140,16 @@ class SuspenedUserList extends Component {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {this.state.pageOfItems
+                {this.state.suspendedUsers
                   .filter(searchingFor(this.state.search))
                   .map((item, i) => (
                     <TableRow key={i}>
                       <TableCell>{item.firstName}</TableCell>
                       <TableCell>{item.lastName}</TableCell>
                       <TableCell>{item.mail}</TableCell>
-                      <TableCell>{item.updatedAt}</TableCell>
+                      <TableCell>
+                        {new Date(item.updatedAt).toDateString()}
+                      </TableCell>
                       <TableCell>
                         <ul className="activityList">
                           <li>
@@ -205,7 +207,7 @@ class SuspenedUserList extends Component {
         </Grid>
         <Pagination
           rowShow={5}
-          items={userList}
+          items={this.suspendedUsers}
           onChangePage={this.onChangePage}
         />
       </Fragment>

@@ -17,8 +17,6 @@ import Pagination from 'components/Pagination';
 import SweetAlert from 'sweetalert-react';
 import { toast } from 'react-toastify';
 import 'sweetalert/dist/sweetalert.css';
-// json data
-import userList from 'utils/json/userlist';
 
 // images
 import deleteUser from 'images/icon/delete-user.svg';
@@ -36,7 +34,7 @@ const searchingFor = search => user =>
 class UserList extends Component {
   state = {
     search: '',
-    pageOfItems: [],
+    users: [],
     delete: false,
     suspend: false,
   };
@@ -46,8 +44,8 @@ class UserList extends Component {
     });
   };
 
-  onChangePage = pageOfItems => {
-    this.setState({ pageOfItems: pageOfItems });
+  onChangePage = users => {
+    this.setState({ users });
   };
 
   deleteModalShow = () => {
@@ -82,11 +80,11 @@ class UserList extends Component {
       const userList = response.data.users;
       console.log(userList);
       this.setState({
-        pageOfItems: userList,
+        users: userList,
       });
     } catch (err) {
       this.setState({
-        pageOfItems: [],
+        users: [],
       });
     }
   };
@@ -140,14 +138,16 @@ class UserList extends Component {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {this.state.pageOfItems
+                {this.state.users
                   .filter(searchingFor(this.state.search))
                   .map((item, i) => (
                     <TableRow key={i}>
                       <TableCell>{item.firstName}</TableCell>
                       <TableCell>{item.lastName}</TableCell>
                       <TableCell>{item.mail}</TableCell>
-                      <TableCell>{item._id}</TableCell>
+                      <TableCell>
+                        {new Date(item.updatedAt).toDateString()}
+                      </TableCell>
                       <TableCell>
                         <ul className="activityList">
                           <li>
@@ -209,7 +209,7 @@ class UserList extends Component {
         </Grid>
         <Pagination
           rowShow={5}
-          items={userList}
+          items={this.users}
           onChangePage={this.onChangePage}
         />
       </Fragment>

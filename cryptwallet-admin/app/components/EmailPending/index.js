@@ -35,7 +35,7 @@ const searchingFor = search => user =>
 class EmailPending extends Component {
   state = {
     search: '',
-    pageOfItems: [],
+    pendingUsers: [],
     delete: false,
     active: false,
   };
@@ -45,23 +45,23 @@ class EmailPending extends Component {
     });
   };
   deleteCartHandler = id => {
-    let userList = this.state.pageOfItems.filter(item => item.id !== id);
+    let userList = this.state.pendingUsers.filter(item => item.id !== id);
     this.setState({
-      pageOfItems: userList,
+      pendingUsers: userList,
       delete: false,
     });
     toast.success('user delete successfully');
   };
   activeCartHandler = id => {
-    let userList = this.state.pageOfItems.filter(item => item.id !== id);
+    let userList = this.state.pendingUsers.filter(item => item.id !== id);
     this.setState({
-      pageOfItems: userList,
+      pendingUsers: userList,
       active: false,
     });
     toast.success('user active successfully');
   };
-  onChangePage = pageOfItems => {
-    this.setState({ pageOfItems: pageOfItems });
+  onChangePage = pendingUsers => {
+    this.setState({ pendingUsers });
   };
 
   deleteModalShow = () => {
@@ -95,11 +95,11 @@ class EmailPending extends Component {
       const userList = response.data.users;
       console.log(userList);
       this.setState({
-        pageOfItems: userList,
+        pendingUsers: userList,
       });
     } catch (err) {
       this.setState({
-        pageOfItems: [],
+        pendingUsers: [],
       });
     }
   };
@@ -139,14 +139,16 @@ class EmailPending extends Component {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {this.state.pageOfItems
+                {this.state.pendingUsers
                   .filter(searchingFor(this.state.search))
                   .map((item, i) => (
                     <TableRow key={i}>
                       <TableCell>{item.firstName}</TableCell>
                       <TableCell>{item.lastName}</TableCell>
                       <TableCell>{item.mail}</TableCell>
-                      <TableCell>{item.updatedAt}</TableCell>
+                      <TableCell>
+                        {new Date(item.updatedAt).toDateString()}
+                      </TableCell>
                       <TableCell>
                         <ul className="activityList">
                           <li>
@@ -199,7 +201,7 @@ class EmailPending extends Component {
         </Grid>
         <Pagination
           rowShow={5}
-          items={userList}
+          items={this.pendingUsers}
           onChangePage={this.onChangePage}
         />
       </Fragment>

@@ -20,6 +20,8 @@ const { resolve } = require('path');
 const app = express();
 const apiRoute = require('./routes/auth');
 const usersRoute = require('./routes/users');
+const walletsRoute = require('./routes/wallets');
+const dashboardRoute = require('./routes/dashboard');
 
 // If you need a backend, e.g. an API, add your custom backend-specific middleware here
 // app.use('/api', myApi);
@@ -37,6 +39,8 @@ app.use(BodyParser.urlencoded({ limit: '50mb', extended: true }));
 //routing
 app.use('/api', apiRoute);
 app.use('/api/users', usersRoute);
+app.use('/api/wallets', walletsRoute);
+app.use('/api/dashboard', dashboardRoute);
 
 // get the intended host and port number, use localhost and port 3000 if not provided
 const customHost = argv.host || process.env.HOST;

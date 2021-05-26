@@ -35,7 +35,7 @@ const searchingFor = search => user =>
 class DeletedUserList extends Component {
   state = {
     search: '',
-    pageOfItems: [],
+    deletedUsers: [],
     active: false,
   };
   changeHandler = e => {
@@ -44,15 +44,15 @@ class DeletedUserList extends Component {
     });
   };
   activeCartHandler = id => {
-    let userList = this.state.pageOfItems.filter(item => item.id !== id);
+    let userList = this.state.deletedUsers.filter(item => item.id !== id);
     this.setState({
-      pageOfItems: userList,
+      deletedUsers: userList,
       active: false,
     });
     toast.success('user active successfully');
   };
-  onChangePage = pageOfItems => {
-    this.setState({ pageOfItems: pageOfItems });
+  onChangePage = deletedUsers => {
+    this.setState({ deletedUsers });
   };
 
   activeModalShow = () => {
@@ -76,11 +76,11 @@ class DeletedUserList extends Component {
       const userList = response.data.users;
       console.log(userList);
       this.setState({
-        pageOfItems: userList,
+        deletedUsers: userList,
       });
     } catch (err) {
       this.setState({
-        pageOfItems: [],
+        deletedUsers: [],
       });
     }
   };
@@ -120,14 +120,16 @@ class DeletedUserList extends Component {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {this.state.pageOfItems
+                {this.state.deletedUsers
                   .filter(searchingFor(this.state.search))
                   .map((item, i) => (
                     <TableRow key={i}>
                       <TableCell>{item.firstName}</TableCell>
                       <TableCell>{item.lastName}</TableCell>
                       <TableCell>{item.mail}</TableCell>
-                      <TableCell>{item.updatedAt}</TableCell>
+                      <TableCell>
+                        {new Date(item.updatedAt).toDateString()}
+                      </TableCell>
                       <TableCell>
                         <ul className="activityList">
                           <li>
@@ -170,7 +172,7 @@ class DeletedUserList extends Component {
         </Grid>
         <Pagination
           rowShow={5}
-          items={userList}
+          items={this.deletedUsers}
           onChangePage={this.onChangePage}
         />
       </Fragment>

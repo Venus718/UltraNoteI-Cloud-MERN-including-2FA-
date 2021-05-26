@@ -10,12 +10,12 @@ import featured1 from 'images/icon/featured/icon1.svg';
 import featured2 from 'images/icon/featured/icon2.svg';
 import featured3 from 'images/icon/featured/icon3.svg';
 
-const Featured = props => {
+const Featured = ({ companyProfit, totalUser }) => {
   const featureds = [
     {
       icon: featured1,
       title: 'Company Profit',
-      value: '254548.15 $',
+      value: `${companyProfit} $`,
       percent: '80',
       bgColor: 'linear-gradient(240.95deg, #7BEAFE 0%, #1C8CFA 100%)',
       link: '/withdrawal-history',
@@ -24,7 +24,7 @@ const Featured = props => {
     {
       icon: featured3,
       title: 'Total User',
-      value: '8751',
+      value: totalUser,
       bgColor:
         'linear-gradient(360deg, rgba(98, 88, 251, 0.9) 0.75%, rgba(134, 126, 255, 0.9) 100%)',
       link: '/user',
