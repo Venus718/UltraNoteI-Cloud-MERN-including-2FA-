@@ -84,13 +84,13 @@ const Routes = () => {
         exact
         path="/user-wallets"
         component={WalletList}
-        titles={['Crypt wallet', 'User wallets']}
+        titles={['UltraNote Cloud', 'User wallets']}
       />
       <PrivateRoute
         exact
         path="/all-transaction/:id"
         component={AllTransaction}
-        titles={['Crypt wallet', 'All transaction']}
+        titles={['UltraNote Cloud', 'All transaction']}
       />
       <PrivateRoute
         exact
