@@ -160,7 +160,7 @@ class LoginPage extends Component {
                   <span>UltraNote Cloud</span>
                 </div>
 
-                <p>Manage Users, and walets with Admin Panel StUltraNote</p>
+                <p>Manage users and walets with admin panel</p>
               </Grid>
             </Grid>
             <Grid item lg={6} xs={12}>
