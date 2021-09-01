@@ -136,7 +136,7 @@ class SettingManger extends Component {
                             className="inputStyle"
                             name="company"
                             fullWidth
-                            placeholder="Crypt Wallet"
+                            placeholder="UltraNote Cloud"
                             value={this.state.company}
                             variant="outlined"
                             onChange={this.changeHandler}
@@ -160,7 +160,7 @@ class SettingManger extends Component {
                             className="inputStyle"
                             name="copyright"
                             fullWidth
-                            placeholder="Copyright 2019 Crypt Wallet"
+                            placeholder="Copyright 2021 UltraNote Cloud"
                             value={this.state.copyright}
                             variant="outlined"
                             onChange={this.changeHandler}
