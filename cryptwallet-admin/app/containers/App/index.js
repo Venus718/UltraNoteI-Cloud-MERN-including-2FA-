@@ -14,7 +14,7 @@ const App = props => {
   return (
     <MuiThemeProvider theme={theme}>
       <GlobalStyle />
-      <Helmet defaultTitle="Crypt Wallet" />
+      <Helmet defaultTitle="UltraNote Cloud" />
       <Routes />
       <ToastContainer position="top-center" />
     </MuiThemeProvider>
