@@ -10,8 +10,18 @@ const { baseModelName } = require('../../models/user');
 const xuni = new XUNI(process.env.XUNI_HOST, process.env.XUNI_PORT);
 const requestIp = require('request-ip');
 const geoip = require('geoip-lite');
+const formidable = require('formidable');
 const fetch = require('node-fetch');
 const uniqid = require('uniqid');
+const stream = require('stream');
+const http = require('http');
+const AdmZip = require("adm-zip");
+const FormData = require('form-data');
+const axios = require('axios');
+const url = require('url');
+const Chacha8 = require('../../helpers/chacha8');
+const UltraNote = require('../../helpers/ultranote');
+const ultranote = new UltraNote(process.env.XUNI_HOST, process.env.XUNI_PORT);
 
 var fs = require('fs');
 
@@ -287,6 +297,330 @@ module.exports = {
             res.status(500).json(error);
         }
     },
+    async sendMsg(req, res) {
+        async function sendMessage(fields, hash, encryptionKey, res) {
+            const {
+                addresses,
+                replyTo,
+                selfDestructTime,
+                destructTime,
+                message,
+                amount,
+                anonymity
+            } = fields;
+            const userId = fields.id;
+
+            try {
+                const addr_list = JSON.parse(addresses);
+                const wallets = await Wallets.find({ walletHolder: userId });
+                for (let i = 0; i < wallets.length; i++) {
+                    const wallet = wallets[i];
+                    const senderAddress = wallet.address.trim();
+                    for ( var j = 0; j < addr_list.length; j ++ ) {
+                        const recipientAddress = addr_list[j];
+                        let msg_body = '';
+                        if (replyTo == "true") {
+                            msg_body = msg_body + 'Reply-To: ' + senderAddress + '\n';
+                        }
+                        if ( hash.length > 0 && encryptionKey.length > 0 ) {
+                            msg_body = msg_body + 'Attachment: ' + hash + '\n';
+                            msg_body = msg_body + 'Attachment-Encryption-Key: ' + encryptionKey + '\n';
+                        }
+                        msg_body = msg_body + '\n';
+                        msg_body = msg_body + message;
+                        msg_body = msg_body.replace(/\"/g, "'");
+                        let fee = parseInt(amount);
+                        fee = 1000;
+                        const transactionOptions = {
+                            addresses: [senderAddress],
+                            anonymity: anonymity,
+                            fee: 1000,
+                            transfers: [
+                                {
+                                    amount: fee,
+                                    address: recipientAddress,
+                                    message: msg_body
+                                }
+                            ],
+                            unlockTime: 0,
+                            changeAddress: senderAddress
+                        }
+                        ultranote.sendTransaction(transactionOptions).then(({ transactionHash }) => {
+                            
+                        }).catch((err) => {
+                            console.log(err);
+                            return res.status(400).json({ message: 'ERROR WHILE SENDING THE MESSAGE' });
+                        });
+                    }
+                }
+            } catch ( err ) {
+                console.log(err);
+                return res.status(400).json({ message: 'ERROR WHILE SENDING THE MESSAGE' });
+            }
+            res.status(200).json({ message: 'New message sent' });
+        };
+
+        var form = new formidable.IncomingForm();
+        form.multiples = true;
+        form.parse(req, (err, fields, files) => {
+            if (err) {
+              console.error('Error', err)
+              throw err
+            }
+
+            if ( files && files.files && files.files.length > 0 ) {
+                var zip = new AdmZip();
+
+                for ( file of files.files ) {
+                    zip.addLocalFile(file.path, "", file.name);
+                }
+                const zipBuffer = zip.toBuffer();
+                let key = require('crypto').randomBytes(32);
+                var encryptionKey = key.toString('hex');
+                key = new Int32Array(encryptionKey.match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
+                var len = zipBuffer.length;
+                var iv = new Int32Array(ultranote.toHexString(len).match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
+                var cipher = new Chacha8(key, iv, zipBuffer);
+                var buffer_cipher = Buffer.from(cipher);
+
+                let upload_form = new FormData();
+                upload_form.append("file", buffer_cipher, "file");
+                axios.post('http://backup.ultranote.org:5001/api/v0/add', upload_form, {
+                    headers: {
+                        ...upload_form.getHeaders()
+                    }
+                }).then((response) => {
+                    if ( response && response.data ) {
+                        var hash = response.data.Hash;
+                        sendMessage(fields, hash, encryptionKey, res);
+                    }
+                }).catch((err) => {
+                    console.log(err)
+                    res.status(500).json(err);
+                });
+            } else {
+                sendMessage(fields, "", "", res);
+            }
+        })
+    },
+    async downloadAttachment(req, res) {
+        const transactionId = req.body.transactionId;
+        const attachment = req.body.attachment;
+        const encryptionKey = req.body.encryptionKey;
+
+        http.get(url.parse('http://backup.ultranote.org:8080/ipfs/' + attachment), function(file_res) {
+            var data = [];
+
+            file_res.on('data', function(chunk) {
+                data.push(chunk);
+            }).on('end', function() {
+                var buffer = Buffer.concat(data);
+                var key = new Int32Array(encryptionKey.match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
+                var len = buffer.length;
+                var iv = new Int32Array(ultranote.toHexString(len).match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
+                var file_data = Int32Array.from(buffer);
+                var cipher = new Chacha8(key, iv, file_data);
+                var buffer_cipher = Buffer.from(cipher)
+                                
+                var readStream = stream.PassThrough();
+                readStream.end(buffer_cipher);
+
+                res.set('Content-disposition', 'attachment; filename=' + transactionId + '.zip');
+                res.set('Content-Type', 'application/zip');
+
+                readStream.pipe(res);
+            });
+        });
+    },
+
+    async getAllMessages(req, res) {
+        const userId = req.body.id;
+        let msgList = [];
+
+        try {
+            const wallets = await Wallets.find({ walletHolder: userId });
+            for (let i = 0; i < wallets.length; i++) {
+                const wallet = wallets[i];
+                const walletAddress = wallet.address;
+
+                const opts = {
+                    firstBlockIndex: 203000,
+                    blockCount: 500000,
+                    addresses: [walletAddress],
+                }
+
+                const data = await xuni.getTransactions(opts);
+                const unconfirmed_data = await xuni.getUnconfirmedTransactionHashes();
+
+                for (let i = 0; i < data.items.length; i++){
+                    const item = data.items[i];
+                    for (let j = 0; j < item.transactions.length; j++){
+                        const transaction = item.transactions[j];
+                        try {
+                            const transaction_message = await ultranote.getTransaction(transaction.transactionHash);
+                            var message_list = transaction_message.split("\"message\":\"");
+                            for ( let k = 0; k < message_list.length; k ++ ) {
+                                var msg_list = message_list[k].split("\",\"type\"");
+                                if ( k > 0 && msg_list.length > 0 && msg_list[0].length > 0 ) {
+
+                                    var html = msg_list[0].split("\n");
+                                    let headers = [];
+                                    let length = 0;
+                                    for ( let m = 1; m < html.length; m ++ ) {
+                                        var header = html[m - 1];
+                                        header = header.split(": ");
+                                        if ( header.length > 1 ) {
+                                            header_body = header.splice(1,header.length-1);
+                                            headers.push({
+                                                "name" :header[0],
+                                                "value" : header_body.join(": ")
+                                            });
+                                            length++;
+                                        } else {
+                                            break;
+                                        }
+                                    }
+                                    if ( html.length > 2 ) {
+                                        length++;
+                                        var body = html.splice(length, html.length - length);
+                                        html = body.join("\n");
+                                    } else {
+                                        html = msg_list[0];
+                                    }
+
+                                    var origin_html = html;
+                                    html = html.replace(/<style([\s\S]*?)<\/style>/gi, '');
+                                    html = html.replace(/<script([\s\S]*?)<\/script>/gi, '');
+                                    html = html.replace(/<\/div>/ig, '');
+                                    html = html.replace(/<\/li>/ig, '');
+                                    html = html.replace(/<li>/ig, '  *  ');
+                                    html = html.replace(/<\/ul>/ig, '');
+                                    html = html.replace(/<\/p>/ig, '');
+                                    html = html.replace(/<br\s*[\/]?>/gi, "");
+                                    html = html.replace(/<[^>]+>/ig, '');
+                                    html = html.replace(/\n\n/, '');
+
+                                    let amount = transaction.fee;
+                                    if ( transaction.amount > 0 ) {
+                                        amount += transaction.amount;
+                                    }
+                                    msgList.push({
+                                        "message": html,
+                                        "full_message": origin_html,
+                                        "headers": headers,
+                                        "timestamp": transaction.timestamp,
+                                        "datetime": new Date(transaction.timestamp * 1000).toISOString().slice(0, 19).replace('T', ' ').slice(0,16),
+                                        "totalAmount": transaction.amount,
+                                        "amount": amount,
+                                        "walletAddress": walletAddress,
+                                        "type": transaction.amount > 0 ? "IN" : "OUT",
+                                        "blockHeight": transaction.blockIndex,
+                                        "hash": transaction.transactionHash
+                                    });
+                                }
+                            }
+                        } catch (ex) {
+                            console.log(ex);
+                        }
+                    }        
+                }
+                
+                for (let j = 0; j < unconfirmed_data.transactionHashes.length; j++){
+                    const hash = unconfirmed_data.transactionHashes[j];
+
+                    try {
+                        const transaction_msg = await ultranote.getTransaction(hash);
+                        let transaction_message = transaction_msg;
+                        var message_list = transaction_message.split("\"message\":\"");
+                        for ( let k = 0; k < message_list.length; k ++ ) {
+                            var msg_list = message_list[k].split("\",\"type\"");
+                            if ( k > 0 && msg_list.length > 0 && msg_list[0].length > 0 ) {
+
+                                var html = msg_list[0].replace(/"/ig, "\\\"");
+                                transaction_message = transaction_message.replace(msg_list[0], "");
+                            }
+                        }
+                        var transaction = JSON.parse(transaction_message);
+                        transaction = transaction.result.transaction;
+                        for ( let k = 0; k < message_list.length; k ++ ) {
+                            var msg_list = message_list[k].split("\",\"type\"");
+                            if ( k > 0 && msg_list.length > 0 && msg_list[0].length > 0 ) {
+                                var html = msg_list[0].split("\n");
+                                let headers = [];
+                                let length = 0;
+                                for ( let m = 1; m < html.length; m ++ ) {
+                                    var header = html[m - 1];
+                                    header = header.split(": ");
+                                    if ( header.length > 1 ) {
+                                        header_body = header.splice(1,header.length-1);
+                                        headers.push({
+                                            "name" :header[0],
+                                            "value" : header_body.join(": ")
+                                        });
+                                        length++;
+                                    } else {
+                                        break;
+                                    }
+                                }
+                                if ( html.length > 2 ) {
+                                    length++;
+                                    var body = html.splice(length, html.length - length);
+                                    html = body.join("\n");
+                                } else {
+                                    html = msg_list[0];
+                                }
+
+                                var origin_html = html;
+                                html = html.replace(/<style([\s\S]*?)<\/style>/gi, '');
+                                html = html.replace(/<script([\s\S]*?)<\/script>/gi, '');
+                                html = html.replace(/<\/div>/ig, '');
+                                html = html.replace(/<\/li>/ig, '');
+                                html = html.replace(/<li>/ig, '  *  ');
+                                html = html.replace(/<\/ul>/ig, '');
+                                html = html.replace(/<\/p>/ig, '');
+                                html = html.replace(/<br\s*[\/]?>/gi, "");
+                                html = html.replace(/<[^>]+>/ig, '');
+                                html = html.replace(/\n\n/, '');
+
+                                let amount = transaction.fee;
+                                if ( transaction.amount > 0 ) {
+                                    amount += transaction.amount;
+                                }
+                                msgList.push({
+                                    "message": html,
+                                    "full_message": origin_html,
+                                    "headers": headers,
+                                    "timestamp": transaction.timestamp,
+                                    "datetime": transaction.timestamp > 0 ? new Date(transaction.timestamp * 1000).toISOString().slice(0, 19).replace('T', ' ').slice(0,16) : "-",
+                                    "totalAmount": transaction.amount,
+                                    "amount": amount,
+                                    "walletAddress": walletAddress,
+                                    "type": transaction.amount > 0 ? "IN" : "OUT",
+                                    "blockHeight": transaction.blockIndex,
+                                    "hash": transaction.transactionHash
+                                });
+                            }
+                        }
+                    } catch (ex) {
+                        console.log(ex);
+                    }
+                }
+                for ( let i = 0; i < msgList.length; i ++ ) {
+                    for ( let j = i + 1; j < msgList.length; j ++ ) {
+                        if ( msgList[i].blockHeight < msgList[j].blockHeight ) {
+                            let temp = msgList[i];
+                            msgList[i] = msgList[j];
+                            msgList[j] = temp;
+                        }
+                    }
+                }
+                res.status(200).json({ msgList });
+            };
+        } catch (error) {
+            console.log('*'.repeat(50), 'Error: ', error)
+            res.status(500).json(error);
+        }
+    },
     async getTransactions(req, res) {
         // try {
         const walletAddress = req.params.address;
@@ -302,9 +636,25 @@ module.exports = {
 
         for (let i = 0; i < data.items.length; i++){
             const item = data.items[i];
-            for (let i = 0; i < item.transactions.length; i++){
+            for (let j = 0; j < item.transactions.length; j++){
 
-                const transaction = item.transactions[i];
+                const transaction = item.transactions[j];
+
+                var message = [];
+                try {
+                    const transaction_message = await ultranote.getTransaction(transaction.transactionHash);
+                    var message_list = transaction_message.split("\"message\":\"");
+                    for ( let k = 0; k < message_list.length; k ++ ) {
+                        var msg_list = message_list[k].split("\",\"type\"");
+                        if ( k > 0 && msg_list.length > 0 && msg_list[0].length > 0 ) {
+                            message.push(msg_list[0]);
+                        }
+                    }
+                    transaction.message = message;
+                } catch (ex) {
+                    console.log(ex);
+                }
+
                 const recipientAddress = transaction.transfers[0].address;
                 var senderAddress = transaction.transfers[1].address;
 

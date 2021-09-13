@@ -20,6 +20,7 @@ import {
 import Grid from '@material-ui/core/Grid';
 import { Button, Typography } from '@material-ui/core';
 
+import cookie from 'js-cookie';
 import injectSaga from 'utils/injectSaga';
 import injectReducer from 'utils/injectReducer';
 import makeSelectDashboardPage from './selectors';
@@ -184,7 +185,7 @@ export class DashboardPage extends React.Component {
                   style={{
                     data: { fill: '#DFF3FF', stroke: '#DFF3FF' },
                   }}
-                  data={deposite}
+                  data={this.state.deposite}
                   x="month"
                   y={d => d.actual}
                 />
@@ -194,7 +195,7 @@ export class DashboardPage extends React.Component {
                   style={{
                     data: { fill: '#5E55E6', stroke: '#5E55E6' },
                   }}
-                  data={withDraw}
+                  data={this.state.withDraw}
                   x="month"
                   y={d => d.actual}
                 />

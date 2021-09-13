@@ -8,7 +8,8 @@ const INITIAL_STATE = {
     usdUnconfirmedBalance: 0,
     selectedWallet: {},
     transactions: {deposit: [], withdraw: []},
-    error: null
+    error: null,
+    messages: []
 };
 
 
@@ -36,6 +37,15 @@ const walletReducer = (state = INITIAL_STATE, action) => {
                 usdAvailabeBalance,
                 usdUnconfirmedBalance,
                 wallets: fetchedWallets
+            };
+        case WalletTypes.GET_ALL_MESSAGES_SUCCESS:
+            return {
+                ...state,
+                messages: action.payload.msgList
+            };
+        case WalletTypes.SEND_MSG_SUCCESS:
+            return {
+                ...state,
             };
         case WalletTypes.GET_TRANSACTIONS_BY_WALLET_SUCCESS:
             return {

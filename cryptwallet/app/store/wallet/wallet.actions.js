@@ -46,7 +46,35 @@ export const getWalletSuccess = (payload) => ({
     payload
 });
 
+export const getMessageStart = (payload) => ({
+    type: WalletTypes.GET_ALL_MESSAGES,
+    payload
+});
 
+export const getMessageSuccess = (payload) => ({
+    type: WalletTypes.GET_ALL_MESSAGES_SUCCESS,
+    payload
+})
+
+export const downloadAttachmentStart = (payload) => ({
+    type: WalletTypes.DOWNLOAD_ATTACHMENT_START,
+    payload
+});
+
+export const downloadAttachmentSuccess = (payload) => ({
+    type: Wallet.DOWNLOAD_ATTACHMENT_SUCCESS,
+    payload
+});
+
+export const sendMsgStart = (payload) => ({
+    type: WalletTypes.SEND_MSG_START,
+    payload
+});
+
+export const sendMsgSuccess = (payload) => ({
+    type: WalletTypes.SEND_MSG_SUCCESS,
+    payload
+});
 
 export const getTransactionsByWalletAddressStart = (payload) => ({
     type: WalletTypes.GET_TRANSACTIONS_BY_WALLET,

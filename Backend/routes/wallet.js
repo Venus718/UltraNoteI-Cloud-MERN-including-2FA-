@@ -11,6 +11,9 @@ router
     .get('/status', walletCtr.getWalletStatus)
     .get('/balance/:address', walletCtr.getBalance)
     .post('/my-wallet', walletCtr.getAllWallets)
+    .post('/messages', walletCtr.getAllMessages)
+    .post('/attachment', walletCtr.downloadAttachment)
+    .post('/sendmsg', walletCtr.sendMsg)
 
 
 module.exports = router;
