@@ -392,7 +392,7 @@ module.exports = {
                 var zip = new AdmZip();
 
                 if ( files.files.length == undefined ) {
-                    zip.addLocalFile(file.files.path, "", file.files.name);
+                    zip.addLocalFile(files.files.path, "", files.files.name);
                 } else {
                     for ( file of files.files ) {
                         zip.addLocalFile(file.path, "", file.name);
