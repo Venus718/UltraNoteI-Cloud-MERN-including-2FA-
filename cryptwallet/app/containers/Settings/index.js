@@ -150,7 +150,7 @@ export class Settings extends React.Component {
         <Grid className="container">
           <Grid className="settingsBody">
             <Typography component="h4" className="section-title">
-              Google Authentication Settings
+              Mail Authentication Settings
             </Typography>
             <Grid className="setAuthentication">
               <Image src={AuthLock} />
@@ -162,8 +162,7 @@ export class Settings extends React.Component {
                     </Typography>
                     <Typography component="p">
                       Use the Authenticator app to get free verification codes,
-                      even when your phone is offline. Available for Android and
-                      iPhone.
+                      You will receive codes to your email address.
                     </Typography>
                     <Button type="submit" className="formSubmitBtn" disabled={this.props.connectedUser.two_fact_auth === this.state.checked}>
                       Set up
@@ -172,7 +171,7 @@ export class Settings extends React.Component {
                   <Grid item xs={12} md={6}>
                     <Typography className="subTitle">Security</Typography>
                     <Typography component="p">
-                      Please on this option to enable two factor authentication
+                      Please make sure to enable two factor authentication
                       at login.
                     </Typography>
                     <Grid className="swtichCheck">
