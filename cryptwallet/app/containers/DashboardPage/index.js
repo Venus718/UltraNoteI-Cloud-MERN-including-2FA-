@@ -20,7 +20,6 @@ import {
 import Grid from '@material-ui/core/Grid';
 import { Button, Typography } from '@material-ui/core';
 
-import cookie from 'js-cookie';
 import injectSaga from 'utils/injectSaga';
 import injectReducer from 'utils/injectReducer';
 import makeSelectDashboardPage from './selectors';
@@ -111,10 +110,10 @@ export class DashboardPage extends React.Component {
 
   render() {
 
-    const auth = cookie.get('Auth');
+    /*const auth = cookie.get('Auth');
     if (!auth) {
       return <Redirect to="/login" />;
-    }
+    }*/
 
     return (
       <Grid className="mainBody">

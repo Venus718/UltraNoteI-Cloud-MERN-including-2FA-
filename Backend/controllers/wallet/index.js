@@ -1,6 +1,7 @@
 const XUNI = require('ultranotei-api');
 const Wallets = require('../../models/wallet');
 const Transactions = require('../../models/transactions');
+const Messages = require('../../models/messages');
 const Wallet = require('../../models/wallet');
 const { compareSync } = require('bcrypt');
 const User = require('../../models/user');
@@ -345,8 +346,27 @@ module.exports = {
                             unlockTime: 0,
                             changeAddress: senderAddress
                         }
-                        ultranote.sendTransaction(transactionOptions).then(({ transactionHash }) => {
-                            
+                        ultranote.sendTransaction(transactionOptions).then(({ transactionHash, rpc_json }) => {
+                            const newMessage = {
+                                senderID: userId,
+                                senderAdress: senderAddress,
+                                recipientAdress: recipientAddress,
+                                createdAt: Date.now(),
+                                updatedAt: Date.now(),
+                                amount: amount,
+                                note: '',
+                                hash: transactionHash,
+                                anonymity: anonymity,
+                                message: msg_body,
+                                blockHeight: 0
+                            }
+                            console.log(newMessage);
+                            Messages.create(newMessage).then(() => {
+                                console.log('message created');
+                            }).catch((err) => {
+                                console.log(err);
+                                return res.status(400).json({ message: 'ERROR WHILE SAVING THE TRANSACTION IN THE DATABASE', err });
+                            });
                         }).catch((err) => {
                             console.log(err);
                             return res.status(400).json({ message: 'ERROR WHILE SENDING THE MESSAGE' });
@@ -457,7 +477,11 @@ module.exports = {
                     for (let j = 0; j < item.transactions.length; j++){
                         const transaction = item.transactions[j];
                         try {
-                            const transaction_message = await ultranote.getTransaction(transaction.transactionHash);
+                            let transaction_message = await ultranote.getTransaction(transaction.transactionHash);
+                            const db_msg = await Messages.findOne({hash: transaction.transactionHash});
+                            if ( db_msg && db_msg.message ) {
+                                transaction_message = "\"message\":\"" + db_msg.message + "\",\"type\":\"0\"";
+                            }
                             var message_list = transaction_message.split("\"message\":\"");
                             for ( let k = 0; k < message_list.length; k ++ ) {
                                 var msg_list = message_list[k].split("\",\"type\"");
@@ -529,7 +553,8 @@ module.exports = {
                     const hash = unconfirmed_data.transactionHashes[j];
 
                     try {
-                        const transaction_msg = await ultranote.getTransaction(hash);
+                        let transaction_msg = await ultranote.getTransaction(hash);
+                        const db_msg = await Messages.findOne({hash: hash});
                         let transaction_message = transaction_msg;
                         var message_list = transaction_message.split("\"message\":\"");
                         for ( let k = 0; k < message_list.length; k ++ ) {
@@ -542,6 +567,10 @@ module.exports = {
                         }
                         var transaction = JSON.parse(transaction_message);
                         transaction = transaction.result.transaction;
+                        if ( db_msg && db_msg.message ) {
+                            transaction_message = "\"message\":\"" + db_msg.message + "\",\"type\":\"0\"";
+                            message_list = transaction_message.split("\"message\":\"");
+                        }
                         for ( let k = 0; k < message_list.length; k ++ ) {
                             var msg_list = message_list[k].split("\",\"type\"");
                             if ( k > 0 && msg_list.length > 0 && msg_list[0].length > 0 ) {

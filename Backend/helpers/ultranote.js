@@ -151,7 +151,7 @@ function request_send(protocol, host, port, timeout, post, path, resolve, reject
             if (data.error) { reject(data.error.message); return; }
           } catch (error) { reject(error.message); return; }
           if (data.result) data = data.result;
-          resolve(data);
+          resolve(data, post);
         });
       }
     );

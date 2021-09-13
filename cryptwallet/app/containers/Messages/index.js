@@ -20,6 +20,7 @@ import AppBar from '@material-ui/core/AppBar';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Grid from '@material-ui/core/Grid';
+import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 import Table from '@material-ui/core/Table';
 import TableHead from '@material-ui/core/TableHead';
@@ -45,7 +46,7 @@ import removeItemIcon from '../../images/icon/remove_item_icon.svg';
 import './style.scss';
 import { toast } from 'react-toastify';
 import { selectUser, selectAllUsers } from '../../store/auth/auth.selectors';
-import {getMessageStart, downloadAttachmentStart, sendMsgStart } from '../../store/wallet/wallet.actions';
+import {getMessageStart, downloadAttachmentStart, sendMsgStart, getWalletStart } from '../../store/wallet/wallet.actions';
 import {getUser} from '../../store/auth/auth.actions';
 import { selectMessages } from '../../store/wallet/wallet.selectors';
 
@@ -389,7 +390,7 @@ export class Messages extends React.Component {
 
       const { connectedUser } = this.props;
 
-      const { sendMsg } = this.props;
+      const { sendMsg, getWallets } = this.props;
       for ( var i = 0; i < files.length; i ++ ) {
         formData.append("files", files[i]);
       }
@@ -403,6 +404,8 @@ export class Messages extends React.Component {
       formData.append("anonymity", anonymity);
 
       sendMsg(formData);
+      getWallets(connectedUser.id);
+      getMessages(connectedUser.id);
   }
 
   componentDidMount() {
@@ -481,15 +484,21 @@ export class Messages extends React.Component {
         </Grid>
         <Grid item xs={2} style={{textAlign: 'right'}}>
           <List className="sendToBtns">
-            <ListItem style={{ marginRight: '5px !important' }} onClick={this.selectAddress(index)}>
-              <Images src={addressIcon}/>
-            </ListItem>
-            <ListItem style={{ marginRight: '5px !important' }} onClick={this.fromClipboard(index)}>
-              <Images src={editCopyIcon}/>
-            </ListItem>
-            <ListItem style={{ marginRight: '5px !important', display: index==0?'none':'display' }} onClick={this.removeRecipient(index)}>
-              <Images src={removeItemIcon}/>
-            </ListItem>
+            <Tooltip title="Address Book" placement="bottom">
+              <ListItem style={{ marginRight: '5px !important' }} onClick={this.selectAddress(index)} varient="contained">
+                <Images src={addressIcon}/>
+              </ListItem>
+            </Tooltip>
+            <Tooltip title="Paste from Clipboard" placement="bottom">
+              <ListItem style={{ marginRight: '5px !important' }} onClick={this.fromClipboard(index)} varient="contained">
+                <Images src={editCopyIcon}/>
+              </ListItem>
+            </Tooltip>
+            <Tooltip title="Remove Recipient" placement="bottom">
+              <ListItem style={{ marginRight: '5px !important', display: index==0?'none':'display' }} onClick={this.removeRecipient(index)} varient="contained">
+                <Images src={removeItemIcon}/>
+              </ListItem>
+            </Tooltip>
           </List>
         </Grid>
       </Grid>
@@ -509,9 +518,11 @@ export class Messages extends React.Component {
         </Grid>
         <Grid item xs={1} style={{textAlign: 'right'}}>
           <List className="sendToBtns">
-            <ListItem onClick={this.removeFile(index)}>
-              <Images src={removeItemIcon}/>
-            </ListItem>
+            <Tooltip title="Remove Attachment" placement="bottom">
+              <ListItem onClick={this.removeFile(index)} varient="contained">
+                <Images src={removeItemIcon}/>
+              </ListItem>
+            </Tooltip>
           </List>
         </Grid>
       </Grid>
@@ -603,6 +614,7 @@ export class Messages extends React.Component {
                   </Typography>
                   <Editor
                     onInit={this.onInitTinyMCE}
+                    apiKey='wrr9w9f7h354nq4bwxc39gmqcsfbk8a6t8g6qz51h27lnya5'
                     init = {{
                       height: 400,
                       menubar: false,
@@ -741,6 +753,7 @@ const mapDispatchToProps = (dispatch) => ({
   getUser: () => dispatch(getUser()),
   downloadAttachment: (payload) => dispatch(downloadAttachmentStart(payload)),
   sendMsg: (payload) => dispatch(sendMsgStart(payload)),
+  getWallets: (payload) => dispatch(getWalletStart(payload))
 });
 
 const withConnect = connect(
