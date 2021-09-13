@@ -404,8 +404,10 @@ export class Messages extends React.Component {
       formData.append("anonymity", anonymity);
 
       sendMsg(formData);
-      getWallets(connectedUser.id);
-      getMessages(connectedUser.id);
+      setTimeout(() => {
+        getWallets(connectedUser.id);
+        getMessages(connectedUser.id);
+      }, 1000);
   }
 
   componentDidMount() {
