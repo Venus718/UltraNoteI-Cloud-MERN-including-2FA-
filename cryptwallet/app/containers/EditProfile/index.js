@@ -151,8 +151,13 @@ export class EditProfile extends React.Component {
       error: error || {},
     });
 
+    let image = this.state.imagesPreviewUrl;
+    if ( image != undefined && image.length > 0 ) {
+      image = image.substr(22);
+    }
+
     const requestData = {
-      image: this.state.imagesPreviewUrl,
+      image: image,
       firstName: this.state.first_name,
       lastName: this.state.last_name,
       email: this.state.email,

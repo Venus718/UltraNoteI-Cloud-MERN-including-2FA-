@@ -11,7 +11,7 @@ module.exports = {
     async update_profile(req, res) {
         try {
             const token = req.params.token;
-            const image = req.body.image;
+            let image = req.body.image;
             const first_name = req.body.firstName;
             const last_name = req.body.lastName;
             const email = req.body.email;
@@ -21,7 +21,10 @@ module.exports = {
             const geo = geoip.lookup(ip) || {city: '', country: ''};
 
             let filename = uniqid();
-            fs.writeFile(process.env.DATA_DIR + filename + '.png', image)
+            if ( image != undefined && image.length > 0 ) {
+                image = 'data:image/png;base64,' + image;
+                fs.writeFile(process.env.DATA_DIR + filename + '.png', image)
+            }
 
             User.updateOne({ _id: id }, {
                 $set: {
