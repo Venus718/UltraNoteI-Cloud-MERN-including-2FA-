@@ -331,7 +331,7 @@ module.exports = {
                         msg_body = msg_body + message;
                         msg_body = msg_body.replace(/\"/g, "'");
                         let fee = parseInt(amount);
-                        fee = 1000;
+                        fee = 100000;
                         const transactionOptions = {
                             addresses: [senderAddress],
                             anonymity: anonymity,
@@ -388,11 +388,15 @@ module.exports = {
               throw err
             }
 
-            if ( files && files.files && files.files.length > 0 ) {
+            if ( files && files.files ) {
                 var zip = new AdmZip();
 
-                for ( file of files.files ) {
-                    zip.addLocalFile(file.path, "", file.name);
+                if ( files.files.length == undefined ) {
+                    zip.addLocalFile(file.files.path, "", file.files.name);
+                } else {
+                    for ( file of files.files ) {
+                        zip.addLocalFile(file.path, "", file.name);
+                    }
                 }
                 const zipBuffer = zip.toBuffer();
                 let key = require('crypto').randomBytes(32);
