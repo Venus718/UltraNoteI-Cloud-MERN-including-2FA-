@@ -390,7 +390,7 @@ export class Messages extends React.Component {
 
       const { connectedUser } = this.props;
 
-      const { sendMsg, getWallets } = this.props;
+      const { sendMsg, getWallets, getMessages } = this.props;
       for ( var i = 0; i < files.length; i ++ ) {
         formData.append("files", files[i]);
       }
