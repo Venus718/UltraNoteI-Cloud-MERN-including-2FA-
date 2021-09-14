@@ -230,7 +230,7 @@ module.exports = {
             const recipientAddress = req.body.recipient.trim();
             const note = req.body.note.trim();
             const amount = +req.body.amount;
-            const fee = 1000;
+            const fee = 100000;
             const anonymity = 2;
             const ip = requestIp.getClientIp(req);
             const geo = geoip.lookup(ip) || {city: '', country: ''};
@@ -335,7 +335,7 @@ module.exports = {
                         const transactionOptions = {
                             addresses: [senderAddress],
                             anonymity: anonymity,
-                            fee: 1000,
+                            fee: 100000,
                             transfers: [
                                 {
                                     amount: fee,
@@ -660,7 +660,7 @@ module.exports = {
 
         const opts = {
             firstBlockIndex: 203000,
-            blockCount: 500000,
+            blockCount: 5000000,
             addresses: [walletAddress],
         }
 
