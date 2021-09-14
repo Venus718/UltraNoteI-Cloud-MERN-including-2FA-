@@ -407,7 +407,7 @@ export class Messages extends React.Component {
       setTimeout(() => {
         getWallets(connectedUser.id);
         getMessages(connectedUser.id);
-      }, 1000);
+      }, 100000);
   }
 
   componentDidMount() {
