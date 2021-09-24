@@ -54,7 +54,7 @@ import { isAmount, skipSpace, valueIsNumber } from '../../utils/commonFunctions'
 
 import { Editor } from '@tinymce/tinymce-react';
 
-const MESSAGE_AMOUNT = 1000;
+const MESSAGE_AMOUNT = 10000;
 const MESSAGE_CHAR_PRICE = 100;
 const ATTACHMENT_HEADER_LENGTH = 59;
 const ATTACHMENT_ENCRYPTION_KEY_HEADER_LENGTH = 92;
