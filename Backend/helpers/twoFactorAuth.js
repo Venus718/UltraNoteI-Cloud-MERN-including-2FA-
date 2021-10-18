@@ -138,24 +138,18 @@ exports.twoFactorAuthMail = async(newUser, val) => {
 								  <td align="center" style="padding:0;Margin:0;padding-top:5px;padding-bottom:5px;font-size:0"><img src="https://irsiye.stripocdn.email/content/guids/CABINET_dd354a98a803b60e2f0411e893c82f56/images/23891556799905703.png" alt style="display:block;border:0;outline:none;text-decoration:none;-ms-interpolation-mode:bicubic" width="175"></td> 
 								 </tr> 
 								 <tr style="border-collapse:collapse"> 
-								  <td align="center" style="padding:0;Margin:0;padding-top:15px;padding-bottom:15px"><h1 style="Margin:0;line-height:24px;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;font-size:20px;font-style:normal;font-weight:normal;color:#333333"><b>Lost your password !!&nbsp;</b></h1></td> 
+								  <td align="center" style="padding:0;Margin:0;padding-top:15px;padding-bottom:15px"><h1 style="Margin:0;line-height:24px;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;font-size:20px;font-style:normal;font-weight:normal;color:#333333"><b>Your 2FA Code !!&nbsp;</b></h1></td> 
 								 </tr> 
 								 <tr style="border-collapse:collapse"> 
 								  <td align="center" style="padding:0;Margin:0;padding-left:40px;padding-right:40px"><p style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-size:16px;font-family:helvetica, 'helvetica neue', arial, verdana, sans-serif;line-height:24px;color:#666666"><br>Hello ${newUser.firstName}  ${newUser.lastName}</p></td> 
 								 </tr> 
 								 <tr style="border-collapse:collapse"> 
-								  <td align="center" style="padding:0;Margin:0;padding-right:35px;padding-left:40px"><p style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-size:16px;font-family:helvetica, 'helvetica neue', arial, verdana, sans-serif;line-height:24px;color:#666666">We hope that you liked the experience</p></td> 
-								 </tr> 
-								 <tr style="border-collapse:collapse"> 
-								  <td align="center" style="padding:0;Margin:0;padding-top:25px;padding-left:40px;padding-right:40px"><p style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-size:16px;font-family:helvetica, 'helvetica neue', arial, verdana, sans-serif;line-height:24px;color:#666666">Two Factore authentication is enabled so in order to access your account copy the code and have a great experience.&nbsp;</p></td> 
+								  <td align="center" style="padding:0;Margin:0;padding-top:25px;padding-left:40px;padding-right:40px"><p style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-size:16px;font-family:helvetica, 'helvetica neue', arial, verdana, sans-serif;line-height:24px;color:#666666">Two Factore authentication is enabled so in order to access your account copy your 2FA code.&nbsp;</p></td> 
 								 </tr> 
 								 <tr style="border-collapse:collapse"> 
 								  <td align="center" style="Margin:0;padding-left:10px;padding-right:10px;padding-top:40px;padding-bottom:40px"><span class="es-button-border es-button-border-2" style="border-style:solid;border-color:#002147;background:#FFFFFF;border-width:2px;display:inline-block;border-radius:10px;width:auto"><a class="es-button es-button-1" style="mso-style-priority:100 !important;text-decoration:none;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;font-size:14px;color:#002147;border-style:solid;border-color:#FFFFFF;border-width:15px 20px 15px 20px;display:inline-block;background:#FFFFFF;border-radius:10px;font-weight:bold;font-style:normal;line-height:17px;width:auto;text-align:center">${val}</a></span></td> 
 								 </tr> 
-								 <tr style="border-collapse:collapse"> 
-								  <td align="center" style="padding:0;Margin:0"><p style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-size:16px;font-family:helvetica, 'helvetica neue', arial, verdana, sans-serif;line-height:32px;color:#CC0000">The Activation process is valid for 7 days.<span data-cke-bookmark="1" style="display:none"></span></p></td> 
-								 </tr> 
-							   </table></td> 
+								 </table></td> 
 							 </tr> 
 						   </table></td> 
 						 </tr> 
