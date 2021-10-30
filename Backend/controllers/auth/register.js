@@ -32,12 +32,12 @@ module.exports = {
             user.save().then(async (savedUser) => {
                 try {
                     const token = jwt.sign({ data: savedUser }, process.env.TOKENCODE, { expiresIn: '168h' });
-                    const result = await helper.ActivationMail(savedUser, token);
+                    const result =  helper.ActivationMail(savedUser, token);
                     if (result) {
                         res.status(200).json({ message: 'User add successfully' });
                     }
                 } catch (error) {
-                    console.log(error);
+                    console.log(error.message);
                     res.status(400).json({ message: console.log(error) + ' failed while sending the activation mail', error })
                 }
             })

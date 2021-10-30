@@ -17,7 +17,7 @@ module.exports = {
                 User.findOne({mail: req.body.mail}).then(async (user) => {
                     if (user) {
                         const token = jwt.sign({data: user}, process.env.TOKENCODE, {expiresIn: '168h'});
-                    const result = await Helpers.ResetPasswordMail(user, token);
+                    const result =  Helpers.ResetPasswordMail(user, token);
                     if (result) {
                         res.status(200).json({message: 'We sent you password reset mail'});
                     } else {

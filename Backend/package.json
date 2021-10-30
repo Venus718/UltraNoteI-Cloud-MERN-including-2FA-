@@ -25,6 +25,7 @@
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.11.3",
     "node-fetch": "^2.6.1",
+    "node-mailjet": "^3.3.4",
     "nodemailer": "^6.4.16",
     "nodemon": "^2.0.6",
     "qrcode": "^1.4.4",

@@ -1,27 +1,24 @@
-const nodemailer = require('nodemailer');
-
+//const nodemailer = require('nodemailer');
+const mailjet = require ('node-mailjet')
+    .connect('6938f56f5fc30428c70f53aab4330f5c', 'b3a11bd9434c5b665ecd158c9d3a5522')
 exports.ActivationMail = async(newUser, token) => {
+console.log(newUser);
 
-
-
-    const transporter = nodemailer.createTransport({
-        host: 'smtp.sendgrid.net',
-		port: 587,
-		secure: false,
-        auth: {
-            user: 'apikey',
-            pass: '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',
-        },
-    });
-
-    const mailOptions = {
-        
-        from: 'support@ultranote.org',
-        to: newUser.mail,
-        subject: 'UltraNote Infinity Cloud: confirmation',
-        text: 'Hello' + newUser.firstName + newUser.lastName ,
-		html: 
-			`<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+const request = mailjet
+    .post("send", {'version': 'v3.1'})
+    .request({
+        "Messages":[{
+            "From": {
+                "Email": "support@ultranote.org",
+                "Name": "UltraNote Cloud"
+            },
+            "To": [{
+                "Email": newUser.mail,
+                "Name": newUser.firstName +' '+ newUser.lastName,
+            }],
+            "Subject": "UltraNote Infinity Cloud: confirmation",
+            "TextPart": 'Hello' + newUser.firstName + newUser.lastName,
+            "HTMLPart": `<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 			<html xmlns="http://www.w3.org/1999/xhtml" xmlns:o="urn:schemas-microsoft-com:office:office" style="width:100%;font-family:helvetica, 'helvetica neue', arial, verdana, sans-serif;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%;padding:0;Margin:0">
 			 <head> 
 			  <meta charset="UTF-8"> 
@@ -258,7 +255,45 @@ exports.ActivationMail = async(newUser, token) => {
 			  </div>  
 			 </body>
 			</html>`
-    };
-	const result = await transporter.sendMail(mailOptions);
-	return result;
+        }]
+    })
+request
+    .then((result) => {
+        console.log('Lets check =>',result.body.Messages[0].Status);
+		return  result.body.Messages[0].Status;
+    })
+    .catch((err) => {
+     //   console.log('Lets check Errors =>',err.statusCode)
+
+    })
+
+
+
+
+
+
+
+
+
+    // const transporter = nodemailer.createTransport({
+    //     host: 'smtp.sendgrid.net',
+	// 	port: 587,
+	// 	secure: false,
+    //     auth: {
+    //         user: 'apikey',
+    //         pass: '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',
+    //     },
+    // });
+
+    // const mailOptions = {
+        
+    //     from: 'support@ultranote.org',
+    //     to: newUser.mail,
+    //     subject: 'UltraNote Infinity Cloud: confirmation',
+    //     text: 'Hello' + newUser.firstName + newUser.lastName ,
+	// 	html: 
+		
+    // };
+	// const result = await transporter.sendMail(mailOptions);
+	// return result;
 }
