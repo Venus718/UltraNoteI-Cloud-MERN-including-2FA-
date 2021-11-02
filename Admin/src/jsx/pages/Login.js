@@ -20,7 +20,7 @@ const Login = (props) => {
     const {setCurrentUser} = props;
     console.log('Clicking',inputValues);
     // e.preventDefault();
-    axios.post(`https://cloud.ultranote.org/api/admin/login`,{
+    axios.post(`https://portal.ultranote.org/api/admin/login`,{
       email: e.email,
       password:e.password 
     })
