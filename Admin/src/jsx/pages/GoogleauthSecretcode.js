@@ -14,7 +14,7 @@ const GoogleSecretCode = (props) => {
   //  const {setCurrentUser} = props;
     console.log('Clicking',inputValues);
     e.preventDefault();
-    axios.post(`https://cloud.ultranote.org/api/admin/googleauthtokenverify`,{
+    axios.post(`https://portal.ultranote.org/api/admin/googleauthtokenverify`,{
       email: useremail,
       serect_code:inputValues.secretcode
     })
