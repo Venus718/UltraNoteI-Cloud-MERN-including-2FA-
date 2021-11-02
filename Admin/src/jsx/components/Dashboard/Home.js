@@ -7,9 +7,6 @@ import { connect } from 'react-redux';
 import Donut from "../zenix/MyWallets/Donut";
 import axios from 'axios';
 import { createStructuredSelector } from 'reselect';
-//http://localhost:5000/api/users/activeUsers -- active user
-//Images
-// https://cloud.ultranote.org/api/wallets/transactions/XuniihE4LneQDtUjFTiPGufSxpfQ52u2uSibdiVqv3WkFMuo5yQRhz2NHeJAzrh8Ar2UqhYpiWAvNgZzqdydmeyAZL4TJQh15Ab
 import Card1 from './../../../images/card/card1.jpg';
 import { Row, Col, Card } from "react-bootstrap";
 import BarChart1 from "../charts/Chartjs/bar1";
@@ -59,7 +56,7 @@ const Home = ({tokem,allUsers,totaluser,balancedata ,totalBalance , totalActiveU
 	console.log('mounted');
 	 
     // Update the document title using the browser API
-	axios.get(`https://cloud.ultranote.org/api/users/user_list`,{
+	axios.get(`https://portal.ultranote.org/api/users/user_list`,{
 		headers: {
 		  'Authorization': tokem.token
 		}
@@ -72,7 +69,7 @@ const Home = ({tokem,allUsers,totaluser,balancedata ,totalBalance , totalActiveU
 		// handle error
 	  console.log(error);
 	  });
-	    axios.get(`https://cloud.ultranote.org/api/users/activeUsers`,{
+	    axios.get(`https://portal.ultranote.org/api/users/activeUsers`,{
 		headers: {
 		'Authorization': tokem.token
 		}
@@ -85,7 +82,7 @@ const Home = ({tokem,allUsers,totaluser,balancedata ,totalBalance , totalActiveU
 		// handle error
 		console.log(error);
 		}); 
-		axios.get(`https://cloud.ultranote.org/api/wallets/transactions/Xuniig11qtQ5qTbcG2aoP4Vo59nk9FXQ2RrJg6K9F32eYwcQ7Grxc8zfZAgG9EdVqY4r8eVXRB6qh7onf58CCDVhbgAmAz747ux`,{
+		axios.get(`https://portal.ultranote.org/api/wallets/transactions/Xuniig11qtQ5qTbcG2aoP4Vo59nk9FXQ2RrJg6K9F32eYwcQ7Grxc8zfZAgG9EdVqY4r8eVXRB6qh7onf58CCDVhbgAmAz747ux`,{
 		headers: {
 		'Authorization': tokem.token
 		}
@@ -98,7 +95,7 @@ const Home = ({tokem,allUsers,totaluser,balancedata ,totalBalance , totalActiveU
 		// handle error
 		console.log(error);
 		}); 
-		axios.get(`https://cloud.ultranote.org/api/admin/profiledetails`, {
+		axios.get(`https://portal.ultranote.org/api/admin/profiledetails`, {
 		headers: {
 		'Authorization': tokem.token
 		}
@@ -111,7 +108,7 @@ const Home = ({tokem,allUsers,totaluser,balancedata ,totalBalance , totalActiveU
 		// handle error
 		console.log(error);
 		});   
-		axios.post(`https://cloud.ultranote.org/api/users/suspended_user`,{"hhj":"kol"}, {
+		axios.post(`https://portal.ultranote.org/api/users/suspended_user`,{"hhj":"kol"}, {
 			headers: {
 			'Authorization': tokem.token
 			}
