@@ -15,7 +15,7 @@ password.current = watch("password", "");
 useEffect( () => {
     console.log('i fire once');
 const fetchFunc = async () => {
- const response = await fetch(`https://cloud.ultranote.org/api/admin/reset-password/${props.match.params.id}/${props.match.params.token}`)
+ const response = await fetch(`https://portal.ultranote.org/api/admin/reset-password/${props.match.params.id}/${props.match.params.token}`)
  const rejson = await response.json();
  setMessage(rejson)
  }
@@ -27,7 +27,7 @@ fetchFunc();
 
 const onSubmit = (e) => {
 console.log('aa',e);
-axios.post(`https://cloud.ultranote.org/api/admin/reset-password/${props.match.params.id}/${props.match.params.token}`,{
+axios.post(`https://portal.ultranote.org/api/admin/reset-password/${props.match.params.id}/${props.match.params.token}`,{
 password: e.password,
 conformpassword:e.conformpassword 
 })
