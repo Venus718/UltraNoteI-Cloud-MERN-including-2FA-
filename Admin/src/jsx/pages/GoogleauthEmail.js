@@ -16,7 +16,7 @@ const GoogleAuthEmail = ({ history  , SetEmailfortwofa }) => {
     console.log('Clicking',inputValues);
     e.preventDefault();
 
-    axios.post(`https://cloud.ultranote.org/api/admin/googleauthapp`,{
+    axios.post(`https://portal.ultranote.org/api/admin/googleauthapp`,{
       email: inputValues.email,
     })
     .then(res => {
