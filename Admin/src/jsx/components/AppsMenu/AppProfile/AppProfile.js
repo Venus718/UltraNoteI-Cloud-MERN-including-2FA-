@@ -34,7 +34,7 @@ const [checked, setChecked] = useState(userProfileData.twofastatus)
 
 useEffect(() => {
 // Update the document title using the browser API
-axios.get(`https://cloud.ultranote.org/api/admin/profiledetails`, {
+axios.get(`https://portal.ultranote.org/api/admin/profiledetails`, {
 	headers: {
 	'Authorization': token.token
 	}
@@ -52,7 +52,7 @@ axios.get(`https://cloud.ultranote.org/api/admin/profiledetails`, {
 
 const handleOnChange = () => { 
 	console.log(token.token);
-	const  url = 'https://cloud.ultranote.org/api/admin/2faactive-inactive';
+	const  url = 'https://portal.ultranote.org/api/admin/2faactive-inactive';
 	axios.post(url,{'name':'foo', 'surname': 'bar'},{
 		headers: {
 		  'Authorization': token.token
@@ -76,13 +76,13 @@ const onSubmit = async (data) => {
    formData.append("lastname", data.lastname);
    formData.append("phonenumber", data.phonenumber);
    formData.append("_id",userProfileData._id);
-   const  url = 'https://cloud.ultranote.org/api/admin/updateprofile';
+   const  url = 'https://portal.ultranote.org/api/admin/updateprofile';
    axios.post(url,formData, {
 	headers: {
 	 'Authorization': token.token
 	}}).then(res => { console.log(res)
 	if( res.data.message == "Profile Updated Successfully" ){
-		axios.get(`https://cloud.ultranote.org/api/admin/profiledetails`, {
+		axios.get(`https://portal.ultranote.org/api/admin/profiledetails`, {
 			headers: {
 			'Authorization': token.token
 			}
@@ -105,7 +105,7 @@ const resetPassword = async (event) => {
 	console.log(event);
     event._id = userProfileData._id;
 	console.log(event);
-	const  url = 'https://cloud.ultranote.org/api/admin/updatepassword';
+	const  url = 'https://portal.ultranote.org/api/admin/updatepassword';
 	axios.post(url,event,{
 	headers: {
 	'Authorization': token.token
