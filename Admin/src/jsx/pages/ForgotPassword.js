@@ -12,7 +12,7 @@ const ForgotPassword = () => {
    
     console.log('Clicking',inputValues);
   
-    axios.post(`https://cloud.ultranote.org/api/admin/forgotpassword`,{
+    axios.post(`https://portal.ultranote.org/api/admin/forgotpassword`,{
       email: e.email,
     
     })
