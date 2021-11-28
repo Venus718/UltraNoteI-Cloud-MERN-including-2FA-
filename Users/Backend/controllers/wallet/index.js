@@ -12,7 +12,6 @@ const xuni = new XUNI(process.env.XUNI_HOST, process.env.XUNI_PORT);
 const requestIp = require('request-ip');
 const geoip = require('geoip-lite');
 const formidable = require('formidable');
-const fetch = require('node-fetch');
 const uniqid = require('uniqid');
 const stream = require('stream');
 const http = require('http');
@@ -74,21 +73,22 @@ module.exports = {
             console.log(ex);
         }
 
-        const response = await fetch('https://api.coingecko.com/api/v3/coins/ultranote-infinity');
-        const data = await response.json();
+        let data;
         const user = await User.findOne({_id: userId});
         try {
             if (user.currency == 'usd'){
-                usdAvailabeBalance = availableBalance * data.market_data.current_price.usd;
-                usdUnconfirmedBalance = unconfirmedBalance * data.market_data.current_price.usd;
+                await axios.get(`https://api.nomics.com/v1/currencies/ticker?key=${process.env.API_KEY}&ids=XUNI`).then(res => data = res.data[0]);
+                usdAvailabeBalance = availableBalance * data.price;
+                usdUnconfirmedBalance = unconfirmedBalance * data.price;
             } 
             if (user.currency == 'btc') {
-                usdAvailabeBalance = availableBalance * data.market_data.current_price.btc;
-                usdUnconfirmedBalance = unconfirmedBalance * data.market_data.current_price.btc;
+                await axios.get(`https://api.nomics.com/v1/currencies/ticker?key=${process.env.API_KEY}&ids=XUNI&convert=BTC`).then(res => data = res.data[0]);
+                usdAvailabeBalance = availableBalance * data.price;
+                usdUnconfirmedBalance = unconfirmedBalance * data.price;
             }
         } catch {
-            usdAvailabeBalance = availableBalance * data.market_data.current_price.usd;
-            usdUnconfirmedBalance = unconfirmedBalance * data.market_data.current_price.usd;
+            usdAvailabeBalance = 0;
+            usdUnconfirmedBalance = 0;
         }
 
         try{

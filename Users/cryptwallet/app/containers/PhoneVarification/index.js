@@ -12,7 +12,7 @@ import { createStructuredSelector } from 'reselect';
 import { compose } from 'redux';
 
 import ReactPhoneInput from 'react-phone-input-2';
-import 'react-phone-input-2/dist/style.css';
+import 'react-phone-input-2/lib/style.css';
 
 import injectSaga from 'utils/injectSaga';
 import injectReducer from 'utils/injectReducer';
