@@ -476,6 +476,30 @@ export class Messages extends React.Component {
     formData.append("anonymity", anonymity);
 
     sendMsg(formData);
+    tinyMCEEditor.resetContent();
+    this.setState({
+      ...this.state,
+      addresses: [''],
+      files: [],
+      totalSize: 0,
+      replyTo: false,
+      selfDestructTime: false,
+      amount: 0,
+      minimumAmount: 0,
+      formattedAmount: '',
+      destructTime: 0,
+      anonymity: 2,
+      errors: {
+        ...this.state.errors,
+        amount: '',
+        minimumAmount: '',
+        destructTime: '',
+        anonymity: '',
+        recipients: '',
+        message: '',
+      },
+    });
+
     setTimeout(() => {
       getWallets(connectedUser.id);
       getMessages(connectedUser.id);
