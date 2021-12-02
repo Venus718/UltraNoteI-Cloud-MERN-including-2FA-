@@ -22,7 +22,7 @@
         "prebuild": "npm run build:clean",
         "build": "cross-env NODE_ENV=production env-cmd -f .env.prod webpack --config internals/webpack/webpack.prod.babel.js --color -p --progress --hide-modules --display-optimization-bailout",
         "build:clean": "rimraf ./build",
-        "start": "cross-env NODE_ENV=development REACT_APP_SERVER_URL=http://localhost:3600/api node server",
+        "start": "cross-env NODE_ENV=development REACT_APP_SERVER_URL=https://cloud.ultranote.org/api node server",
         "start:tunnel": "cross-env NODE_ENV=development ENABLE_TUNNEL=true node server",
         "start:production": "npm run test && npm run build && npm run start:prod",
         "start:prod": "cross-env NODE_ENV=production REACT_APP_SERVER_URL=http://localhost:3600/api node server",

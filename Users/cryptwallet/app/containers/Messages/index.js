@@ -4,53 +4,54 @@
  *
  */
 
-import React from 'react';
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
-import { Helmet } from 'react-helmet';
-import { FormattedMessage } from 'react-intl';
-import { createStructuredSelector } from 'reselect';
+ import React from 'react';
+ import PropTypes from 'prop-types';
+ import { connect } from 'react-redux';
+ import { Helmet } from 'react-helmet';
+ import { FormattedMessage } from 'react-intl';
+ import { createStructuredSelector } from 'reselect';
 import { compose } from 'redux';
-
-import injectSaga from 'utils/injectSaga';
-import injectReducer from 'utils/injectReducer';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import { Button, Checkbox, List, ListItem, TextField } from '@material-ui/core';
-import AppBar from '@material-ui/core/AppBar';
-import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
-import Grid from '@material-ui/core/Grid';
-import Tooltip from '@material-ui/core/Tooltip';
-import Typography from '@material-ui/core/Typography';
-import Table from '@material-ui/core/Table';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
-import TableCell from '@material-ui/core/TableCell';
-import TableBody from '@material-ui/core/TableBody';
-import Image from '../../components/uiStyle/Images';
-import messages from './messages';
-import saga from './saga';
-import reducer from './reducer';
-import MessageDetail from '../../components/MessageDetail';
-import SelectAddress from "../../components/SelectAddress";
-
-import Images from '../../components/uiStyle/Images';
-
-// icons
-import messageIcon from '../../images/icon/message.png';
-import addressIcon from '../../images/icon/address_book_icon.svg';
-import editCopyIcon from '../../images/icon/editcopy.png';
-import removeItemIcon from '../../images/icon/remove_item_icon.svg';
-
-
-import './style.scss';
-import { toast } from 'react-toastify';
-import { selectUser, selectAllUsers } from '../../store/auth/auth.selectors';
-import {getMessageStart, downloadAttachmentStart, sendMsgStart, getWalletStart } from '../../store/wallet/wallet.actions';
-import {getUser} from '../../store/auth/auth.actions';
-import { selectMessages } from '../../store/wallet/wallet.selectors';
-
-import { isAmount, skipSpace, valueIsNumber } from '../../utils/commonFunctions';
+ 
+ import injectSaga from 'utils/injectSaga';
+ import injectReducer from 'utils/injectReducer';
+ import FormControlLabel from '@material-ui/core/FormControlLabel';
+ import { Button, Checkbox, List, ListItem, TextField } from '@material-ui/core';
+ import AppBar from '@material-ui/core/AppBar';
+ import Tabs from '@material-ui/core/Tabs';
+ import Tab from '@material-ui/core/Tab';
+ import Grid from '@material-ui/core/Grid';
+ import Tooltip from '@material-ui/core/Tooltip';
+ import Typography from '@material-ui/core/Typography';
+ import Table from '@material-ui/core/Table';
+ import TableHead from '@material-ui/core/TableHead';
+ import TableRow from '@material-ui/core/TableRow';
+ import TableCell from '@material-ui/core/TableCell';
+ import TableBody from '@material-ui/core/TableBody';
+ import Image from '../../components/uiStyle/Images';
+ import { LinearProgress } from '@material-ui/core';
+ import messages from './messages';
+ import saga from './saga';
+ import reducer from './reducer';
+ import MessageDetail from '../../components/MessageDetail';
+ import SelectAddress from "../../components/SelectAddress";
+ 
+ import Images from '../../components/uiStyle/Images';
+ 
+ // icons
+ import messageIcon from '../../images/icon/message.png';
+ import addressIcon from '../../images/icon/address_book_icon.svg';
+ import editCopyIcon from '../../images/icon/editcopy.png';
+ import removeItemIcon from '../../images/icon/remove_item_icon.svg';
+ 
+ 
+ import './style.scss';
+ import { toast } from 'react-toastify';
+ import { selectUser, selectAllUsers } from '../../store/auth/auth.selectors';
+ import {getMessageStart, downloadAttachmentStart, sendMsgStart, getWalletStart } from '../../store/wallet/wallet.actions';
+ import {getUser} from '../../store/auth/auth.actions';
+ import { selectMessages } from '../../store/wallet/wallet.selectors';
+ 
+ import { isAmount, skipSpace, valueIsNumber } from '../../utils/commonFunctions';
 
 import { Editor } from '@tinymce/tinymce-react';
 
@@ -59,6 +60,8 @@ const MESSAGE_CHAR_PRICE = 100;
 const ATTACHMENT_HEADER_LENGTH = 59;
 const ATTACHMENT_ENCRYPTION_KEY_HEADER_LENGTH = 92;
 const MAX_ATTACHMENT_SIZE = 100 * 1024 * 1024;
+const ATTACHMENT_PRICE = 10000;
+const ANONYMITY_PRICE = 100000;
 const MINIMAL_MESSAGE_FEE = MESSAGE_CHAR_PRICE;
 const DEFAULT_MESSAGE_MIXIN = 2;
 
@@ -76,6 +79,8 @@ function TabContainer(props) {
   );
 }
 
+const percent = (a, b) => (a / b * 100).toFixed(2);
+
 /* eslint-disable react/prefer-stateless-function */
 export class Messages extends React.Component {
   state = {
@@ -91,14 +96,23 @@ export class Messages extends React.Component {
     addr_index: 0,
     addresses: [''],
     files: [],
+    totalSize: 0,
     tinyMCEEditor: null,
     replyTo: false,
     selfDestructTime: false,
     amount: 0,
     minimumAmount: 0,
-    destructTime: 1,
+    formattedAmount: '',
+    destructTime: 0,
     anonymity: 2,
-    errors: '',
+    errors: {
+      amount: '',
+      minimumAmount: '',
+      destructTime: '',
+      anonymity: '',
+      recipients: '',
+      message: '',
+    },
     is_prev: false,
     is_next: false,
     message_index: -1,
@@ -126,10 +140,16 @@ export class Messages extends React.Component {
     }
     if (Name === 'destructTime' && valueIsNumber(Value)) {
       this.setState({
+        ...this.state,
+        errors: {
+          ...this.state.errors,
+          destructTime: (Value < MIN_TTL || Value > MAX_TTL) ? 'Self destruct time must be between 5 minutes and 14 hours' : '',
+        },
         [Name]: Value,
       });
     }
-    if (Name === 'anonymity' && valueIsNumber(Value) ) {
+    if (Name === 'anonymity' && valueIsNumber(Value)) {
+      if (Value < 0 || Value > 10) return;
       this.setState({
         [Name]: Value,
       });
@@ -153,6 +173,8 @@ export class Messages extends React.Component {
     const {
       addresses,
       files,
+      anonymity,
+      totalSize,
       tinyMCEEditor,
       selfDestructTime,
     } = this.state;
@@ -161,25 +183,27 @@ export class Messages extends React.Component {
     const messageSize = message.length;
     let fee = 0;
     // fee for permanent message
-    if ( selfDestructTime == false ) {
-      fee += MINIMAL_MESSAGE_FEE;
-    }
+    if ( selfDestructTime == false) fee += MINIMAL_MESSAGE_FEE;
     // fee for attachment
-    if ( files.length > 0 ) {
-      fee += MESSAGE_CHAR_PRICE * ATTACHMENT_HEADER_LENGTH;
-      fee += MESSAGE_CHAR_PRICE * ATTACHMENT_ENCRYPTION_KEY_HEADER_LENGTH;
-    }
-
+    if (files.length > 0) fee += (totalSize.toFixed(2) / (1024 * 1024)) * ATTACHMENT_PRICE;
+    // fee for anonymity
+    if (anonymity > 2) fee += anonymity * ANONYMITY_PRICE;
     // fee for recipients
     fee += MESSAGE_AMOUNT * addresses.length;
     fee += MESSAGE_CHAR_PRICE * messageSize;
     this.setState({
       ...this.state,
       minimumAmount: fee,
-      amount: fee
+      amount: fee,
+      formattedAmount: this.formatAmount(fee),
     });
   }
-  
+
+  formatAmount = amount => {
+    // 1 XUNI = 1000000
+    return `${(amount / 1000000).toFixed(6)} XUNI (${amount} bits)`;
+  };
+
   adModalCloseHandler = () => {
     this.setState({
       adModalOpen: false,
@@ -236,10 +260,10 @@ export class Messages extends React.Component {
     } = this.state;
 
     const {downloadAttachment} = this.props;
-    
+
     let attachment = '';
     let encryptionKey = '';
-    
+
     let headers = message.headers;
     for ( let header of headers ) {
       if ( header['name'] == 'Attachment' ) {
@@ -331,6 +355,12 @@ export class Messages extends React.Component {
 
   removeFile = (index) => e => {
     const { files } = this.state;
+    this.setState({
+      ...this.state,
+      totalSize: this.state.totalSize - files[index].size,
+    }, () => {
+      this.calcAmount();
+    });
     files.splice(index,1);
     this.setState({
       files: files
@@ -358,10 +388,17 @@ export class Messages extends React.Component {
   }
 
   onFileChange = e => {
-    if ( e.target.files[0] ) {
+    if (e.target.files[0]) {
+      if (e.target.files[0].size > MAX_ATTACHMENT_SIZE) return toast.error('Attachment size is too large');
+
+      if ((this.state.totalSize + e.target.files[0].size) > MAX_ATTACHMENT_SIZE) return toast.error('Attachments size cannot exceed 100MB');
       const {
         files
       } = this.state;
+      this.setState({
+        ...this.state,
+        totalSize: this.state.totalSize + e.target.files[0].size,
+      });
       files.push(e.target.files[0]);
       this.setState({
         files
@@ -375,39 +412,74 @@ export class Messages extends React.Component {
     this.fileElement.click();
   }
 
-  onSend = e => {
-      const formData = new FormData();
-      const {
-        files,
-        addresses,
-        replyTo,
-        selfDestructTime,
-        destructTime,
-        amount,
-        anonymity,
-        tinyMCEEditor
-      } = this.state;
-
-      const { connectedUser } = this.props;
-
-      const { sendMsg, getWallets, getMessages } = this.props;
-      for ( var i = 0; i < files.length; i ++ ) {
-        formData.append("files", files[i]);
+  validateForm = () => {
+    let isValid = true;
+    const {
+      addresses,
+      tinyMCEEditor
+    } = this.state;
+    this.setState({
+      ...this.state,
+      errors: {}
+    });
+    let errors = {
+      recipients: '',
+      message: '',
+    };
+    if (addresses[0].length == 0) {
+      isValid = false;
+      errors.recipients = 'Please select recipient';
+    }
+    if (tinyMCEEditor.getContent().length === 0) {
+      isValid = false;
+      errors.message = 'Please enter a message';
+    }
+    this.setState({
+      ...this.state,
+      errors: {
+        ...this.state.errors,
+        ...errors
       }
-      formData.append("id",connectedUser.id);
-      formData.append("addresses", JSON.stringify(addresses));
-      formData.append("replyTo", replyTo);
-      formData.append("selfDestructTime", selfDestructTime);
-      formData.append("destructTime", destructTime);
-      formData.append("message", tinyMCEEditor.getContent());
-      formData.append("amount", amount);
-      formData.append("anonymity", anonymity);
+    });
 
-      sendMsg(formData);
-      setTimeout(() => {
-        getWallets(connectedUser.id);
-        getMessages(connectedUser.id);
-      }, 100000);
+    return isValid;
+  }
+
+  onSend = e => {
+    const formData = new FormData();
+    const {
+      files,
+      addresses,
+      replyTo,
+      selfDestructTime,
+      destructTime,
+      amount,
+      anonymity,
+      tinyMCEEditor
+    } = this.state;
+    
+    if (!this.validateForm()) return;
+
+    const { connectedUser } = this.props;
+
+    const { sendMsg, getWallets, getMessages } = this.props;
+    for ( var i = 0; i < files.length; i ++ ) {
+      formData.append("files", files[i]);
+    }
+    formData.append("id",connectedUser.id);
+    formData.append("addresses", JSON.stringify(addresses));
+    formData.append("replyTo", replyTo);
+    formData.append("selfDestructTime", selfDestructTime);
+    formData.append("destructTime", destructTime);
+    formData.append("message", tinyMCEEditor.getContent());
+    formData.append("amount", amount);
+    formData.append("anonymity", anonymity);
+
+    sendMsg(formData);
+    setTimeout(() => {
+      getWallets(connectedUser.id);
+      getMessages(connectedUser.id);
+    }, 100000);
   }
 
   componentDidMount() {
@@ -440,11 +512,13 @@ export class Messages extends React.Component {
       tab,
       addresses,
       files,
+      totalSize,
       addr_list,
       replyTo,
       selfDestructTime,
       destructTime,
       amount,
+      formattedAmount,
       anonymity,
       errors,
       is_prev,
@@ -478,6 +552,7 @@ export class Messages extends React.Component {
           <TextField
             label="Send To"
             className="inputStyle"
+            helperText={errors.recipients}
             name="address"
             variant="outlined"
             value={row}
@@ -555,7 +630,7 @@ export class Messages extends React.Component {
                 label="Send Message"
                 icon={<Image src={messageIcon} />}
               />
-            </Tabs>
+              </Tabs>
           </AppBar>
           {tab === 0 && (
             <Grid className="messageBody">
@@ -634,9 +709,24 @@ export class Messages extends React.Component {
                     onKeyUp={this.calcAmount}
                     onExecCommand={this.calcAmount}
                   />
+                  <Typography>{errors.message}</Typography>
                 </Grid>
                 <Grid item xs={12} sm={12}>
                   {renderFiles}
+                </Grid>
+                <Grid item xs={12} sm={12}>
+                  {totalSize > 0 && 
+                    <Grid sx={{ display: 'inline-flex', alignItems: 'center' }}>
+                      <Grid item xs={12}>
+                        <LinearProgress variant="determinate" style={{ height: "20px" }} value={ percent(totalSize, MAX_ATTACHMENT_SIZE) } />
+                      </Grid>
+                      <Grid item xs={12} style={{ textAlign: 'center' }}>
+                        <Typography variant="body2" color="text.secondary">
+                          Used {(totalSize / 1024 / 1024).toFixed(2)} MB of {(MAX_ATTACHMENT_SIZE / 1024 / 1024).toFixed(2)} MB {percent(totalSize, MAX_ATTACHMENT_SIZE)}%
+                        </Typography>
+                      </Grid>
+                    </Grid>
+                  }
                 </Grid>
                 <Grid item xs={12} sm={12}>
                   <FormControlLabel
@@ -657,7 +747,7 @@ export class Messages extends React.Component {
                       helperText={errors.destructTime}
                       variant="outlined"
                       type="number"
-                      min="1"
+                      min={ MIN_TTL }
                       max={MAX_TTL/MIN_TTL}
                       placeholder="Destruct time"
                       value={destructTime}
@@ -668,26 +758,7 @@ export class Messages extends React.Component {
                 </Grid>
                 <Grid item xs={12} sm={12}>
                   <TextField
-                    InputLabelProps={{
-                      shrink: true,
-                    }}
-                    label="Amount in bits, Ex: 1000000 = 1 XUNI coin"
-                    helperText={errors.amount}
-                    id="amount"
-                    className="inputStyleBasic"
-                    name="amount"
-                    type="number"
-                    value={amount}
-                    min={minimumAmount} 
-                    placeholder="Amount"
-                    onChange={this.changeHandler}
-                  />
-                </Grid>
-                <Grid item xs={12} sm={12}>
-                  <TextField
-                    InputLabelProps={{
-                      shrink: true,
-                    }}
+                    InputLabelProps={{ shrink: true }}
                     label="Anonymity level"
                     helperText={errors.anonymity}
                     id="anonymity"
@@ -699,6 +770,19 @@ export class Messages extends React.Component {
                     value={anonymity}
                     placeholder="Anonymity Level"
                     onChange={this.changeHandler}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={12}>
+                  <TextField
+                    InputLabelProps={{ shrink: true }}
+                    label="Fee"
+                    helperText={errors.amount}
+                    id="amount"
+                    disabled={true}
+                    className="inputStyleBasic"
+                    name="amount"
+                    value={formattedAmount}
+                    inputProps={{ readOnly: true }}
                   />
                 </Grid>
                 <Grid item xs={12} className="sendActions">

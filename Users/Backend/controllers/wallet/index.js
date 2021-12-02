@@ -55,7 +55,6 @@ module.exports = {
                     console.log('balance:\r\n' + ex);
                     fs.writeFile('balance-error.txt', ex, function (err) {
                         if (err) return console.log(err);
-                        console.log('Hello World > helloworld.txt');
                     });
                 }
                 await Wallets.update({ _id: wallet._id },
@@ -331,42 +330,54 @@ module.exports = {
                         msg_body = msg_body + message;
                         msg_body = msg_body.replace(/\"/g, "'");
                         let fee = parseInt(amount);
-                        fee = 100000;
+                        
                         const transactionOptions = {
                             addresses: [senderAddress],
                             anonymity: anonymity,
-                            fee: 100000,
+                            fee: 0,
                             transfers: [
                                 {
                                     amount: fee,
-                                    address: recipientAddress,
-                                    message: msg_body
+                                    address: "XuniihAQHBshnuZkMh2Rz6N6BtvZnfRWqGuUdZrbwfYxSqqbqoNVF9VW37MEW14qeqMqwBoBKxmoc1KtwXdZohjhC63hUoZVLos",
+                                    message: `Fee for sending message, From: ${senderAddress} To: ${recipientAddress}`
                                 }
                             ],
                             unlockTime: 0,
                             changeAddress: senderAddress
                         }
-                        ultranote.sendTransaction(transactionOptions).then(({ transactionHash, rpc_json }) => {
-                            const newMessage = {
-                                senderID: userId,
-                                senderAdress: senderAddress,
-                                recipientAdress: recipientAddress,
-                                createdAt: Date.now(),
-                                updatedAt: Date.now(),
-                                amount: amount,
-                                note: '',
-                                hash: transactionHash,
+                        ultranote.sendTransaction(transactionOptions).then(() => {
+                            ultranote.sendTransaction({
+                                addresses: [senderAddress],
                                 anonymity: anonymity,
-                                message: msg_body,
-                                blockHeight: 0
-                            }
-                            console.log(newMessage);
-                            Messages.create(newMessage).then(() => {
-                                console.log('message created');
-                            }).catch((err) => {
-                                console.log(err);
-                                return res.status(400).json({ message: 'ERROR WHILE SAVING THE TRANSACTION IN THE DATABASE', err });
-                            });
+                                fee: 0,
+                                transfers: [
+                                    {
+                                        amount: 1000,
+                                        address: recipientAddress,
+                                        message: msg_body
+                                    }
+                                ],
+                                unlockTime: 0,
+                                changeAddress: senderAddress
+                            }).then(({ transactionHash } ) => {
+                                const newMessage = {
+                                    senderID: userId,
+                                    senderAdress: senderAddress,
+                                    recipientAdress: recipientAddress,
+                                    createdAt: Date.now(),
+                                    updatedAt: Date.now(),
+                                    amount: amount,
+                                    note: '',
+                                    hash: transactionHash,
+                                    anonymity: anonymity,
+                                    message: msg_body,
+                                    blockHeight: 0
+                                }
+                                Messages.create(newMessage).catch((err) => {
+                                    console.log(err);
+                                    return res.status(400).json({ message: 'ERROR WHILE SAVING THE TRANSACTION IN THE DATABASE', err });
+                                });
+                            })
                         }).catch((err) => {
                             console.log(err);
                             return res.status(400).json({ message: 'ERROR WHILE SENDING THE MESSAGE' });
