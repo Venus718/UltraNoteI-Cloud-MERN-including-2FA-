@@ -20,6 +20,9 @@
   + label::after {
   background-color: rgba(1, 1, 1, 0) !important;
 }
+.react-bootstrap-table-pagination {
+  margin: 0 !important;
+}
 /* ////////////////////////fixed */
 .element-right-round button#dropdown-button-drop-dwon {
   border-radius: 0 0.75rem 0.75rem 0;
@@ -256,14 +259,14 @@ a:focus {
 
 .dd .nestable-item-name {
   color: #fff;
-  background: #EB8153;
+  background: #eb8153;
   display: block;
   height: 35px;
   margin: 5px 0;
   padding: 8px 10px;
   text-decoration: none;
   font-weight: 700;
-  border: 1px solid #EEEEEE;
+  border: 1px solid #eeeeee;
   border-radius: 5px;
   box-sizing: border-box;
   font-size: 13px;

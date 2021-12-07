@@ -1,37 +1,37 @@
-
 const bcrypt = require("bcrypt");
-const jwt = require('jsonwebtoken');
+const jwt = require("jsonwebtoken");
 const Admin = require("../../models/adminuser");
-const JWT_SERECT = 'some super secret ...'
+const JWT_SERECT = "some super secret ...";
 const nodemailer = require("nodemailer");
 const uuid = require("uuid");
 const speakeasy = require("speakeasy");
-const QRCode = require('qrcode');
-const mailjet = require ('node-mailjet').connect('6938f56f5fc30428c70f53aab4330f5c', 'b3a11bd9434c5b665ecd158c9d3a5522')
+const QRCode = require("qrcode");
+const mailjet = require("node-mailjet").connect(
+  "6938f56f5fc30428c70f53aab4330f5c",
+  "b3a11bd9434c5b665ecd158c9d3a5522"
+);
 exports.gets_users_all_details = (req, res, next) => {
-  
-  Admin.find({ _id:req.userData.userId })
+  Admin.find({ _id: req.userData.userId })
     .select("firstname lastname _id username email userImage faactive ")
     .exec()
-    .then(docs => {
+    .then((docs) => {
       const response = {
         count: docs.length,
-        products: docs.map(doc => {
+        products: docs.map((doc) => {
           return {
             firstname: doc.firstname,
             lastname: doc.lastname,
             username: doc.username,
             email: doc.email,
-            userImage: "https://portal.ultranote.org/"+doc.userImage,
+            userImage: "https://portal.ultranote.org/" + doc.userImage,
             _id: doc._id,
-            twofastatus:doc.faactive,
+            twofastatus: doc.faactive,
             request: {
               type: "GET",
-              url: "https://portal.ultranote.org/" + doc._id
-            }
-            
+              url: "https://portal.ultranote.org/" + doc._id,
+            },
           };
-        })
+        }),
       };
       //   if (docs.length >= 0) {
       res.status(200).json(response);
@@ -41,25 +41,17 @@ exports.gets_users_all_details = (req, res, next) => {
       //       });
       //   }
     })
-    .catch(err => {
+    .catch((err) => {
       console.log(err);
       res.status(500).json({
-        error: err
+        error: err,
       });
     });
 };
 
-
-
-
-
-
-
 exports.post_adminregister = (req, res, next) => {
-
   console.log(req.file.path);
- 
-  
+
   // console.log(req.file);
   const id = uuid.v4();
   try {
@@ -68,151 +60,143 @@ exports.post_adminregister = (req, res, next) => {
     const temp_secret = speakeasy.generateSecret();
     // Create user in the database
     Admin.find({ email: req.body.email })
-    .exec()
-    .then(admin => {
-      if (admin.length >= 1) {
-        return res.status(200).json({
-          message: "Mail exists"
-        });
-      } else {
-        bcrypt.hash(req.body.password, 10, (err, hash) => {
-          if (err) {
-            return res.status(200).json({
-              error: err
-            });
-          } else {
-            const nuwuser = new Admin({
-              firstname:req.body.firstname,
-              lastname:req.body.lastname,
-              username:req.body.username,
-              email: req.body.email,
-              userImage:req.file.path,
-              password: hash,
-              phoneno:req.body.phoneno,
-              gauthidt:id,
-              gsecrettoken:temp_secret.base32,
-              gsecretqrcode:temp_secret.otpauth_url
-            });
-            nuwuser
-              .save()
-              .then(result => {
-                console.log(result);
-                res.status(200).json({
-                message: "User created",
-                user:result  
-                });
-              })
-              .catch(err => {
-                console.log(err);
-                res.status(200).json({
-                  error: err
-                });
+      .exec()
+      .then((admin) => {
+        if (admin.length >= 1) {
+          return res.status(200).json({
+            message: "Mail exists",
+          });
+        } else {
+          bcrypt.hash(req.body.password, 10, (err, hash) => {
+            if (err) {
+              return res.status(200).json({
+                error: err,
               });
-          }
-        });
-      }
-    });
-   
+            } else {
+              const nuwuser = new Admin({
+                firstname: req.body.firstname,
+                lastname: req.body.lastname,
+                username: req.body.username,
+                email: req.body.email,
+                userImage: req.file.path,
+                password: hash,
+                phoneno: req.body.phoneno,
+                gauthidt: id,
+                gsecrettoken: temp_secret.base32,
+                gsecretqrcode: temp_secret.otpauth_url,
+              });
+              nuwuser
+                .save()
+                .then((result) => {
+                  console.log(result);
+                  res.status(200).json({
+                    message: "User created",
+                    user: result,
+                  });
+                })
+                .catch((err) => {
+                  console.log(err);
+                  res.status(200).json({
+                    error: err,
+                  });
+                });
+            }
+          });
+        }
+      });
+
     // Send user id and base32 key to user
-   // res.json({ id, secret: temp_secret })
-  } catch(e) {
+    // res.json({ id, secret: temp_secret })
+  } catch (e) {
     console.log(e);
-    res.status(200).json({ message: 'Error generating secret key'})
+    res.status(200).json({ message: "Error generating secret key" });
   }
-
-
-
-
-
-    }
-
+};
 
 exports.post_admin_user_login = (req, res, next) => {
   console.log(req.body);
-  console.log( process.env.JWT_KEY);
+  console.log(process.env.JWT_KEY);
   Admin.find({ email: req.body.email })
     .exec()
-    .then(admin => {
+    .then((admin) => {
       if (admin.length < 1) {
         return res.status(200).json({
-          message: "Email is Not Exist"
+          message: "Email is Not Exist",
         });
       }
       bcrypt.compare(req.body.password, admin[0].password, (err, result) => {
         if (err) {
           return res.status(200).json({
-            message: "Auth failed"
+            message: "Auth failed",
           });
         }
         if (result) {
           const token = jwt.sign(
             {
               email: admin[0].email,
-              userId: admin[0]._id
+              userId: admin[0]._id,
             },
             process.env.JWT_KEY || "serectserect",
             {
-                expiresIn: "1h"
+              expiresIn: "2h",
             }
           );
           return res.status(200).json({
             message: "Auth successful",
-            token: token
+            token: token,
           });
         }
         res.status(200).json({
-          message: "Auth failed"
+          message: "Auth failed",
         });
       });
     })
-    .catch(err => {
+    .catch((err) => {
       console.log(err);
       res.status(200).json({
-        error: err
+        error: err,
       });
     });
-}    
-
+};
 
 exports.post_admin_forgot_password = async (req, res, next) => {
- try {
-  const { email } = req.body;
+  try {
+    const { email } = req.body;
 
-  const admin = await Admin.find({ email: email }).exec()
-  console.log(admin);
-  if (admin.length < 1) {
-    return res.status(200).json({
-      message: "Email is not exist"
-    });
-  }
-  console.log(admin[0]._id);
- const serect = JWT_SERECT + admin[0].password;
- const payload = {
-   email:admin[0].email,
-   id:admin[0]._id
- }
+    const admin = await Admin.find({ email: email }).exec();
+    console.log(admin);
+    if (admin.length < 1) {
+      return res.status(200).json({
+        message: "Email is not exist",
+      });
+    }
+    console.log(admin[0]._id);
+    const serect = JWT_SERECT + admin[0].password;
+    const payload = {
+      email: admin[0].email,
+      id: admin[0]._id,
+    };
 
- const token = await  jwt.sign(payload,serect, {expiresIn:'15m'})
- const link  = `https://portal.ultranote.org/reset-password/${admin[0]._id}/${token}`
+    const token = await jwt.sign(payload, serect, { expiresIn: "15m" });
+    const link = `https://portal.ultranote.org/reset-password/${admin[0]._id}/${token}`;
 
-
-  
- console.log(link);
- const request = mailjet
-    .post("send", {'version': 'v3.1'})
-    .request({
-        "Messages":[{
-            "From": {
-                "Email": "support@ultranote.org",
-                "Name": "UltraNote Cloud"
+    console.log(link);
+    const request = mailjet.post("send", { version: "v3.1" }).request({
+      Messages: [
+        {
+          From: {
+            Email: "support@ultranote.org",
+            Name: "UltraNote Cloud",
+          },
+          To: [
+            {
+              Email: `${email}`,
+              Name: admin[0].firstname + " " + admin[0].lastname,
             },
-            "To": [{
-                "Email": `${email}`,
-                "Name": admin[0].firstname + " " + admin[0].lastname
-            }],
-            "Subject": "Reset Password",
-            "TextPart": "Reset Your password",
-            "HTMLPart": `<html xmlns="http://www.w3.org/1999/xhtml" xmlns:o="urn:schemas-microsoft-com:office:office" style="width:100%;font-family:helvetica, 'helvetica neue', arial, verdana, sans-serif;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%;padding:0;Margin:0">
+          ],
+          Subject: "Reset Password",
+          TextPart: "Reset Your password",
+          HTMLPart: `<html xmlns="http://www.w3.org/1999/xhtml" xmlns:o="urn:schemas-microsoft-com:office:office" style="width:100%;font-family:helvetica, 'helvetica neue', arial, verdana, sans-serif;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%;padding:0;Margin:0">
             <head> 
              <meta charset="UTF-8"> 
              <meta content="width=device-width, initial-scale=1" name="viewport"> 
@@ -332,9 +316,7 @@ exports.post_admin_forgot_password = async (req, res, next) => {
                                  <td align="center" style="padding:0;Margin:0;padding-top:15px;padding-bottom:15px"><h1 style="Margin:0;line-height:24px;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;font-size:20px;font-style:normal;font-weight:normal;color:#333333"><b>Lost your password !!&nbsp;</b></h1></td> 
                                 </tr> 
                                 <tr style="border-collapse:collapse"> 
-                                 <td align="center" style="padding:0;Margin:0;padding-left:40px;padding-right:40px"><p style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-size:16px;font-family:helvetica, 'helvetica neue', arial, verdana, sans-serif;line-height:24px;color:#666666"><br>Hello ${
-                                  admin[0].firstname
-                 }  ${admin[0].lastname}</p></td> 
+                                 <td align="center" style="padding:0;Margin:0;padding-left:40px;padding-right:40px"><p style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-size:16px;font-family:helvetica, 'helvetica neue', arial, verdana, sans-serif;line-height:24px;color:#666666"><br>Hello ${admin[0].firstname}  ${admin[0].lastname}</p></td> 
                                 </tr> 
                                 <tr style="border-collapse:collapse"> 
                                  <td align="center" style="padding:0;Margin:0;padding-right:35px;padding-left:40px"><p style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-size:16px;font-family:helvetica, 'helvetica neue', arial, verdana, sans-serif;line-height:24px;color:#666666">We hope that you liked the experience</p></td> 
@@ -449,176 +431,165 @@ exports.post_admin_forgot_password = async (req, res, next) => {
               </table> 
              </div>  
             </body>
-            </html>`
-        }]
-    })
-request
-    .then( result => 
-      res.status(200).json({
-        response:result.body, 
-        message:"Email Has Been Send"
+            </html>`,
+        },
+      ],
+    });
+    request
+      .then((result) =>
+        res.status(200).json({
+          response: result.body,
+          message: "Email Has Been Send",
         })
-    )
-    .catch(error => res.status(200).json({
-      response:error.message, 
-      message:"Email Has Been Send Error"
-      }))
-  
-
-
-
- 
-} catch(error) {
-res.status(200).json({
-response:error,
-message:"Email Has Been Send Error"  
-})
-}
-  
-}
-   
-  
-
-
-
-
-exports.get_admin_reset_password = (req, res, next) => {
-const { id , token } = req.params;
-console.log('id=>',id);
-console.log('token=>',token);
-Admin.find({ _id: id })
-.exec()
-.then(admin => {
-  if (admin.length < 1) {
-    return res.status(200).json({
-      message: "User Not Exist"
-    });
-  } 
-const serect =   JWT_SERECT + admin[0].password
-try{
-const payload = jwt.verify(token,serect)  
-console.log(payload);
-res.status(200).json({
-  message: 'user verified',
-  email:payload.email
-});
-}
-catch(error) {
-console.log('aas',error.message);
-res.status(200).json({
-  message:'user in not verified',
-  error: error
-});
-} 
-}).catch(err => {
-  console.log(err);
-  res.status(200).json({
-    error: err
-  });
-});
-
-
-}
-
-exports.post_admin_reset_password = (req, res, next) => {
-  const { id , token } = req.params;
-  const { password , conformpassword } = req.body;
-  console.log(id,token);
-
-  Admin.findOne({ _id: id })
-  .exec()
-  .then(admin => {
-    if (admin === undefined || admin == null || admin.length <= 0) {
-      return res.status(200).json({
-        message: "User Not Exist"
-      });
-    } 
-  
-   const serect =   JWT_SERECT + admin.password;
-      try {
-      const payload = jwt.verify(token,serect);
-      console.log('=>',password);
-      
-      bcrypt.hash(password, 10, (err, hash) => {
-        if (err) {
-          return res.status(200).json({
-            error: err,
-            message:'system err'
-          });
-        } else {
-          admin.password =  hash;
-          admin.save();
-          return res.status(200).json({
-            message: "User Password changed",
-            data:admin
-            });
-        }
-      });
-    } catch(error) {
-     console.log(error.message);
-     return res.status(200).json({
-      message: error.message
-    });
-    }
-
-    }).catch(err => {
-    console.log(err);
+      )
+      .catch((error) =>
+        res.status(200).json({
+          response: error.message,
+          message: "Email Has Been Send Error",
+        })
+      );
+  } catch (error) {
     res.status(200).json({
-    error: err
-  });  
-  })
-
-
-}  
-
-exports.post_google_authenticator = async( req, res, next ) => {
-try {
- const { email } = req.body;
- console.log(email);
-  const admin = await Admin.find({ email:email }).exec();
-  if (admin.length < 1) {
-     return res.status(200).json({
-      message: "Email is not exist"
-    });
-    } else if (!admin[0].faactive) {
-    return res.status(200).json({
-    message: "Your 2FA Authentication Failed"
+      response: error,
+      message: "Email Has Been Send Error",
     });
   }
-  else {
+};
 
- const data_url = await QRCode.toDataURL(admin[0].gsecretqrcode);
- const datanow = new Date();
- const filename =  admin[0].email.slice(0, -4)+datanow;
+exports.get_admin_reset_password = (req, res, next) => {
+  const { id, token } = req.params;
+  console.log("id=>", id);
+  console.log("token=>", token);
+  Admin.find({ _id: id })
+    .exec()
+    .then((admin) => {
+      if (admin.length < 1) {
+        return res.status(200).json({
+          message: "User Not Exist",
+        });
+      }
+      const serect = JWT_SERECT + admin[0].password;
+      try {
+        const payload = jwt.verify(token, serect);
+        console.log(payload);
+        res.status(200).json({
+          message: "user verified",
+          email: payload.email,
+        });
+      } catch (error) {
+        console.log("aas", error.message);
+        res.status(200).json({
+          message: "user in not verified",
+          error: error,
+        });
+      }
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(200).json({
+        error: err,
+      });
+    });
+};
 
- const finalname = filename
- const finalstring = filename.slice(0, -37);
- const check = finalstring.replace(/ /g,'');
-// console.log('kkl=>',typeof check)
- const filesname = check+".png";
-  const filelocation = "./qrbucket/"
-  const newString = filelocation.concat(filesname);
- const base64Data = data_url.replace(/^data:image\/png;base64,/, "");
-  require('fs').writeFileSync(newString, base64Data, 'base64');
- const html = "https://portal.ultranote.org/qrbucket/";
- const newfinalhtml = html.concat(filesname);
-// console.log(newfinalhtml);
- 
- const request = mailjet
- .post("send", {'version': 'v3.1'})
- .request({
-     "Messages":[{
-         "From": {
-             "Email": "support@ultranote.org",
-             "Name": "UltraNote Cloud"
-         },
-         "To": [{
-             "Email": `${email}`,
-             "Name": admin[0].firstname + " " + admin[0].lastname
-         }],
-         "Subject": "2FA Auth Google Authenticator",
-         "TextPart": " Google Authenticator",
-         "HTMLPart": `<html xmlns="http://www.w3.org/1999/xhtml" xmlns:o="urn:schemas-microsoft-com:office:office" style="width:100%;font-family:helvetica, 'helvetica neue', arial, verdana, sans-serif;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%;padding:0;Margin:0">
+exports.post_admin_reset_password = (req, res, next) => {
+  const { id, token } = req.params;
+  const { password, conformpassword } = req.body;
+  console.log(id, token);
+
+  Admin.findOne({ _id: id })
+    .exec()
+    .then((admin) => {
+      if (admin === undefined || admin == null || admin.length <= 0) {
+        return res.status(200).json({
+          message: "User Not Exist",
+        });
+      }
+
+      const serect = JWT_SERECT + admin.password;
+      try {
+        const payload = jwt.verify(token, serect);
+        console.log("=>", password);
+
+        bcrypt.hash(password, 10, (err, hash) => {
+          if (err) {
+            return res.status(200).json({
+              error: err,
+              message: "system err",
+            });
+          } else {
+            admin.password = hash;
+            admin.save();
+            return res.status(200).json({
+              message: "User Password changed",
+              data: admin,
+            });
+          }
+        });
+      } catch (error) {
+        console.log(error.message);
+        return res.status(200).json({
+          message: error.message,
+        });
+      }
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(200).json({
+        error: err,
+      });
+    });
+};
+
+exports.post_google_authenticator = async (req, res, next) => {
+  try {
+    const { email } = req.body;
+    console.log(email);
+    const admin = await Admin.find({ email: email }).exec();
+    if (admin.length < 1) {
+      return res.status(200).json({
+        message: "Email is not exist",
+      });
+    } else if (!admin[0].faactive) {
+      return res.status(200).json({
+        message: "Your 2FA Authentication Failed",
+      });
+    } else {
+      const data_url = await QRCode.toDataURL(admin[0].gsecretqrcode);
+      const datanow = new Date();
+      const filename = admin[0].email.slice(0, -4) + datanow;
+
+      const finalname = filename;
+      const finalstring = filename.slice(0, -37);
+      const check = finalstring.replace(/ /g, "");
+      // console.log('kkl=>',typeof check)
+      const filesname = check + ".png";
+      const filelocation = "./qrbucket/";
+      const newString = filelocation.concat(filesname);
+      const base64Data = data_url.replace(/^data:image\/png;base64,/, "");
+      require("fs").writeFileSync(newString, base64Data, "base64");
+      const html = "https://portal.ultranote.org/qrbucket/";
+      const newfinalhtml = html.concat(filesname);
+      // console.log(newfinalhtml);
+
+      const request = mailjet
+        .post("send", { version: "v3.1" })
+        .request({
+          Messages: [
+            {
+              From: {
+                Email: "support@ultranote.org",
+                Name: "UltraNote Cloud",
+              },
+              To: [
+                {
+                  Email: `${email}`,
+                  Name: admin[0].firstname + " " + admin[0].lastname,
+                },
+              ],
+              Subject: "2FA Auth Google Authenticator",
+              TextPart: " Google Authenticator",
+              HTMLPart: `<html xmlns="http://www.w3.org/1999/xhtml" xmlns:o="urn:schemas-microsoft-com:office:office" style="width:100%;font-family:helvetica, 'helvetica neue', arial, verdana, sans-serif;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%;padding:0;Margin:0">
          <head> 
           <meta charset="UTF-8"> 
           <meta content="width=device-width, initial-scale=1" name="viewport"> 
@@ -738,9 +709,7 @@ try {
                               <td align="center" style="padding:0;Margin:0;padding-top:15px;padding-bottom:15px"><h1 style="Margin:0;line-height:24px;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;font-size:20px;font-style:normal;font-weight:normal;color:#333333"><b>Lost your password !!&nbsp;</b></h1></td> 
                              </tr> 
                              <tr style="border-collapse:collapse"> 
-                              <td align="center" style="padding:0;Margin:0;padding-left:40px;padding-right:40px"><p style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-size:16px;font-family:helvetica, 'helvetica neue', arial, verdana, sans-serif;line-height:24px;color:#666666"><br>Hello ${
-                               admin[0].firstname
-              }  ${admin[0].lastname}</p></td> 
+                              <td align="center" style="padding:0;Margin:0;padding-left:40px;padding-right:40px"><p style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-size:16px;font-family:helvetica, 'helvetica neue', arial, verdana, sans-serif;line-height:24px;color:#666666"><br>Hello ${admin[0].firstname}  ${admin[0].lastname}</p></td> 
                              </tr> 
                              <tr style="border-collapse:collapse"> 
                               <td align="center" style="padding:0;Margin:0;padding-right:35px;padding-left:40px"><p style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-size:16px;font-family:helvetica, 'helvetica neue', arial, verdana, sans-serif;line-height:24px;color:#666666">We hope that you liked the experience</p></td> 
@@ -861,148 +830,156 @@ try {
          </body>
          </html>
          
-         `
-     }]
- })
- .then( result => 
-  res.status(200).json({
-    response:result.body, 
-    message:"Email Has Been Send"
-    })
-)
-.catch(error => res.status(200).json({
-  response:error.message, 
-  message:"Email Has Been Send Error"
-  }))
+         `,
+            },
+          ],
+        })
+        .then((result) =>
+          res.status(200).json({
+            response: result.body,
+            message: "Email Has Been Send",
+          })
+        )
+        .catch((error) =>
+          res.status(200).json({
+            response: error.message,
+            message: "Email Has Been Send Error",
+          })
+        );
+    } // else
+  } catch (error) {
+    console.log(error.message);
+  }
+};
 
+exports.post_google_auth_code_verify = async (req, res, next) => {
+  const { serect_code, email } = req.body;
 
-} // else 
- 
-} catch(error) {
-console.log(error.message);
-}
-}
- 
-
-
-
-exports.post_google_auth_code_verify = async( req, res, next ) => { 
-const { serect_code , email } = req.body;
-
-const admin = await Admin.find({ email:email }).exec();
-var base32secret = admin[0].gsecrettoken;
-const verified = await speakeasy.totp.verify({ secret:base32secret, encoding: 'base32',token:serect_code, window: 1 });
-console.log(req.body);
-console.log(verified);
-if(verified) {
-  const token = jwt.sign(
-    {
-      email: admin[0].email,
-      userId: admin[0]._id
-    },
-    process.env.JWT_KEY || "serectserect",
-    {
-        expiresIn: "1h"
-    }
-  );
-  return res.status(200).json({
-    message: "Auth successful",
-    token: token
+  const admin = await Admin.find({ email: email }).exec();
+  var base32secret = admin[0].gsecrettoken;
+  const verified = await speakeasy.totp.verify({
+    secret: base32secret,
+    encoding: "base32",
+    token: serect_code,
+    window: 1,
   });
+  console.log(req.body);
   console.log(verified);
-} else {
-  res.status(200).json({
-    message:"Your Serect Code Is Incorrect",
- });
-  
- }
+  if (verified) {
+    const token = jwt.sign(
+      {
+        email: admin[0].email,
+        userId: admin[0]._id,
+      },
+      process.env.JWT_KEY || "serectserect",
+      {
+        expiresIn: "1h",
+      }
+    );
+    return res.status(200).json({
+      message: "Auth successful",
+      token: token,
+    });
+    console.log(verified);
+  } else {
+    res.status(200).json({
+      message: "Your Serect Code Is Incorrect",
+    });
+  }
+};
 
+exports.post_update_profile_details = async (req, res, next) => {
+  if (req.body.image != undefined && req.body.image.length > 0) {
+    let filename = uniqid();
+    fs.writeFile("/home/Backend/src/images/" + filename + ".png", image);
+    let image = filename;
+  }
+  User.updateOne(
+    { _id: req.body._id },
+    {
+      $set: {
+        firstName: req.body.firstname,
+        lastName: req.body.lastname,
+        phone: req.body.phone,
+        currency: req.body.currency,
+        mail: req.body.mail,
+        isActive: req.body.isActive,
+        ...(image ? { image: image } : {}),
+        two_fact_auth: req.body.two_factor_auth,
+      },
+    }
+  )
+    .then(() => {
+      res.status(200).json({
+        message: "Profile Updated Successfully",
+      });
+    })
+    .catch((error) => {
+      res.status(200).json({
+        message: "Profile Updated Successfully",
+        error: error,
+      });
+    });
+};
 
-
-}  
-
-exports.post_update_profile_details = async ( req,res,next ) => {
-console.log("Update Profile");
-// console.log(req.body);
-// console.log(req.file.path);
-const profiledata = await Admin.findOne({ _id:req.body._id }).exec();
-console.log(profiledata);
-profiledata.firstname = req.body.firstname;
-profiledata.lastname = req.body.lastname;
-profiledata.phonenumber = req.body.phonenumber;
-profiledata.userImage = req.file.path;
-profiledata.save()
-.then(res => {   
-res.status(200).json({
-message:"Profile Updated Successfully"
-});  
-})
-.catch((error) => { 
-  res.status(200).json({
-  message:"Profile Updated Successfully",
-  error:error
-});
-});
-}
-exports.post_update_password_set = async ( req,res,next ) => {
+exports.post_update_password_set = async (req, res, next) => {
   console.log("Update Password");
   console.log(req.body);
- const resetPasswordReq = await Admin.findOne({ _id: req.body._id }).exec();
+  const resetPasswordReq = await Admin.findOne({ _id: req.body._id }).exec();
   console.log(resetPasswordReq);
-  if(resetPasswordReq.email === req.body.email){
-    resetPasswordReq.password
-    const compare = await bcrypt.compare(req.body.currentpassword, resetPasswordReq.password);
+  if (resetPasswordReq.email === req.body.email) {
+    resetPasswordReq.password;
+    const compare = await bcrypt.compare(
+      req.body.currentpassword,
+      resetPasswordReq.password
+    );
     console.log(compare);
-  if (compare){
-  const hashpass = await bcrypt.hash(req.body.password,10);
-  console.log(hashpass);
-  resetPasswordReq.password = hashpass;
- await resetPasswordReq.save().then(result => {
-  res.status(200).json({
-  message: "Password Changed"
- })
-}).catch(error => {
-res.status(200).json({
-message: "Password Not Changed System Error"
-}); 
-});
-
+    if (compare) {
+      const hashpass = await bcrypt.hash(req.body.password, 10);
+      console.log(hashpass);
+      resetPasswordReq.password = hashpass;
+      await resetPasswordReq
+        .save()
+        .then((result) => {
+          res.status(200).json({
+            message: "Password Changed",
+          });
+        })
+        .catch((error) => {
+          res.status(200).json({
+            message: "Password Not Changed System Error",
+          });
+        });
+    } else {
+      res.status(200).json({
+        message: "Your Current Password Not Matched",
+      });
+    }
   } else {
-  res.status(200).json({
-  message:"Your Current Password Not Matched"  
-  });  
+    res.status(200).json({
+      message: "Email id Is Not Matched",
+    });
   }
+};
+
+exports.twofachagestatus = async (req, res, next) => {
+  console.log("Change Status");
+  const id = req.userData.userId;
+  try {
+    const change_status = await Admin.findOne({ _id: id }).exec();
+    // console.log(change_status);
+    if (change_status.faactive) {
+      // console.log('true');
+      change_status.faactive = false;
+    } else {
+      // console.log('false');
+      change_status.faactive = true;
+    }
+    change_status.save();
+    res.status(200).json({
+      message: "2FA Status Changed",
+    });
+  } catch (error) {
+    console.log(error);
   }
-  else {
-   res.status(200).json({
-   message:"Email id Is Not Matched"  
-   }); 
-  } 
-
-
-
-  }
-
-exports.twofachagestatus  = async (req,res,next) => {
-console.log("Change Status");
-const id = req.userData.userId;
-try {
-const change_status = await Admin.findOne({ _id: id }).exec();
-// console.log(change_status);
-if(change_status.faactive) {
-// console.log('true');
-change_status.faactive = false;
-} else {
-// console.log('false');
-change_status.faactive = true;
-}
-change_status.save();
-res.status(200).json({
-message:"2FA Status Changed"   
-});
-}
-catch(error) {
-console.log(error);  
-}
-
-}  
+};
