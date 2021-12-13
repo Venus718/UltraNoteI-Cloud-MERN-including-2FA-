@@ -7,6 +7,7 @@ import { selectUserToken } from "../../../redux/user/user.selectors";
 import BootstrapTable from "react-bootstrap-table-next";
 import paginationFactory from "react-bootstrap-table2-paginator";
 import "react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.min.css";
+import { toast, ToastContainer } from "react-toastify";
 
 class UserList extends Component {
   constructor(props) {
@@ -14,6 +15,7 @@ class UserList extends Component {
     this.state = {
       token: this.props.tokem.token,
       data: [],
+      filter: "all",
       sort: 8,
       activePag: 0,
       test: 0,
@@ -36,8 +38,8 @@ class UserList extends Component {
       })
       .then((res) => {
         this.setState({
-          allUsers: res.data,
-          data: res.data,
+          allUsers: res.data.users,
+          data: res.data.users,
           activeUsers: res.data.users.filter((user) => user.isActive == true),
           inactiveUsers: res.data.users.filter(
             (user) => user.isActive == false
@@ -45,6 +47,7 @@ class UserList extends Component {
           suspendedUsers: res.data.users.filter(
             (user) => user.suspended == true
           ),
+          deletedUsers: res.data.users.filter((user) => user.deleted == true),
           totalUsers: res.data.users.length,
         });
       })
@@ -71,6 +74,30 @@ class UserList extends Component {
     );
   };
 
+  onDelete = (id) => {
+    if (window.confirm("Are you sure you want to delete this user?")) {
+      axios
+        .put(
+          `https://portal.ultranote.org/api/users/delete_user`,
+          {
+            userId: id,
+          },
+          {
+            headers: {
+              Authorization: this.state.token,
+            },
+          }
+        )
+        .then((res) => {
+          console.log(res);
+          toast.success("User deleted successfully");
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    }
+  };
+
   searchHandler = (e) => {
     const search = e.target.value;
     if (search == "") {
@@ -79,7 +106,7 @@ class UserList extends Component {
       });
       return;
     }
-    const searchUsers = this.state.data.users.filter((user) => {
+    const searchUsers = this.state.data.filter((user) => {
       return user.mail?.toLowerCase().includes(search.toLowerCase());
     });
     this.setState({
@@ -89,19 +116,78 @@ class UserList extends Component {
     });
   };
 
+  changeFilter = (filter) => {
+    switch (filter) {
+      case "all":
+        this.setState({
+          data: this.state.allUsers,
+        });
+        break;
+      case "active":
+        this.setState({
+          data: this.state.activeUsers,
+        });
+        break;
+      case "inactive":
+        this.setState({
+          data: this.state.inactiveUsers,
+        });
+        break;
+      case "suspended":
+        this.setState({
+          data: this.state.suspendedUsers,
+        });
+        break;
+      case "deleted":
+        this.setState({
+          data: this.state.deletedUsers,
+        });
+        break;
+      default:
+        break;
+    }
+    this.setState({
+      filter: filter,
+    });
+  };
+
   render() {
-    const { data, totalUsers } = this.state;
+    const { data, totalUsers, filter } = this.state;
     return (
       <Fragment>
+        <ToastContainer
+          position="top-right"
+          autoClose={5000}
+          hideProgressBar={false}
+          newestOnTop={true}
+          closeOnClick
+        />
         <div className="form-head d-flex align-items-center flex-wrap mb-3">
-          <h2 className="font-w600 mb-0 text-black">Users List</h2>
+          <h2 className="font-w600 mb-0 text-black">
+            Users List ({filter.toUpperCase()})
+          </h2>
           <div className="d-flex align-items-center ml-auto">
             <input
               type="text"
-              className="form-control"
+              className="form-control mr-2"
               placeholder="Enter email"
               onChange={this.searchHandler}
             />
+            <div className="form-group mb-0">
+              <select
+                className="form-control w-auto"
+                onChange={(e) => {
+                  this.changeFilter(e.target.value);
+                }}
+              >
+                Search filters
+                <option value="all">All</option>
+                <option value="active">Active</option>
+                <option value="inactive">Inactive</option>
+                <option value="suspended">Suspended</option>
+                <option value="deleted">Deleted</option>
+              </select>
+            </div>
           </div>
         </div>
         <div className="row">
@@ -113,7 +199,7 @@ class UserList extends Component {
               >
                 {totalUsers > 0 && (
                   <BootstrapTable
-                    data={data.users}
+                    data={data}
                     keyField="_id"
                     wrapperClasses="table-responsive m-0"
                     classes="mb-4 dataTablesCard short-one card-table text-black dataTable no-footer "
@@ -182,13 +268,13 @@ class UserList extends Component {
                                 to={`/users/${row._id}`}
                                 className="btn btn-sm btn-secondary mr-1"
                               >
-                                <i className="la la-edit"></i>
+                                Edit
                               </Link>
                               <button
                                 className="btn btn-sm btn-secondary"
-                                onClick={() => this.props.onDelete(row._id)}
+                                onClick={() => this.onDelete(row._id)}
                               >
-                                <i className="la la-trash"></i>
+                                Delete
                               </button>
                             </div>
                           );

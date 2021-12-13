@@ -10,7 +10,6 @@ const NavHader = () => {
   const { navigationHader, openMenuToggle, background } = useContext(
     ThemeContext
   );
-  console.log('check header=>',toggle);
   return (
     <div className="nav-header">
       <Link to="/" className="brand-logo">

@@ -54,11 +54,10 @@ const SideBar = ({ userProfileData }) => {
   let scrollPosition = useScrollPosition();
   /// Path
   let path = window.location.pathname;
-  path = path.split("/");
-  path = path[path.length - 1];
+  path = path.split("/")[1];
   /// Active menu
   let deshBoard = [
-      "",
+      "dashboard",
       "my-wallets",
       "transactions",
       "coin-details",
@@ -120,6 +119,7 @@ const SideBar = ({ userProfileData }) => {
       "uc-noui-slider",
       "map-jqvmap",
       "uc-lightgallery",
+      "mass-email",
     ],
     widget = ["widget-basic"],
     forms = [
@@ -187,29 +187,20 @@ const SideBar = ({ userProfileData }) => {
         </div>
         <MM className="metismenu" id="menu">
           <li className={`${deshBoard.includes(path) ? "mm-active" : ""}`}>
-            <Link className="has-arrow ai-icon" to="#">
+            <Link className="ai-icon" to="/dashboard">
               <i className="flaticon-144-layout"></i>
               <span className="nav-text">Dashboard</span>
             </Link>
-            <ul>
-              <li>
-                <Link
-                  className={`${path === "" ? "mm-active" : ""}`}
-                  to="/dashboard"
-                >
-                  {" "}
-                  Dashboard{" "}
-                </Link>
-              </li>
-              {/* <li><Link className={`${path === "wallet" ? "mm-active" : ""}`} to="/my-wallets">Wallet</Link></li>
+            {/*<ul>
+               <li><Link className={`${path === "wallet" ? "mm-active" : ""}`} to="/my-wallets">Wallet</Link></li>
               <li><Link className={`${path === "transactions" ? "mm-active" : ""}`} to="/transactions"> Transactions</Link></li>
 			  <li><Link className={`${path === "coin-details" ? "mm-active" : ""}`} to="/coin-details"> Coin Details</Link> </li>
               <li><Link className={`${path === "portofolio" ? "mm-active" : ""}`} to="/portofolio">Portofolio</Link></li>
-              <li><Link className={`${path === "market-capital" ? "mm-active" : ""}`} to="/market-capital">Market Capital</Link></li> */}
-            </ul>
+              <li><Link className={`${path === "market-capital" ? "mm-active" : ""}`} to="/market-capital">Market Capital</Link></li> 
+            </ul>*/}
           </li>
 
-          <li className={`${deshBoard.includes(path) ? "mm-active" : ""}`}>
+          <li className={`${widget.includes(path) ? "mm-active" : ""}`}>
             <Link className="has-arrow ai-icon" to="#">
               <i className="flaticon-044-file"></i>
               <span className="nav-text">Fainancial Reports</span>
@@ -416,25 +407,21 @@ const SideBar = ({ userProfileData }) => {
             </ul>
           </li>
           <li className={`${app.includes(path) ? "mm-active" : ""}`}>
-            <Link className="has-arrow ai-icon" to="#">
+            <Link className="ai-icon" to="/users">
               <i className="flaticon-019-add-user"></i>
               <span className="nav-text">User Management</span>
             </Link>
-            <ul>
-              <li>
-                <Link
-                  className={`${path === "users" ? "mm-active" : ""}`}
-                  to="/users"
-                >
-                  User List
-                </Link>
-              </li>
-            </ul>
           </li>
-          <li className={`${plugins.includes(path) ? "mm-active" : ""}`}>
+          <li className={`${pages.includes(path) ? "mm-active" : ""}`}>
             <Link className="has-arrow ai-icon" to="#">
               <i className="flaticon-073-settings"></i>
               <span className="nav-text">Settings</span>
+            </Link>
+          </li>
+          <li className={`${plugins.includes(path) ? "mm-active" : ""}`}>
+            <Link className="ai-icon" to="/mass-email">
+              <i className="flaticon-076-email-1"></i>
+              <span className="nav-text">Mass email</span>
             </Link>
           </li>
         </MM>

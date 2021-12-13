@@ -19,7 +19,7 @@ class TotalUsers extends Component {
       ],
       labels: ["Active Users", "Suspended users", "Not Active Users"],
     };
-
+    console.log(data);
     const options = {
       responsive: true,
       legend: false,

@@ -156,6 +156,11 @@ span.mail-text {
   color: #3e4954;
   font-weight: 100;
 }
+
+#multiselect .dropdown-menu {
+  max-height: 300px;
+  overflow-y: auto;
+}
 /* slider */
 
 .card-text {
@@ -670,4 +675,21 @@ button.react-calendar__tile.react-calendar__tile--active.react-calendar__tile--r
 /* Selector Design */
 .css-1okebmr-indicatorSeparator {
   display: none;
+}
+
+::-webkit-scrollbar {
+  width: 15px;
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #eb8153;
+}
+
+::-webkit-scrollbar-track {
+  background: #2c254a;
+  border: #473f72 1px solid;
+}
+
+select option {
+  background: #2c254a;
 }

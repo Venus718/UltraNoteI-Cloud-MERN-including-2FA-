@@ -1,44 +1,39 @@
 import React, { Component } from "react";
 import { Bar } from "react-chartjs-2";
 
-
 class BarChart1 extends Component {
   constructor(props) {
     super(props);
-    // Don't call this.setState() here!
-
   }
-  // componentDidMount() {
-  //   axios.post(`http://localhost:5000/api/users/user_list`)
-  //   .then(res => {
-  //     const persons = res.data;
-  //     console.log(persons);
-  //     allUsers(persons);
-  //     }).catch(function (error) {
-  //     // handle error
-  //     console.log(error);
-  //     });
-  // }
+
   render() {
-    console.log(this.props);
-    console.log(this.props.users);
-    const { users } = this.props;
-      const data = {
+    const users = this.props.users;
+    const usersByMonth = users.reduce((acc, user) => {
+      const month = new Date(user.creationDate).getMonth();
+      if (!acc[month]) {
+        acc[month] = [];
+      }
+      acc[month].push(user);
+      return acc;
+    }, {});
+    const data = {
       defaultFontFamily: "Poppins",
-      labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul","Aug","Sep","Oct","Nov","Dec"],
+      labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul","Aug","Sep","Oct","Nov","Dec"], // prettier-ignore
       datasets: [
         {
-          label: "User Registred With Months",
-          
-          data: [users/12, users/11, users/10, users/9, users/8, users/7, users/6,users/5,users/4,users/3,users/2,users/1],
-          
+          label: "New Users",
+
+          data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+
           borderColor: "rgba(64, 24, 157, 1)",
           borderWidth: "0",
           backgroundColor: "#EB8153",
         },
       ],
     };
-  
+    for (let month in usersByMonth)
+      data.datasets[0].data[month] = usersByMonth[month].length;
+
     const options = {
       legend: false,
       scales: {
@@ -52,20 +47,18 @@ class BarChart1 extends Component {
         xAxes: [
           {
             // Change here
-            barPercentage: 0.5,
+            barPercentage: 0.8,
           },
         ],
       },
     };
-  
-  
+
     return (
       <>
-        <Bar data={data} height={150} options={options} />
+        <Bar data={data} height={50} options={options} />
       </>
     );
   }
 }
-
 
 export default BarChart1;

@@ -1,18 +1,10 @@
-import React, { Fragment, useState, useRef, useEffect } from "react";
-import { Button, Dropdown, Modal } from "react-bootstrap";
-import { Link } from "react-router-dom";
-import { useForm } from "react-hook-form";
+import React, { Fragment, useState, useEffect } from "react";
+import { Button } from "react-bootstrap";
 import axios from "axios";
-import { connect } from "react-redux";
-import {
-  selectProfileData,
-  selectUserToken,
-} from "../../../redux/user/user.selectors";
-import { createStructuredSelector } from "reselect";
 import "../AppsMenu/AppProfile/AppProfile.css";
 import PageTitle from "../../layouts/PageTitle";
-import moment from "moment";
-import BootstrapSwitchButton from "bootstrap-switch-button-react";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const UserEdit = (props) => {
   const { id } = props.match.params;
@@ -54,7 +46,22 @@ const UserEdit = (props) => {
         },
       })
       .then((res) => {
-        console.log(res);
+        toast.success("User updated successfully", {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+        });
+      })
+      .catch((err) => {
+        toast.error("User update failed", {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+        });
       });
   };
   useEffect(() => {
@@ -84,10 +91,6 @@ const UserEdit = (props) => {
   const handleBack = () => {
     props.history.goBack();
   };
-  const toggleEdit = () => {
-    setEdit(!edit);
-  };
-  const [edit, setEdit] = useState(false);
   const handleImageChange = (e) => {
     e.preventDefault();
     let reader = new FileReader();
@@ -103,7 +106,18 @@ const UserEdit = (props) => {
 
   return (
     <Fragment>
-      <PageTitle activeMenu="User Profile" motherMenu="App" />
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
+      <PageTitle activeMenu="Edit User" motherMenu="App" />
       <div className="row">
         <div className="col-sm-12 col-md-12">
           <div className="card">
@@ -120,7 +134,7 @@ const UserEdit = (props) => {
                   XUNI
                 </h4>
                 <p>
-                  <small> {walletData.address} </small>
+                  <small> {walletData?.address || "Address not found"} </small>
                 </p>
               </div>
             </div>
@@ -189,83 +203,7 @@ const UserEdit = (props) => {
                         }
                       />
                     </div>
-                  </div>
-                  <div className="col-md-6">
-                    <div className="form-group">
-                      <label>Status</label>
-                      <select
-                        className="form-control"
-                        value={userData.status}
-                        onChange={(e) =>
-                          setUserData({
-                            ...userData,
-                            isActive: e.target.value === "true" ? true : false,
-                          })
-                        }
-                      >
-                        <option value="true">Active</option>
-                        <option value="false">Inactive</option>
-                      </select>
-                    </div>
-                    <div className="form-group">
-                      <label>Suspended</label>
-                      <select
-                        className="form-control"
-                        value={userData.suspended}
-                        onChange={(e) =>
-                          setUserData({
-                            ...userData,
-                            suspended: e.target.value === "true" ? true : false,
-                          })
-                        }
-                      >
-                        <option value="true">Yes</option>
-                        <option value="false">No</option>
-                      </select>
-                    </div>
-                    <div className="form-group">
-                      <label>Currency</label>
-                      <select
-                        className="form-control"
-                        value={userData.currency}
-                        onChange={(e) =>
-                          setUserData({
-                            ...userData,
-                            currency: e.target.value,
-                          })
-                        }
-                      >
-                        <option value="USD">USD</option>
-                        <option value="EUR">EUR</option>
-                      </select>
-                    </div>
-                    <div className="form-group">
-                      <label>2FA Enabled</label>
-                      <div
-                        className="d-flex switch"
-                        style={{
-                          marginTop: "-50px",
-                          marginBottom: "60px",
-                        }}
-                      >
-                        <input
-                          type="checkbox"
-                          onChange={(e) =>
-                            setUserData({
-                              ...userData,
-                              two_fact_auth: e.target.checked,
-                            })
-                          }
-                          checked={userData.two_fact_auth}
-                          value={userData.two_fact_auth}
-                          className="switch-input"
-                          style={{
-                            margintop: "-50px",
-                          }}
-                        />
-                        <span className="slider round"></span>
-                      </div>
-                    </div>
+
                     <div className="form-group">
                       <label>Avatar</label>
                       <div className="input-group mb-3">
@@ -283,6 +221,118 @@ const UserEdit = (props) => {
                             Choose file
                           </label>
                         </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="col-md-6">
+                    <div className="form-group">
+                      <label>Status</label>
+                      <select
+                        className="form-control"
+                        onChange={(e) =>
+                          setUserData({
+                            ...userData,
+                            isActive: e.target.value === "true" ? true : false,
+                          })
+                        }
+                      >
+                        <option value="true" selected={userData.isActive}>
+                          Active
+                        </option>
+                        <option value="false" selected={!userData.isActive}>
+                          Inactive
+                        </option>
+                      </select>
+                    </div>
+                    <div className="form-group">
+                      <label>Suspended</label>
+                      <select
+                        className="form-control"
+                        onChange={(e) =>
+                          setUserData({
+                            ...userData,
+                            suspended: e.target.value === "true" ? true : false,
+                          })
+                        }
+                      >
+                        <option value="true" selected={userData.suspended}>
+                          Yes
+                        </option>
+                        <option value="false" selected={!userData.suspended}>
+                          No
+                        </option>
+                      </select>
+                    </div>
+                    <div className="form-group">
+                      <label>Deleted</label>
+                      <select
+                        className="form-control"
+                        onChange={(e) =>
+                          setUserData({
+                            ...userData,
+                            deleted: e.target.value === "true" ? true : false,
+                          })
+                        }
+                      >
+                        <option value="true" selected={userData.deleted}>
+                          Yes
+                        </option>
+                        <option value="false" selected={!userData.deleted}>
+                          No
+                        </option>
+                      </select>
+                    </div>
+                    <div className="form-group">
+                      <label>Currency</label>
+                      <select
+                        className="form-control"
+                        value={userData.currency}
+                        onChange={(e) =>
+                          setUserData({
+                            ...userData,
+                            currency: e.target.value,
+                          })
+                        }
+                      >
+                        <option
+                          value="USD"
+                          selected={userData.currency?.toLowerCase() == "usd"}
+                        >
+                          USD
+                        </option>
+                        <option
+                          value="EUR"
+                          selected={userData.currency?.toLowerCase() == "eur"}
+                        >
+                          EUR
+                        </option>
+                      </select>
+                    </div>
+                    <div className="form-group">
+                      <label>2FA Enabled</label>
+                      <div
+                        className="d-flex switch"
+                        onClick={(e) =>
+                          setUserData({
+                            ...userData,
+                            two_fact_auth: !userData.two_fact_auth,
+                          })
+                        }
+                        style={{
+                          marginTop: "-50px",
+                          marginBottom: "60px",
+                        }}
+                      >
+                        <input
+                          type="checkbox"
+                          checked={userData.two_fact_auth}
+                          value={userData.two_fact_auth}
+                          className="switch-input"
+                          style={{
+                            margintop: "-50px",
+                          }}
+                        />
+                        <span className="slider round"></span>
                       </div>
                     </div>
                   </div>

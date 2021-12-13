@@ -1,6 +1,5 @@
 import React, { useEffect } from "react";
 import { Route, Switch, Redirect } from "react-router-dom";
-import Home from "./jsx/components/Dashboard/Home";
 /// Components
 import Markup from "./jsx";
 
@@ -22,6 +21,7 @@ import ResetPasswordPage from "./pages/resetpassword";
 import GoogleAuthEmailPage from "./pages/GoogleEmail";
 import GoogleAuthEnticatorSecretCodePage from "./pages/GoogleAuthticatorSecretCode";
 import { selectUserToken } from "./redux/user/user.selectors";
+import MassEmailPage from "./pages/MassEmail/MassEmail";
 
 // import {setCurrentUser} from './redux/user/user.actions';
 const App = ({ width, token }) => {
@@ -77,6 +77,13 @@ const App = ({ width, token }) => {
             props.token = token ? token : null;
             return <UserEdit {...props} />;
           }}
+        />
+        <Route
+          exact
+          path="/mass-email"
+          render={() =>
+            token ? <MassEmailPage token={token.token} /> : <Redirect to="/" />
+          }
         />
         <Route path="/forgotpassword" component={ForgotPasswordPage} />
         <Route
