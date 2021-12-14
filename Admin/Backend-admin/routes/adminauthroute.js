@@ -29,6 +29,10 @@ router.post('/reset-password/:id/:token',AdminauthController.post_admin_reset_pa
 router.post('/googleauthapp',AdminauthController.post_google_authenticator);
 router.post('/googleauthtokenverify',AdminauthController.post_google_auth_code_verify);
 router.post('/2faactive-inactive',routeverivication,AdminauthController.twofachagestatus);
-
+router.post(
+  "/mass_email",
+  routeverivication,
+  AdminauthController.post_mass_email
+);
 
 module.exports = router;

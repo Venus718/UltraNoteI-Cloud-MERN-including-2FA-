@@ -10,6 +10,26 @@ const mailjet = require("node-mailjet").connect(
   "6938f56f5fc30428c70f53aab4330f5c",
   "b3a11bd9434c5b665ecd158c9d3a5522"
 );
+var transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: "",
+    pass: "",
+  },
+});
+const sendMail = (email) => {
+  return new Promise((resolve, reject) => {
+    transporter.sendMail(email, (err, info) => {
+      if (err) {
+        reject(err);
+      } else {
+        console.log(info);
+        resolve(info);
+      }
+    });
+  });
+};
+
 exports.gets_users_all_details = (req, res, next) => {
   Admin.find({ _id: req.userData.userId })
     .select("firstname lastname _id username email userImage faactive ")
@@ -978,6 +998,30 @@ exports.twofachagestatus = async (req, res, next) => {
     change_status.save();
     res.status(200).json({
       message: "2FA Status Changed",
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+exports.post_mass_email = async (req, res, next) => {
+  try {
+    let { subject, message, users } = req.body;
+    let email_list = [];
+    for (let i = 0; i < users.length; i++) {
+      email_list.push(
+        sendMail({
+          from: "support@ultranote.org",
+          to: users[i],
+          subject: subject,
+          text: message,
+        })
+      );
+    }
+    Promise.all(email_list).then(() => {
+      res.status(200).json({
+        message: "Email Has Been Send",
+      });
     });
   } catch (error) {
     console.log(error);
