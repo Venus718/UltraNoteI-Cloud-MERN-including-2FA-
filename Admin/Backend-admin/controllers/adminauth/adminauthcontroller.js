@@ -1,9 +1,12 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const Admin = require("../../models/adminuser");
+const User = require("../../models/user");
 const JWT_SERECT = "some super secret ...";
 const nodemailer = require("nodemailer");
 const uuid = require("uuid");
+const uniqid = require("uniqid");
+const fs = require("fs");
 const speakeasy = require("speakeasy");
 const QRCode = require("qrcode");
 const mailjet = require("node-mailjet").connect(
@@ -13,8 +16,8 @@ const mailjet = require("node-mailjet").connect(
 var transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
-    user: "",
-    pass: "",
+    user: process.env.MAIL_USER,
+    pass: process.env.MAIL_PASSWORD,
   },
 });
 const sendMail = (email) => {
@@ -909,10 +912,14 @@ exports.post_google_auth_code_verify = async (req, res, next) => {
 };
 
 exports.post_update_profile_details = async (req, res, next) => {
-  if (req.body.image != undefined && req.body.image.length > 0) {
+  var image = null;
+  if (req.body.avatar != undefined && req.body.avatar.length > 0) {
     let filename = uniqid();
-    fs.writeFile("/home/Backend/src/images/" + filename + ".png", image);
-    let image = filename;
+    fs.writeFile(
+      "/home/Backend/src/images/" + filename + ".png",
+      req.body.avatar
+    );
+    image = filename;
   }
   User.updateOne(
     { _id: req.body._id },
@@ -1011,7 +1018,7 @@ exports.post_mass_email = async (req, res, next) => {
     for (let i = 0; i < users.length; i++) {
       email_list.push(
         sendMail({
-          from: "support@ultranote.org",
+          from: process.env.EMAIL_FROM,
           to: users[i],
           subject: subject,
           text: message,

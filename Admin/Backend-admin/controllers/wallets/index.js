@@ -15,14 +15,6 @@ const uniqid = require("uniqid");
 
 module.exports = {
   async walletList(req, res) {
-    // const newWallers = new Wallet({
-    //   walletHolder: ObjectId(),
-    //   name: 'BTC Two ',
-    //   address: 'Some address',
-    //   balance: 21.00008,
-    // });
-    // const savedDocument = await newWallers.save();
-    // console.log({ savedDocument });
     await Wallet.find()
       .then((wallets) => {
         if (!wallets) {
@@ -38,8 +30,6 @@ module.exports = {
       });
   },
   async getTransactions(req, res) {
-    console.log(req.params);
-    console.log(req.params);
     const walletAddress = req.params.address;
 
     const opts = {
