@@ -13,25 +13,7 @@ const mailjet = require("node-mailjet").connect(
   "6938f56f5fc30428c70f53aab4330f5c",
   "b3a11bd9434c5b665ecd158c9d3a5522"
 );
-var transporter = nodemailer.createTransport({
-  service: "gmail",
-  auth: {
-    user: process.env.MAIL_USER,
-    pass: process.env.MAIL_PASSWORD,
-  },
-});
-const sendMail = (email) => {
-  return new Promise((resolve, reject) => {
-    transporter.sendMail(email, (err, info) => {
-      if (err) {
-        reject(err);
-      } else {
-        console.log(info);
-        resolve(info);
-      }
-    });
-  });
-};
+const sendMail = require("../../helpers/sendMail");
 
 exports.gets_users_all_details = (req, res, next) => {
   Admin.find({ _id: req.userData.userId })
@@ -1021,7 +1003,10 @@ exports.post_mass_email = async (req, res, next) => {
           from: process.env.EMAIL_FROM,
           to: users[i],
           subject: subject,
-          text: message,
+          templateVars: {
+            title: users[i],
+            message: message,
+          },
         })
       );
     }
