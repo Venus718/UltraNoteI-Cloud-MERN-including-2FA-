@@ -271,11 +271,17 @@ class UserList extends Component {
                                 Edit
                               </Link>
                               <button
-                                className="btn btn-sm btn-secondary"
+                                className="btn btn-sm btn-secondary mr-1"
                                 onClick={() => this.onDelete(row._id)}
                               >
                                 Delete
                               </button>
+                              <Link
+                                to={`/users/${row._id}/transactions`}
+                                className="btn btn-sm btn-secondary"
+                              >
+                                Transactions
+                              </Link>
                             </div>
                           );
                         },

@@ -15,6 +15,7 @@ import ProfilePage from "./pages/profile";
 import RegisterPage from "./pages/Register";
 import UserList from "./pages/UserManagement/UserList";
 import UserEdit from "./pages/UserManagement/UserEdit";
+import UserTransactions from "./pages/UserManagement/UserTransactions";
 import ForgotPasswordPage from "./pages/forgotpassword";
 import { createStructuredSelector } from "reselect";
 import ResetPasswordPage from "./pages/resetpassword";
@@ -70,7 +71,14 @@ const App = ({ width, token }) => {
           exact
           path="/users"
           render={() => (token ? <UserList /> : <Redirect to="/" />)}
-        />{" "}
+        />
+        <Route
+          path="/users/:id/transactions"
+          render={(props) => {
+            props.token = token ? token : null;
+            return <UserTransactions {...props} />;
+          }}
+        />
         <Route
           path="/users/:id"
           render={(props) => {
