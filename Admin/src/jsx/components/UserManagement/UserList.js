@@ -143,6 +143,7 @@ class UserList extends Component {
         this.setState({
           data: this.state.walletUsers,
         });
+        break;
       case "deleted":
         this.setState({
           data: this.state.deletedUsers,
