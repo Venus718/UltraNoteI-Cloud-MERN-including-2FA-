@@ -49,6 +49,7 @@ class UserList extends Component {
           ),
           deletedUsers: res.data.users.filter((user) => user.deleted == true),
           totalUsers: res.data.users.length,
+          walletUsers: res.data.users.filter((user) => user.isWalletCreated == true), // prettier-ignore
         });
       })
       .catch(function (error) {
@@ -138,6 +139,10 @@ class UserList extends Component {
           data: this.state.suspendedUsers,
         });
         break;
+      case "wallet":
+        this.setState({
+          data: this.state.walletUsers,
+        });
       case "deleted":
         this.setState({
           data: this.state.deletedUsers,
@@ -186,6 +191,7 @@ class UserList extends Component {
                 <option value="inactive">Inactive</option>
                 <option value="suspended">Suspended</option>
                 <option value="deleted">Deleted</option>
+                <option value="wallet">Has Wallet</option>
               </select>
             </div>
           </div>
@@ -253,6 +259,25 @@ class UserList extends Component {
                             return (
                               <span className="badge badge-danger">
                                 Inactive
+                              </span>
+                            );
+                          }
+                        },
+                      },
+                      {
+                        dataField: "isWalletCreated",
+                        text: "Wallet",
+                        formatter: (cell, row) => {
+                          if (row.isWalletCreated) {
+                            return (
+                              <span className="badge badge-success">
+                                Created
+                              </span>
+                            );
+                          } else {
+                            return (
+                              <span className="badge badge-danger">
+                                Not Created
                               </span>
                             );
                           }
