@@ -55,8 +55,6 @@ exports.gets_users_all_details = (req, res, next) => {
 };
 
 exports.post_adminregister = (req, res, next) => {
-  console.log(req.file.path);
-
   // console.log(req.file);
   const id = uuid.v4();
   try {
@@ -93,7 +91,6 @@ exports.post_adminregister = (req, res, next) => {
               nuwuser
                 .save()
                 .then((result) => {
-                  console.log(result);
                   res.status(200).json({
                     message: "User created",
                     user: result,
@@ -119,8 +116,6 @@ exports.post_adminregister = (req, res, next) => {
 };
 
 exports.post_admin_user_login = (req, res, next) => {
-  console.log(req.body);
-  console.log(process.env.JWT_KEY);
   Admin.find({ email: req.body.email })
     .exec()
     .then((admin) => {
@@ -170,13 +165,11 @@ exports.post_admin_forgot_password = async (req, res, next) => {
     const { email } = req.body;
 
     const admin = await Admin.find({ email: email }).exec();
-    console.log(admin);
     if (admin.length < 1) {
       return res.status(200).json({
         message: "Email is not exist",
       });
     }
-    console.log(admin[0]._id);
     const serect = JWT_SERECT + admin[0].password;
     const payload = {
       email: admin[0].email,
@@ -186,7 +179,6 @@ exports.post_admin_forgot_password = async (req, res, next) => {
     const token = await jwt.sign(payload, serect, { expiresIn: "15m" });
     const link = `https://portal.ultranote.org/reset-password/${admin[0]._id}/${token}`;
 
-    console.log(link);
     const request = mailjet.post("send", { version: "v3.1" }).request({
       Messages: [
         {
@@ -464,8 +456,6 @@ exports.post_admin_forgot_password = async (req, res, next) => {
 
 exports.get_admin_reset_password = (req, res, next) => {
   const { id, token } = req.params;
-  console.log("id=>", id);
-  console.log("token=>", token);
   Admin.find({ _id: id })
     .exec()
     .then((admin) => {
@@ -477,13 +467,12 @@ exports.get_admin_reset_password = (req, res, next) => {
       const serect = JWT_SERECT + admin[0].password;
       try {
         const payload = jwt.verify(token, serect);
-        console.log(payload);
         res.status(200).json({
           message: "user verified",
           email: payload.email,
         });
       } catch (error) {
-        console.log("aas", error.message);
+        console.log(error);
         res.status(200).json({
           message: "user in not verified",
           error: error,
@@ -501,7 +490,6 @@ exports.get_admin_reset_password = (req, res, next) => {
 exports.post_admin_reset_password = (req, res, next) => {
   const { id, token } = req.params;
   const { password, conformpassword } = req.body;
-  console.log(id, token);
 
   Admin.findOne({ _id: id })
     .exec()
@@ -515,7 +503,6 @@ exports.post_admin_reset_password = (req, res, next) => {
       const serect = JWT_SERECT + admin.password;
       try {
         const payload = jwt.verify(token, serect);
-        console.log("=>", password);
 
         bcrypt.hash(password, 10, (err, hash) => {
           if (err) {
@@ -533,7 +520,7 @@ exports.post_admin_reset_password = (req, res, next) => {
           }
         });
       } catch (error) {
-        console.log(error.message);
+        console.log(error);
         return res.status(200).json({
           message: error.message,
         });
@@ -550,7 +537,6 @@ exports.post_admin_reset_password = (req, res, next) => {
 exports.post_google_authenticator = async (req, res, next) => {
   try {
     const { email } = req.body;
-    console.log(email);
     const admin = await Admin.find({ email: email }).exec();
     if (admin.length < 1) {
       return res.status(200).json({
@@ -854,7 +840,7 @@ exports.post_google_authenticator = async (req, res, next) => {
         );
     } // else
   } catch (error) {
-    console.log(error.message);
+    console.log(error);
   }
 };
 
@@ -869,8 +855,6 @@ exports.post_google_auth_code_verify = async (req, res, next) => {
     token: serect_code,
     window: 1,
   });
-  console.log(req.body);
-  console.log(verified);
   if (verified) {
     const token = jwt.sign(
       {
@@ -886,7 +870,6 @@ exports.post_google_auth_code_verify = async (req, res, next) => {
       message: "Auth successful",
       token: token,
     });
-    console.log(verified);
   } else {
     res.status(200).json({
       message: "Your Serect Code Is Incorrect",
@@ -933,20 +916,15 @@ exports.post_update_profile_details = async (req, res, next) => {
 };
 
 exports.post_update_password_set = async (req, res, next) => {
-  console.log("Update Password");
-  console.log(req.body);
   const resetPasswordReq = await Admin.findOne({ _id: req.body._id }).exec();
-  console.log(resetPasswordReq);
   if (resetPasswordReq.email === req.body.email) {
     resetPasswordReq.password;
     const compare = await bcrypt.compare(
       req.body.currentpassword,
       resetPasswordReq.password
     );
-    console.log(compare);
     if (compare) {
       const hashpass = await bcrypt.hash(req.body.password, 10);
-      console.log(hashpass);
       resetPasswordReq.password = hashpass;
       await resetPasswordReq
         .save()
@@ -973,7 +951,6 @@ exports.post_update_password_set = async (req, res, next) => {
 };
 
 exports.twofachagestatus = async (req, res, next) => {
-  console.log("Change Status");
   const id = req.userData.userId;
   try {
     const change_status = await Admin.findOne({ _id: id }).exec();

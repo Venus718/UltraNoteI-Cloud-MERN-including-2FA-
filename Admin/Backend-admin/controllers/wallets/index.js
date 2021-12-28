@@ -39,14 +39,12 @@ module.exports = {
     };
 
     const data = await xuni.getTransactions(opts);
-    console.log(data);
     const totalTransactions = [];
 
     for (let i = 0; i < data.items.length; i++) {
       const item = data.items[i];
       for (let j = 0; j < item.transactions.length; j++) {
         const transaction = item.transactions[j];
-        console.log("transaction =>", transaction);
         var message = [];
         try {
           const transaction_message = await ultranote.getTransaction(
@@ -66,7 +64,6 @@ module.exports = {
 
         const recipientAddress = transaction.transfers[0].address;
         var senderAddress = transaction.transfers[1].address;
-        console.log("Senders address =>", senderAddress);
         if (senderAddress == "") {
           senderAddress = uniqid();
         }
@@ -102,13 +99,12 @@ module.exports = {
       const status = await xuni.status();
       res.status(200).json(status);
     } catch (error) {
-      console.log("*".repeat(50), "Error: ", error);
+      console.log(error);
     }
   },
 
   async walletsdepositscheck(req, res) {
     try {
-      console.log(req.body.amount);
       const senderAddress = req.body.sender;
       const recipientAddress = req.body.recipient;
       const amount = req.body.amount;
@@ -127,11 +123,9 @@ module.exports = {
         unlockTime: 0,
         changeAddress: senderAddress,
       };
-      console.log("Transition=>", transactionOptions);
       const Transaction = await xuni.sendTransaction(transactionOptions);
-      console.log("Transaction Final Result =>", Transaction);
     } catch (error) {
-      console.log("worng=>", error);
+      console.log(error);
     }
   },
 };
