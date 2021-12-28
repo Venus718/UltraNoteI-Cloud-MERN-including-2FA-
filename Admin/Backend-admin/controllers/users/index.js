@@ -4,7 +4,6 @@ const User = require("../../models/user");
 
 module.exports = {
   async userList(req, res) {
-    console.log("user Check");
     await User.find()
       .then((users) => {
         if (!users) {
@@ -31,7 +30,6 @@ module.exports = {
       });
   },
   async deletedUser(req, res) {
-    console.log("Deleted Users");
     await User.find({ deleted: true })
       .then((users) => {
         if (!users) {
@@ -108,12 +106,10 @@ module.exports = {
         });
       }
       const { userId } = req.body;
-      console.log({ userId });
       const suspendedUser = await User.findOneAndUpdate(
         { _id: ObjectId(userId) },
         { $set: { suspended: true } }
       );
-      console.log({ suspendedUser });
       if (!suspendedUser)
         return res.status(400).json({ message: "user doesn't exist!" });
       else res.status(200).json({ message: "User suspended successfully" });
@@ -190,12 +186,10 @@ module.exports = {
         });
       }
       const { userId } = req.body;
-      console.log({ userId });
       const suspendedUser = await User.findOneAndUpdate(
         { _id: ObjectId(userId) },
         { $set: { suspended: true } }
       );
-      console.log({ suspendedUser });
       if (!suspendedUser)
         return res.status(400).json({ message: "user doesn't exist!" });
       else res.status(200).json({ message: "User updated successfully" });

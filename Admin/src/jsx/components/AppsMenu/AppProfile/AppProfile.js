@@ -23,7 +23,6 @@ import googleauth from "../../../../images/googleauth/unnamed.png";
 import PageTitle from "../../../layouts/PageTitle";
 import { setUserProfileData } from "../../../../redux/user/user.actions";
 const AppProfile = ({ userProfileData, token, setUserProfileData }) => {
-  console.log(token);
   const [activeToggle, setActiveToggle] = useState("profile");
   const [sendMessage, setSendMessage] = useState(false);
   const [postModal, setPostModal] = useState(false);
@@ -41,9 +40,7 @@ const AppProfile = ({ userProfileData, token, setUserProfileData }) => {
         },
       })
       .then((res) => {
-        const userprofiledata = res.data;
-        console.log("User Profile DATA =>", userprofiledata.products[0]);
-        setUserProfileData(userprofiledata.products[0]);
+        setUserProfileData(res.data.user);
       })
       .catch(function (error) {
         // handle error
@@ -52,7 +49,6 @@ const AppProfile = ({ userProfileData, token, setUserProfileData }) => {
   }, []);
 
   const handleOnChange = () => {
-    console.log(token.token);
     const url = "https://portal.ultranote.org/api/admin/2faactive-inactive";
     axios
       .post(
@@ -64,9 +60,7 @@ const AppProfile = ({ userProfileData, token, setUserProfileData }) => {
           },
         }
       )
-      .then((res) => {
-        console.log(res);
-      })
+      .then((res) => {})
       .catch((error) => console.log(error));
     setChecked(!checked);
   };
@@ -87,7 +81,6 @@ const AppProfile = ({ userProfileData, token, setUserProfileData }) => {
   const password = useRef({});
   password.current = watch2("password", "");
   const onSubmit = async (data) => {
-    console.log(data);
     let formData = new FormData();
     formData.append("userImage", data.Imageupload[0]);
     formData.append("firstname", data.firstname);
@@ -126,9 +119,8 @@ const AppProfile = ({ userProfileData, token, setUserProfileData }) => {
   };
 
   const resetPassword = async (event) => {
-    console.log(event);
+    event.preventDefault();
     event._id = userProfileData._id;
-    console.log(event);
     const url = "https://portal.ultranote.org/api/admin/updatepassword";
     axios
       .post(url, event, {
@@ -137,15 +129,12 @@ const AppProfile = ({ userProfileData, token, setUserProfileData }) => {
         },
       })
       .then((res) => {
-        console.log(res);
         if (res.data.message == "Password Changed") {
           window.location.reload();
         }
       })
       .catch((error) => console.log(error));
   };
-
-  console.log(userProfileData.twofastatus);
 
   const options = {
     settings: {
