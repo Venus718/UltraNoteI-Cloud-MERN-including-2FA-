@@ -111,9 +111,7 @@ class UserList extends Component {
       return user.mail?.toLowerCase().includes(search.toLowerCase());
     });
     this.setState({
-      data: {
-        users: searchUsers,
-      },
+      data: searchUsers,
     });
   };
 

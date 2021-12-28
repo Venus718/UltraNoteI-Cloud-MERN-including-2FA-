@@ -7,7 +7,10 @@ import { connect } from "react-redux";
 import "./allresponsivestyle/pages.styles.css";
 import logo from "../../images/Ultralogo/logo150.png";
 import ReCAPTCHA from "react-google-recaptcha";
-import { setCurrentUser } from "../../redux/user/user.actions";
+import {
+  setCurrentUser,
+  setUserProfileData,
+} from "../../redux/user/user.actions";
 const Login = (props) => {
   const {
     register,
@@ -50,7 +53,8 @@ const Login = (props) => {
           });
         } else {
           console.log("Auth success");
-          setCurrentUser({ token: res.data.token });
+          setCurrentUser({ token: res.data.token, profiledata: res.data.user });
+          setUserProfileData(res.data.user);
         }
       })
       .catch((err) => {

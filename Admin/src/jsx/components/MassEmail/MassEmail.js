@@ -14,6 +14,7 @@ class MassEmail extends Component {
       token: props.token,
       users: [],
       selectedUsers: [],
+      allUsers: [],
       subject: "",
       message: "",
       errors: [],
@@ -29,10 +30,15 @@ class MassEmail extends Component {
       })
       .then((res) => {
         let mailList = [];
+        let allUsers = [];
         res.data.users.forEach((user) => {
           mailList.push(user.mail);
+          allUsers.push({
+            name: user.firstName,
+            email: user.mail,
+          });
         });
-        this.setState({ users: mailList });
+        this.setState({ users: mailList, allUsers });
       })
       .catch((err) => {
         console.log(err);
@@ -41,6 +47,17 @@ class MassEmail extends Component {
   componentDidMount() {
     this.getUsers();
   }
+
+  getNames = (email) => {
+    let allUsers = this.state.allUsers;
+    let users = [];
+    email.forEach((mail) => {
+      let user = allUsers.find((user) => user.email === mail);
+      users.push(user);
+    });
+    console.log(users);
+    return users;
+  };
 
   validateForm = () => {
     let errors = [];
@@ -123,7 +140,9 @@ class MassEmail extends Component {
                           "Selected users: " + selectedUsers.length
                         }
                         handleOnChange={(selected) => {
-                          this.setState({ selectedUsers: selected });
+                          this.setState({
+                            selectedUsers: this.getNames(selected),
+                          });
                         }}
                       />
                     ) : (

@@ -149,6 +149,7 @@ exports.post_admin_user_login = (req, res, next) => {
           return res.status(200).json({
             message: "Auth successful",
             token: token,
+            user: admin[0],
           });
         }
         res.status(200).json({
@@ -1001,10 +1002,10 @@ exports.post_mass_email = async (req, res, next) => {
       email_list.push(
         sendMail({
           from: process.env.EMAIL_FROM,
-          to: users[i],
+          to: users[i].email,
           subject: subject,
           templateVars: {
-            title: users[i],
+            title: users[i].name,
             message: message,
           },
         })

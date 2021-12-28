@@ -1,14 +1,15 @@
-import nodemailer from "nodemailer";
-import fs from "fs";
-import ejs from "ejs";
-import { htmlToText } from "html-to-text";
-import juice from "juice";
+const nodemailer = require("nodemailer");
+const fs = require("fs");
+const path = require("path");
+const ejs = require("ejs");
+const { htmlToText } = require("html-to-text");
+const juice = require("juice");
 
 const smtp = nodemailer.createTransport({
   service: "gmail",
   auth: {
-    user: process.env.MAIL_USER,
-    pass: process.env.MAIL_PASSWORD,
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASSWORD,
   },
 });
 const sendMail = ({
@@ -25,8 +26,9 @@ const sendMail = ({
       to,
       subject,
     };
-    if (fs.existsSync(templatePath)) {
-      const template = fs.readFileSync(templatePath, "utf-8");
+    let tmp = path.join(__dirname, templatePath);
+    if (fs.existsSync(tmp)) {
+      const template = fs.readFileSync(tmp, "utf-8");
       const html = ejs.render(template, templateVars);
       const text = htmlToText(templateVars.message);
       const htmlWithStylesInlined = juice(html);

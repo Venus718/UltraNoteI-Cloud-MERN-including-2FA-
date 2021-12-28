@@ -6,11 +6,12 @@ import BarChart1 from "../charts/Chartjs/bar1";
 import { allUsers } from "../../../redux/home/home.actions";
 import { selectUserToken } from "../../../redux/user/user.selectors";
 import { selectProfileData } from "../../../redux/user/user.selectors";
+import { setUserProfileData } from "../../../redux/user/user.actions";
 import { selectHomeUsers } from "../../../redux/home/home.selectors";
 import WithSpinner from "../spinner/spinner";
 import PageTitle from "../../layouts/PageTitle";
 
-const Home = ({ tokem, saveUsers, users }) => {
+const Home = ({ tokem, saveUsers, users, setUserProfileData }) => {
   const state = {
     totalUsersCount: 0,
     activeUsersCount: 0,
@@ -72,6 +73,18 @@ const Home = ({ tokem, saveUsers, users }) => {
         });
       })
       .catch((error) => console.log(error));
+    axios
+      .get("https://portal.ultranote.org/api/admin/profiledetails", {
+        headers: {
+          Authorization: tokem.token,
+        },
+      })
+      .then((res) => {
+        setUserProfileData(res.data.user[0]);
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
   }, []);
   if (users) {
     return (
@@ -126,6 +139,8 @@ const mapStateToProps = createStructuredSelector({
 });
 const mapDispatchToProps = (dispatch) => ({
   saveUsers: (users) => dispatch(allUsers(users)),
+  setUserProfileData: (userProfileData) =>
+    dispatch(setUserProfileData(userProfileData)),
   selectUserProfileData: (profile) => dispatch(selectProfileData(profile)),
 });
 
