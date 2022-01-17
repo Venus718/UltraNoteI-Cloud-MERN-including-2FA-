@@ -70,7 +70,7 @@ function WalletActivityTable({
                   </TableCell>
                   <TableCell>{row.amount}</TableCell>
                   <TableCell>
-                    <p>{row.hash}</p>
+                    <a href={'https://explorer.ultranote.org/index.html?hash=' + row.hash} target="_blank"><p>{row.hash}</p></a>
                   </TableCell>
                   <TableCell className="dateTd">{moment(row.updatedAt).format('L LT')}</TableCell>
                   <TableCell>{row.note}</TableCell>

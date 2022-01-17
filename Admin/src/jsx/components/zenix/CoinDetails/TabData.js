@@ -1,7 +1,17 @@
 import React from 'react';
 import {Link} from 'react-router-dom';
 import { Dropdown } from "react-bootstrap";
-import {orderdataBlog} from './../../Dashboard/Home';
+
+const orderdataBlog = [
+  { price: "82.1", amount: "58.9", total: "134.10" },
+  { price: "85.2", amount: "55.8", total: "136,12" },
+  { price: "87.3", amount: "53.7", total: "138,12" },
+  { price: "89.4", amount: "51.6", total: "139,12" },
+  { price: "91.9", amount: "47.1", total: "140,12" },
+  { price: "93.8", amount: "46.2", total: "142,12" },
+  { price: "94.7", amount: "45.3", total: "145,12" },
+  { price: "97.6", amount: "44.4", total: "147,12" },
+];
 
 const TabDataTrade = () => {
 	return(

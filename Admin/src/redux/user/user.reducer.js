@@ -1,8 +1,8 @@
-import { UserActionTypes } from './user.types';
+import { UserActionTypes } from "./user.types";
 const INITIAL_STATE = {
   token: null,
-  profiledata:null,
-  email:null
+  profiledata: null,
+  email: null,
 };
 
 const userReducer = (state = INITIAL_STATE, action) => {
@@ -10,18 +10,18 @@ const userReducer = (state = INITIAL_STATE, action) => {
     case UserActionTypes.SET_CURRENT_USER:
       return {
         ...state,
-        token: action.payload
+        token: action.payload,
       };
     case UserActionTypes.SET_USER_PROFILE_DATA:
-     return {
-    ...state,
-    profiledata: action.payload
-     }; 
+      return {
+        ...state,
+        profiledata: action.payload,
+      };
     case UserActionTypes.SET_USER_EMAIL_AUTHICATOR:
-    return {
-    ...state,
-    email: action.payload  
-    }
+      return {
+        ...state,
+        email: action.payload,
+      };
     default:
       return state;
   }

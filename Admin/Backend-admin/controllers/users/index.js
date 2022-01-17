@@ -1,89 +1,87 @@
-const { Types } = require('mongoose');
+const { Types } = require("mongoose");
 const { ObjectId } = Types;
-const User = require('../../models/user');
+const User = require("../../models/user");
 
 module.exports = {
   async userList(req, res) {
-  console.log("user Check");  
-     await User.find()
-      .then(users => {
+    await User.find()
+      .then((users) => {
         if (!users) {
-          return res.status(400).json({ message: 'Users not found' });
+          return res.status(400).json({ message: "Users not found" });
         }
         return res.status(200).json({ users });
       })
-      .catch(err => {
+      .catch((err) => {
         console.log(err);
-        return res.status(400).json({ message: 'ERROR WHILE LOGGING IN', err });
+        return res.status(400).json({ message: "ERROR WHILE LOGGING IN", err });
       });
   },
   async suspendedUser(req, res) {
     await User.find({ suspended: true })
-      .then(users => {
+      .then((users) => {
         if (!users) {
-          return res.status(400).json({ message: 'suspended Users not found' });
+          return res.status(400).json({ message: "suspended Users not found" });
         }
         return res.status(200).json({ users });
       })
-      .catch(err => {
+      .catch((err) => {
         console.log(err);
-        return res.status(400).json({ message: 'ERROR WHILE LOGGING IN', err });
+        return res.status(400).json({ message: "ERROR WHILE LOGGING IN", err });
       });
   },
   async deletedUser(req, res) {
-    console.log("Deleted Users");
     await User.find({ deleted: true })
-      .then(users => {
+      .then((users) => {
         if (!users) {
-          return res.status(400).json({ message: ' deleted Users not found' });
+          return res.status(400).json({ message: " deleted Users not found" });
         }
         return res.status(200).json({ users });
       })
-      .catch(err => {
+      .catch((err) => {
         console.log(err);
-        return res.status(400).json({ message: 'ERROR WHILE LOGGING IN', err });
+        return res.status(400).json({ message: "ERROR WHILE LOGGING IN", err });
       });
   },
   async pendingEmial(req, res) {
     await User.find({ isActive: false })
-      .then(users => {
+      .then((users) => {
         if (!users) {
-          return res.status(400).json({ message: 'pending users not found' });
+          return res.status(400).json({ message: "pending users not found" });
         }
         return res.status(200).json({ users });
       })
-      .catch(err => {
+      .catch((err) => {
         console.log(err);
-        return res.status(400).json({ message: 'ERROR WHILE LOGGING IN', err });
+        return res.status(400).json({ message: "ERROR WHILE LOGGING IN", err });
       });
   },
   // New developer working on Active User
   async ActiveUser(req, res) {
     await User.find({ isActive: true })
-      .then(users => {
+      .then((users) => {
         if (users) {
           return res.status(200).json({ users });
         }
-        return res.status(200).json({ message:'Active User Is Not Found' });
+        return res.status(200).json({ message: "Active User Is Not Found" });
       })
-      .catch(err => {
+      .catch((err) => {
         console.log(err);
-        return res.status(200).json({ message: 'ERROR WHILE LOGGING IN', err });
+        return res.status(200).json({ message: "ERROR WHILE LOGGING IN", err });
       });
-  },   
+  },
 
   async addUser(req, res) {
     try {
       if (!req.body.firstName || !req.body.lastName || !req.body.mail) {
         return res.status(400).json({
-          message: 'FirstName, lastName and Email fields are required',
+          message: "FirstName, lastName and Email fields are required",
         });
       }
       const mail = req.body.mail;
       mail.toLowerCase();
       const emailExist = await User.findOne({ mail: mail });
       if (emailExist)
-        return res.status(400).json({ message: 'Email already exist!' });
+        return res.status(400).json({ message: "Email already exist!" });
       const user = new User({
         firstName: req.body.firstName,
         lastName: req.body.lastName,
@@ -91,34 +89,32 @@ module.exports = {
         phone: req.body.phone,
         role: req.body.role,
       });
-      const savedUser = await user.save().then(user => {
+      const savedUser = await user.save().then((user) => {
         /* const mailTemplat = `Account created ...`
             mailer.sendEmail('verify@Crypto-Petty.com', user.mail , 'please verfiy your account', html);*/
-        res.status(200).json({ message: 'User added successfully' });
+        res.status(200).json({ message: "User added successfully" });
       });
     } catch (error) {
-      res.status(400).json({ message: 'ERROR WHILE ADDING USER', error });
+      res.status(400).json({ message: "ERROR WHILE ADDING USER", error });
     }
   },
   async suspendUser(req, res) {
     try {
       if (!req.body.userId) {
         return res.status(400).json({
-          message: 'UserId  is required',
+          message: "UserId  is required",
         });
       }
       const { userId } = req.body;
-      console.log({ userId });
       const suspendedUser = await User.findOneAndUpdate(
         { _id: ObjectId(userId) },
-        { $set: { suspended: true } },
+        { $set: { suspended: true } }
       );
-      console.log({ suspendedUser });
       if (!suspendedUser)
         return res.status(400).json({ message: "user doesn't exist!" });
-      else res.status(200).json({ message: 'User suspended successfully' });
+      else res.status(200).json({ message: "User suspended successfully" });
     } catch (error) {
-      res.status(400).json({ message: 'ERROR WHILE ADDING USER', error });
+      res.status(400).json({ message: "ERROR WHILE ADDING USER", error });
     }
   },
 
@@ -126,7 +122,7 @@ module.exports = {
     try {
       if (!req.body.userId) {
         return res.status(400).json({
-          message: 'UserId  is required',
+          message: "UserId  is required",
         });
       }
       const { userId } = req.body;
@@ -135,20 +131,20 @@ module.exports = {
         { deleted: true },
         {
           new: true,
-        },
+        }
       );
       if (!deletedUser)
         return res.status(400).json({ message: "user doesn't exist!" });
-      else res.status(200).json({ message: 'User deleted successfully' });
+      else res.status(200).json({ message: "User deleted successfully" });
     } catch (error) {
-      res.status(400).json({ message: 'ERROR WHILE ADDING USER', error });
+      res.status(400).json({ message: "ERROR WHILE ADDING USER", error });
     }
   },
   async activateEmail(req, res) {
     try {
       if (!req.body.userId) {
         return res.status(400).json({
-          message: 'UserId  is required',
+          message: "UserId  is required",
         });
       }
       const { userId } = req.body;
@@ -157,20 +153,20 @@ module.exports = {
         { isActive: true },
         {
           new: true,
-        },
+        }
       );
       if (!pendingEmail)
         return res.status(400).json({ message: "user doesn't exist!" });
-      else res.status(200).json({ message: 'User activated successfully' });
+      else res.status(200).json({ message: "User activated successfully" });
     } catch (error) {
-      res.status(400).json({ message: 'ERROR WHILE ADDING USER', error });
+      res.status(400).json({ message: "ERROR WHILE ADDING USER", error });
     }
   },
   async userProfile(req, res) {
     try {
       if (!req.body.userId) {
         return res.status(400).json({
-          message: 'UserId  is required',
+          message: "UserId  is required",
         });
       }
       const { userId } = req.body;
@@ -179,28 +175,26 @@ module.exports = {
         return res.status(400).json({ message: "user doesn't exist!" });
       else res.status(200).json({ user: userProfile });
     } catch (error) {
-      res.status(400).json({ message: 'ERROR WHILE ADDING USER', error });
+      res.status(400).json({ message: "ERROR WHILE ADDING USER", error });
     }
   },
   async userProfileUpdate(req, res) {
     try {
       if (!req.body.userId) {
         return res.status(400).json({
-          message: 'UserId  is required',
+          message: "UserId  is required",
         });
       }
       const { userId } = req.body;
-      console.log({ userId });
       const suspendedUser = await User.findOneAndUpdate(
         { _id: ObjectId(userId) },
-        { $set: { suspended: true } },
+        { $set: { suspended: true } }
       );
-      console.log({ suspendedUser });
       if (!suspendedUser)
         return res.status(400).json({ message: "user doesn't exist!" });
-      else res.status(200).json({ message: 'User updated successfully' });
+      else res.status(200).json({ message: "User updated successfully" });
     } catch (error) {
-      res.status(400).json({ message: 'ERROR WHILE UPDATING USER', error });
+      res.status(400).json({ message: "ERROR WHILE UPDATING USER", error });
     }
     profileUpdate;
   },
@@ -208,20 +202,20 @@ module.exports = {
     try {
       if (!req.body.userId) {
         return res.status(400).json({
-          message: 'UserId  is required',
+          message: "UserId  is required",
         });
       }
       const { userId, firstName, lastName, phone, country } = req.body;
 
       const profileUpdated = await User.findOneAndUpdate(
         { _id: ObjectId(userId) },
-        { $set: { firstName, lastName, phone, country } },
+        { $set: { firstName, lastName, phone, country } }
       );
       if (!profileUpdated)
         return res.status(400).json({ message: "user doesn't exist!" });
-      else res.status(200).json({ message: 'User updated successfully' });
+      else res.status(200).json({ message: "User updated successfully" });
     } catch (error) {
-      res.status(400).json({ message: 'ERROR WHILE UPDATING USER', error });
+      res.status(400).json({ message: "ERROR WHILE UPDATING USER", error });
     }
   },
 };

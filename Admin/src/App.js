@@ -1,28 +1,31 @@
 import React, { useEffect } from "react";
-import { Route , Switch , Redirect  } from 'react-router-dom';
-import Home from './jsx/components/Dashboard/Home';
+import { Route, Switch, Redirect } from "react-router-dom";
 /// Components
 import Markup from "./jsx";
 
 /// Style
 import "./vendor/bootstrap-select/dist/css/bootstrap-select.min.css";
 import "./css/style.css";
-import { connect } from 'react-redux';
+import { connect } from "react-redux";
 import { withResizeDetector } from "react-resize-detector";
-import LoginPage from './pages/Login';
+import LoginPage from "./pages/Login";
 import ThemeContextProvider from "./context/ThemeContext";
-import DashboardPage from './pages/dashboard';
-import ProfilePage from './pages/profile';
-import RegisterPage from './pages/Register';
-import ForgotPasswordPage from './pages/forgotpassword';
-import { createStructuredSelector } from 'reselect';
-import ResetPasswordPage from './pages/resetpassword';
-import GoogleAuthEmailPage from './pages/GoogleEmail';
-import GoogleAuthEnticatorSecretCodePage from './pages/GoogleAuthticatorSecretCode';
-import {selectUserToken} from './redux/user/user.selectors';
+import DashboardPage from "./pages/dashboard";
+import ProfilePage from "./pages/profile";
+import RegisterPage from "./pages/Register";
+import UserList from "./pages/UserManagement/UserList";
+import UserEdit from "./pages/UserManagement/UserEdit";
+import UserTransactions from "./pages/UserManagement/UserTransactions";
+import ForgotPasswordPage from "./pages/forgotpassword";
+import { createStructuredSelector } from "reselect";
+import ResetPasswordPage from "./pages/resetpassword";
+import GoogleAuthEmailPage from "./pages/GoogleEmail";
+import GoogleAuthEnticatorSecretCodePage from "./pages/GoogleAuthticatorSecretCode";
+import { selectUserToken } from "./redux/user/user.selectors";
+import MassEmailPage from "./pages/MassEmail/MassEmail";
 
 // import {setCurrentUser} from './redux/user/user.actions';
-const App = ({ width ,token }) => {
+const App = ({ width, token }) => {
   const body = document.querySelector("body");
   //useEffect(() => {
   //   body.setAttribute("data-typography", "poppins");
@@ -45,56 +48,72 @@ const App = ({ width ,token }) => {
   //     : body.setAttribute("data-sidebar-style", "full");
   // }, [width]);
 
- 
-
-
   return (
     <ThemeContextProvider>
-     <Switch>
-       <Route  path="/register" component={RegisterPage} />
-       <Route exact path="/"  render={() =>
-              token ? (
-                <Redirect to='/dashboard' />
-              ) : (
-                <LoginPage />
-              )
-            } />
-          
-       <Route exact  path="/dashboard" 
-       render={() =>
-        token ? (
-          <DashboardPage/>
-        ) : (
-          <Redirect to='/'  />
-        )
-      }
-      />
-      <Route exact path="/profile-details" 
-       render={() =>
-        token ? (
-          <ProfilePage/>
-        ) : (
-          <Redirect to='/'  />
-        )
-      }
-      />
-       <Route path="/forgotpassword" component={ForgotPasswordPage}/>
-       <Route path='/reset-password/:id/:token' component={ResetPasswordPage}/> 
-       <Route path='/googleauthicator' component={GoogleAuthEmailPage}/> 
-       <Route path='/googleverifycode' component={GoogleAuthEnticatorSecretCodePage}/>
-      
-       {/* <Route path="/markmili" component={Markup} />  */}
-     </Switch> 
-   </ThemeContextProvider>
+      <Switch>
+        <Route path="/register" component={RegisterPage} />
+        <Route
+          exact
+          path="/"
+          render={() => (token ? <Redirect to="/dashboard" /> : <LoginPage />)}
+        />
+        <Route
+          exact
+          path="/dashboard"
+          render={() => (token ? <DashboardPage /> : <Redirect to="/" />)}
+        />
+        <Route
+          exact
+          path="/profile-details"
+          render={() => (token ? <ProfilePage /> : <Redirect to="/" />)}
+        />
+        <Route
+          exact
+          path="/users"
+          render={() => (token ? <UserList /> : <Redirect to="/" />)}
+        />
+        <Route
+          path="/users/:id/transactions"
+          render={(props) => {
+            props.token = token ? token : null;
+            return <UserTransactions {...props} />;
+          }}
+        />
+        <Route
+          path="/users/:id"
+          render={(props) => {
+            props.token = token ? token : null;
+            return <UserEdit {...props} />;
+          }}
+        />
+        <Route
+          exact
+          path="/mass-email"
+          render={() =>
+            token ? <MassEmailPage token={token.token} /> : <Redirect to="/" />
+          }
+        />
+        <Route path="/forgotpassword" component={ForgotPasswordPage} />
+        <Route
+          path="/reset-password/:id/:token"
+          component={ResetPasswordPage}
+        />
+        <Route path="/googleauthicator" component={GoogleAuthEmailPage} />
+        <Route
+          path="/googleverifycode"
+          component={GoogleAuthEnticatorSecretCodePage}
+        />
+        {/* <Route path="/markmili" component={Markup} />  */}
+      </Switch>
+    </ThemeContextProvider>
   );
 };
 
 const mapStateToProps = createStructuredSelector({
-token: selectUserToken
+  token: selectUserToken,
 });
 // const mapDispatchToProps = dispatch => ({
-//   setCurrentUser:user => dispatch(setCurrentUser(user)) 
+//   setCurrentUser:user => dispatch(setCurrentUser(user))
 //   });
-  
 
 export default connect(mapStateToProps)(withResizeDetector(App));

@@ -28,7 +28,7 @@ import Form from 'components/uiStyle/Form';
 
 import Joi from 'joi-browser';
 import ReactPhoneInput from 'react-phone-input-2';
-import 'react-phone-input-2/dist/style.css';
+import 'react-phone-input-2/lib/style.css';
 
 // images
 import logo from 'images/logo_512x512.png';

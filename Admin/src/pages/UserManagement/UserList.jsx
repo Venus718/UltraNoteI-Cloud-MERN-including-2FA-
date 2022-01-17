@@ -1,8 +1,8 @@
 import React from "react";
-import Nav from "../jsx/layouts/nav";
-import Footer from "../jsx/layouts/Footer";
-import Home from "../jsx/components/Dashboard/Home";
-const DashboardPage = () => (
+import Nav from "../../jsx/layouts/nav";
+import Footer from "../../jsx/layouts/Footer";
+import UserList from "../../jsx/components/UserManagement/UserList";
+const UserListPage = () => (
   <div id="main-wrapper" className="show mh100vh ">
     <Nav />
     <div className="content-body">
@@ -10,11 +10,11 @@ const DashboardPage = () => (
         className="container-fluid"
         style={{ minHeight: window.screen.height - 60 }}
       >
-        <Home />
+        <UserList />
       </div>
     </div>
     <Footer />
   </div>
 );
 
-export default DashboardPage;
+export default UserListPage;
