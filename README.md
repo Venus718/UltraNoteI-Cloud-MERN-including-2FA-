@@ -3,6 +3,7 @@ UltraNote Infinity Cloud Wallet
 
 ## Installing Frontend
 - cd UltraNoteI-Cloud/cryptwallet
+- npm install --legacy-peer-deps
 - npm install
 - npm run build
 - mv build /var/www/Cloud
