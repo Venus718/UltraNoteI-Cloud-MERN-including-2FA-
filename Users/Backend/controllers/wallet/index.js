@@ -13,7 +13,7 @@ const xuni = new XUNI(process.env.XUNI_HOST, process.env.XUNI_PORT);
     const xuni = new XUNI({
         daemonHost: process.env.XUNI_HOST, 
         walletHost: process.env.XUNI_HOST, 
-        daemonRpcPort: 43000,
+        daemonRpcPort: process.env.XUNI_PORT,
         walletRpcPort: process.env.XUNI_PORT,
         rpcUser: process.env.RPC_USER,
         rpcPassword: process.env.RPC_PASSWORD
