@@ -2,7 +2,16 @@ const XUNI = require('ultranotei-api');
 const User = require('../../models/user');
 const Wallets = require('../../models/wallet');
 const Transactions = require('../../models/transactions');
-const xuni = new XUNI(process.env.XUNI_HOST, process.env.XUNI_PORT);
+// const xuni = new XUNI(process.env.XUNI_HOST, process.env.XUNI_PORT);
+const xuni = new XUNI({
+    daemonHost: process.env.XUNI_HOST, 
+    walletHost: process.env.XUNI_HOST, 
+    daemonRpcPort: process.env.DAEMONRPC_PORT,
+    walletRpcPort: process.env.XUNI_PORT,
+    rpcUser: process.env.RPC_USER,
+    rpcPassword: process.env.RPC_PASSWORD
+    });
+
 const uniqid = require('uniqid');
 const fetch = require('node-fetch');
 var fs = require('fs');
@@ -125,7 +134,7 @@ module.exports = {
                 res.status(200).json([withdrawDataByMonth, depositDataByMonth, withdrawDataByDay, depositDataByDay,times,transactionAddrs,walletsAddresses,totalTransactions.items,]);
             } catch (error) {
                 res.status(500).json(error)
-                fs.writeFile('dashboard-cahrt-error1.txt', ex, function (err) {
+                fs.writeFile('dashboard-cahrt-error1.txt', error, function (err) {
                     if (err) return console.log(err);
                     console.log('Hello World > helloworld.txt');
                 });
@@ -134,7 +143,7 @@ module.exports = {
         } catch (error) {
             console.log(error)
             res.status(500).json(error)
-            fs.writeFile('dashboard-cahrt-error.txt', ex, function (err) {
+            fs.writeFile('dashboard-cahrt-error.txt', error, function (err) {
                 if (err) return console.log(err);
                 console.log('Hello World > helloworld.txt');
             });
