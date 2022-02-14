@@ -9,6 +9,16 @@ const UserActivity = require('../../models/user_activity');
 const user_data = require('../user/user_data');
 const { baseModelName } = require('../../models/user');
 const xuni = new XUNI(process.env.XUNI_HOST, process.env.XUNI_PORT);
+/*TODO: Use New XUNI constructor after updating ultranotei-api
+    const xuni = new XUNI({
+        daemonHost: process.env.XUNI_HOST, 
+        walletHost: process.env.XUNI_HOST, 
+        daemonRpcPort: process.env.XUNI_PORT,
+        walletRpcPort: process.env.XUNI_PORT,
+        rpcUser: process.env.RPC_USER,
+        rpcPassword: process.env.RPC_PASSWORD
+        });
+*/
 const requestIp = require('request-ip');
 const geoip = require('geoip-lite');
 const formidable = require('formidable');
