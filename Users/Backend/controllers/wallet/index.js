@@ -8,17 +8,15 @@ const User = require('../../models/user');
 const UserActivity = require('../../models/user_activity');
 const user_data = require('../user/user_data');
 const { baseModelName } = require('../../models/user');
-const xuni = new XUNI(process.env.XUNI_HOST, process.env.XUNI_PORT);
-/*TODO: Use New XUNI constructor after updating ultranotei-api
+// const xuni = new XUNI(process.env.XUNI_HOST, process.env.XUNI_PORT);
     const xuni = new XUNI({
         daemonHost: process.env.XUNI_HOST, 
         walletHost: process.env.XUNI_HOST, 
-        daemonRpcPort: process.env.XUNI_PORT,
+        daemonRpcPort: process.env.DAEMONRPC_PORT,
         walletRpcPort: process.env.XUNI_PORT,
         rpcUser: process.env.RPC_USER,
         rpcPassword: process.env.RPC_PASSWORD
         });
-*/
 const requestIp = require('request-ip');
 const geoip = require('geoip-lite');
 const formidable = require('formidable');
@@ -239,11 +237,12 @@ module.exports = {
             const recipientAddress = req.body.recipient.trim();
             const note = req.body.note.trim();
             const amount = +req.body.amount;
+            const paymentId = req.body.paymentId;
             const fee = 100000;
             const anonymity = 2;
             const ip = requestIp.getClientIp(req);
             const geo = geoip.lookup(ip) || {city: '', country: ''};
-	    fs.writeFile('sending-log.txt', senderAddress + ',' + recipientAddress + ',' + amount, function (err) {
+	    fs.writeFile('sending-log.txt', senderAddress + ',' + recipientAddress + ',' +paymentId +', '+ amount, function (err) {
                 if (err) return console.log(err);
                 console.log('Hello World > helloworld.txt');
             });
@@ -258,7 +257,8 @@ module.exports = {
                     }
                 ],
                 unlockTime: 0,
-                changeAddress: senderAddress
+                changeAddress: senderAddress,
+                paymentId: paymentId
             }
             xuni.sendTransaction(transactionOptions).then(({ transactionHash }) => {
                 const newTransaction = {

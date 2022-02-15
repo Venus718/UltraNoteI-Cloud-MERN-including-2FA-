@@ -39,6 +39,7 @@ import { withdrawWalletStart } from '../../store/wallet/wallet.actions';
 export class SingleWalletWithdraw extends React.Component {
   state = {
     address: '',
+    paymentId: '',
     amount: '',
     note: '',
     errors: '',
@@ -64,12 +65,18 @@ export class SingleWalletWithdraw extends React.Component {
         [e.target.name]: e.target.value,
       });
     }
+    if (Name === 'paymentId') {
+      Value = skipSpace(Value);
+      this.setState({
+        [Name]: Value,
+      });
+    }
   };
 
   validateMulti = () => {
     const errors = {};
 
-    const { address, amount, note } = this.state;
+    const { address, amount, note, paymentId } = this.state;
     if (address === '') {
       errors.address = 'Please provide Address';
     }
@@ -81,6 +88,9 @@ export class SingleWalletWithdraw extends React.Component {
     }
     if (note === '') {
       errors.note = 'Please provide Note';
+    }
+    if (paymentId === '') {
+      errors.note = 'Please provide Payment ID';
     }
 
     return Object.keys(errors).length === 0 ? null : errors;
@@ -98,13 +108,14 @@ export class SingleWalletWithdraw extends React.Component {
     }
     else {
       const {sendWithdraw, connectedUser, row} = this.props;
-      const {address, amount, note} = this.state;
+      const {address, amount, note, paymentId} = this.state;
       const payload = {
         id: connectedUser.id,
         sender: row.address,
         recipient: address,
         amount,
-        note
+        note,
+        paymentId
       };
       sendWithdraw(payload);
     }
@@ -112,7 +123,7 @@ export class SingleWalletWithdraw extends React.Component {
   };
 
   render() {
-    const { address, amount, note, errors } = this.state;
+    const { address, amount, note, errors, paymentId } = this.state;
     return (
       <Grid className="singleWalletWithdraw">
         <Grid container>
@@ -136,6 +147,26 @@ export class SingleWalletWithdraw extends React.Component {
                   name="address"
                   value={address}
                   placeholder="XUNI address"
+                  onChange={this.changeHandler}
+                />
+              </FormControl>
+              <FormControl fullWidth className="mb3">
+                <TextField
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                  InputProps={{
+                    endAdornment: (
+                      <Images className="inputIcon" src={walletCircleIcon} />
+                    ),
+                  }}
+                  label="Payment ID"
+                  helperText={errors.paymentId}
+                  id="paymentId"
+                  className="inputStyleBasic"
+                  name="paymentId"
+                  value={paymentId}
+                  placeholder="Payment ID"
                   onChange={this.changeHandler}
                 />
               </FormControl>
