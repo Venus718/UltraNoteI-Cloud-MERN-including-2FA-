@@ -118,6 +118,12 @@ export class SingleWalletWithdraw extends React.Component {
         paymentId
       };
       sendWithdraw(payload);
+      this.setState({
+        address:'',
+        amount:'',
+        note: '',
+        paymentId: ''
+      });
     }
 
   };
