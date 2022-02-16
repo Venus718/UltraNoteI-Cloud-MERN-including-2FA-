@@ -76,7 +76,7 @@ export class SingleWalletWithdraw extends React.Component {
   validateMulti = () => {
     const errors = {};
 
-    const { address, amount, note, paymentId } = this.state;
+    const { address, amount, note } = this.state;
     if (address === '') {
       errors.address = 'Please provide Address';
     }
@@ -89,9 +89,6 @@ export class SingleWalletWithdraw extends React.Component {
     if (note === '') {
       errors.note = 'Please provide Note';
     }
-//    if (paymentId === '') {
-//      errors.note = 'Please provide Payment ID';
-//    }
 
     return Object.keys(errors).length === 0 ? null : errors;
   };

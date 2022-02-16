@@ -257,9 +257,14 @@ module.exports = {
                     }
                 ],
                 unlockTime: 0,
-                changeAddress: senderAddress,
-                paymentId: paymentId
-            }
+                changeAddress: senderAddress
+            };
+
+            if(paymentId) transactionOptions.paymentId = paymentId;
+            
+            if(senderAddress === recipientAddress) 
+                throw new Error('Sender and receiver cannot be same.');
+            
             xuni.sendTransaction(transactionOptions).then(({ transactionHash }) => {
                 const newTransaction = {
                     senderID: senderId,
