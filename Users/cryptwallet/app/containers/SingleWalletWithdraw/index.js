@@ -75,8 +75,8 @@ export class SingleWalletWithdraw extends React.Component {
 
   validateMulti = () => {
     const errors = {};
-
-    const { address, amount, note, paymentId } = this.state;
+    const {row} = this.props;
+    const { address, amount, note } = this.state;
     if (address === '') {
       errors.address = 'Please provide Address';
     }
@@ -89,9 +89,10 @@ export class SingleWalletWithdraw extends React.Component {
     if (note === '') {
       errors.note = 'Please provide Note';
     }
-//    if (paymentId === '') {
-//      errors.note = 'Please provide Payment ID';
-//    }
+    if (address === row.address) {
+      errors.address = "Error: You can't send coins to yourself.";
+      errors.message = errors.address;
+    }
 
     return Object.keys(errors).length === 0 ? null : errors;
   };
@@ -104,7 +105,8 @@ export class SingleWalletWithdraw extends React.Component {
     });
 
     if (errors){
-      toast.error("Please give a valid input");
+      if(errors.message) toast.error(errors.message);
+      else toast.error("Please give a valid input");
     }
     else {
       const {sendWithdraw, connectedUser, row} = this.props;
