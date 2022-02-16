@@ -92,7 +92,7 @@ export class SingleWalletActivity extends React.Component {
     withdraw_row: WithdrawRow,
     currentPageW: 1,
     pageNumberOfPageW: 1,
-    rowsPerPage: 2,
+    rowsPerPage: 10,
     tab: 0,
   };
 
