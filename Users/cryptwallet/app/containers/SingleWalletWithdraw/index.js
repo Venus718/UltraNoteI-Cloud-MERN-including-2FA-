@@ -89,9 +89,9 @@ export class SingleWalletWithdraw extends React.Component {
     if (note === '') {
       errors.note = 'Please provide Note';
     }
-    if (paymentId === '') {
-      errors.note = 'Please provide Payment ID';
-    }
+//    if (paymentId === '') {
+//      errors.note = 'Please provide Payment ID';
+//    }
 
     return Object.keys(errors).length === 0 ? null : errors;
   };
