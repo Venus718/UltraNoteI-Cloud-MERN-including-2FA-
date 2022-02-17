@@ -257,10 +257,10 @@ module.exports = {
                     }
                 ],
                 unlockTime: 0,
-               //  changeAddress: senderAddress
+                changeAddress: senderAddress
             };
 
-            if(paymentId) transactionOptions.transfers[0].paymentId = paymentId;
+            if(paymentId) transactionOptions.paymentId = paymentId;
             
             if(senderAddress === recipientAddress) 
                 throw new Error('Sender and receiver cannot be same.');
