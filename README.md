@@ -3,8 +3,8 @@ UltraNote Infinity Cloud Wallet
 
 ## Installing Frontend
 - cd UltraNoteI-Cloud/cryptwallet
-- nvm install 12
-- nvm use 12
+- nvm install 14
+- nvm use 14.19.0
 - npm install
 - npm run build
 - mv build /var/www/Cloud
