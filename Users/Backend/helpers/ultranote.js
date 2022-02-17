@@ -21,7 +21,7 @@ const err = {
     str: ' must be a string'
 };
 
-function UltraNote(host, walletRpcPort, daemonRpcPort, timeout) {
+function UltraNote(host, walletRpcPort, daemonRpcPort, timeout, rpcUser, rpcPassword) {
     if (!host) throw 'host required';
     const parse = host.match(/^([^:]*):\/\/(.*)$/);
     if (parse[1] === 'http') this.protocol = http;
@@ -31,6 +31,7 @@ function UltraNote(host, walletRpcPort, daemonRpcPort, timeout) {
     this.walletRpcPort = walletRpcPort;
     this.daemonRpcPort = daemonRpcPort;
     this.timeout = timeout || 5000;
+    this.auth = !rpcUser ? '': `${rpcUser}:${rpcPassword ? rpcPassword:''}`;
 }
 
 UltraNote.prototype.getTransaction = function (hash) {
@@ -91,10 +92,11 @@ UltraNote.prototype.toHexString = function(number) {
     return hex_string;
 }
 
-function request(protocol, host, port, timeout, post, path, resolve, reject) {
+function request(protocol, host, port, auth, timeout, post, path, resolve, reject) {
     const obj = {
         hostname: host,
         port: port,
+        auth: auth,
         method: 'POST',
         timeout: timeout,
         path: path,
@@ -128,13 +130,14 @@ function request(protocol, host, port, timeout, post, path, resolve, reject) {
     doRequest.end(post);
 }
 
-function request_send(protocol, host, port, timeout, post, path, resolve, reject) {
+function request_send(protocol, host, port, auth, timeout, post, path, resolve, reject) {
     const obj = {
       hostname: host,
       port: port,
       method: 'POST',
       timeout: timeout,
       path: path,
+      auth: auth,
       headers: {
         'Content-Type': 'application/json',
         'Content-Length': post.length,
@@ -169,14 +172,14 @@ function request_send(protocol, host, port, timeout, post, path, resolve, reject
   }
 
 function wrpc(that, method, params, resolve, reject) {
-    request(that.protocol, that.host, that.walletRpcPort, that.timeout, buildRpc(method, params), '/json_rpc', resolve, reject);
+    request(that.protocol, that.host, that.walletRpcPort, that.auth, that.timeout, buildRpc(method, params), '/json_rpc', resolve, reject);
 }
 
 function wrpc_send(that, method, params, resolve, reject) {
     let rpc = buildRpc(method, params);
     var msg_json = JSON.stringify(params.transfers[0].message);
     rpc = rpc.replace(/\\n/g,'\n');
-    request_send(that.protocol, that.host, that.walletRpcPort, that.timeout, rpc, '/json_rpc', resolve, reject);
+    request_send(that.protocol, that.host, that.walletRpcPort, that.auth, that.timeout, rpc, '/json_rpc', resolve, reject);
 }
 
 function arrayTest(arr, test) {

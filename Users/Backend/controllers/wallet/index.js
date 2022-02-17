@@ -29,7 +29,7 @@ const axios = require('axios');
 const url = require('url');
 const Chacha8 = require('../../helpers/chacha8');
 const UltraNote = require('../../helpers/ultranote');
-const ultranote = new UltraNote(process.env.XUNI_HOST, process.env.XUNI_PORT);
+const ultranote = new UltraNote(process.env.XUNI_HOST, process.env.XUNI_PORT, process.env.DAEMONRPC_PORT, 5000, process.env.RPC_USER, process.env.RPC_PASSWORD);
 
 var fs = require('fs');
 
@@ -257,7 +257,7 @@ module.exports = {
                     }
                 ],
                 unlockTime: 0,
-                changeAddress: senderAddress
+               //  changeAddress: senderAddress
             };
 
             if(paymentId) transactionOptions.transfers[0].paymentId = paymentId;
@@ -265,6 +265,8 @@ module.exports = {
             if(senderAddress === recipientAddress) 
                 throw new Error('Sender and receiver cannot be same.');
             
+            console.log('Transaction Sending:', transactionOptions);
+
             xuni.sendTransaction(transactionOptions).then(({ transactionHash }) => {
                 const newTransaction = {
                     senderID: senderId,
