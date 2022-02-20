@@ -134,6 +134,15 @@ const SideBar = ({ userProfileData }) => {
               <i className="flaticon-073-settings"></i>
               <span className="nav-text">Settings</span>
             </Link>
+            <ul>
+              <li>
+                <Link
+                  className={`${path === "settings" ? "mm-active" : ""}`}
+                  to="/settings">
+                  Wallet/RPC Settings
+                </Link>
+              </li>
+            </ul>
           </li>
           <li className={`${path === "mass-email" ? "mm-active" : ""}`}>
             <Link className="ai-icon" to="/mass-email">

@@ -6,13 +6,13 @@ import { useForm } from "react-hook-form";
 import axios from 'axios';
 import logo from "../../images/Ultralogo/logo150.png";
 import './allresponsivestyle/pages.styles.css';
-const ForgotPassword = () => {
+const ForgotPassword = ({portalURL}) => {
   const { register, handleSubmit, formState: { errors } } = useForm();
   const onSubmit = (e) => {
    
     console.log('Clicking',inputValues);
   
-    axios.post(`https://portal.ultranote.org/api/admin/forgotpassword`,{
+    axios.post(`${portalURL}api/admin/forgotpassword`,{
       email: e.email,
     
     })

@@ -2,15 +2,25 @@ const XUNI = require("ultranotei-api");
 const { Types } = require("mongoose");
 const { ObjectId } = Types;
 const Wallet = require("../../models/wallet");
-const xuni = new XUNI(
-  process.env.XUNI_HOST || "http://127.0.0.1",
-  process.env.XUNI_PORT || "9050"
-);
-const UltraNote = require("../../helpers/ultranote");
-const ultranote = new UltraNote(
-  process.env.XUNI_HOST || "http://127.0.0.1",
-  process.env.XUNI_PORT || "9050"
-);
+const Settings = require("../../models/settings");
+
+const DB_RPCSETTINGS_STR = 'RPCSettings';
+var xuni;
+reconnectXUNI();
+
+function reconnectXUNI() {
+  loadRPCSettings({}).then(settings=>{
+  xuni = new XUNI({
+    daemonHost: settings.rpcHost || process.env.XUNI_HOST || "http://127.0.0.1", 
+    walletHost: settings.rpcHost || process.env.XUNI_HOST || "http://127.0.0.1", 
+    daemonRpcPort: settings.daemonRpcPort || process.env.DAEMONRPC_PORT || "43000",
+    walletRpcPort: settings.walletRpcPort || process.env.XUNI_PORT || "8070",
+    rpcUser: settings.rpcUser || process.env.RPC_USER,
+    rpcPassword: settings.rpcPassword || process.env.RPC_PASSWORD
+    });
+  })
+}
+
 const uniqid = require("uniqid");
 
 module.exports = {
@@ -47,7 +57,7 @@ module.exports = {
         const transaction = item.transactions[j];
         var message = [];
         try {
-          const transaction_message = await ultranote.getTransaction(
+          const transaction_message = await xuni.getTransaction(
             transaction.transactionHash
           );
           var message_list = transaction_message.split('"message":"');
@@ -68,7 +78,7 @@ module.exports = {
           senderAddress = uniqid();
         }
 
-        transactionObj = {
+        let transactionObj = {
           senderAdress: senderAddress,
           recipientAdress: recipientAddress,
           updatedAt: new Date(transaction.timestamp * 1000).toISOString(),
@@ -128,4 +138,40 @@ module.exports = {
       console.log(error);
     }
   },
+ async getRPCSettings(req, res) {
+  let settingsObj = {
+    rpcHost: '',
+    rpcUser: '',
+    rpcPassword: ''
+  };
+  try {
+    settingsObj = await loadRPCSettings(settingsObj);
+    res.status(200).json(settingsObj);
+
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({message:'Error occurred:'+error});
+  }
+},
+
+ async setRPCSettings(req, res) {
+  try {
+    for(let skey in req.body.rpcSettings)
+    {
+      await Settings.updateOne({type: DB_RPCSETTINGS_STR, key: skey}, {key: skey, value: req.body.rpcSettings[skey]}, {upsert: true});
+    }
+    res.status(200).json({message:'OK'});
+   reconnectXUNI();
+   
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({message: 'Errror:'+error});
+  }
+ }
 };
+
+async function loadRPCSettings(settings) {
+  let settingsRead = await Settings.find({type: DB_RPCSETTINGS_STR});
+  for(let s of settingsRead) settings[s.key] = s.value;
+  return settings;
+}

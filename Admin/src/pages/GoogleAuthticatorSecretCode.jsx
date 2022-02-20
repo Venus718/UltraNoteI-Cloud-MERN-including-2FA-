@@ -1,9 +1,9 @@
 import React from 'react';
 import GoogleSecretCode from '../jsx/pages/GoogleauthSecretcode';
 
-const GoogleAuthEnticatorSecretCodePage = () => (
+const GoogleAuthEnticatorSecretCodePage = (props) => (
 <div className="container-fluid" style={{ minHeight: window.screen.height - 60 }} >
-<GoogleSecretCode/>
+<GoogleSecretCode {...props}/>
 </div>
 );
 

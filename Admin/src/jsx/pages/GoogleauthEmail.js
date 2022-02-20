@@ -9,14 +9,14 @@ import './allresponsivestyle/pages.styles.css';
 
 import logo from "../../images/Ultralogo/logo150.png";
 
-const GoogleAuthEmail = ({ history  , SetEmailfortwofa }) => {
+const GoogleAuthEmail = ({ history  , SetEmailfortwofa, portalURL }) => {
   
   const submitHandler = (e) => {
    
     console.log('Clicking',inputValues);
     e.preventDefault();
 
-    axios.post(`https://portal.ultranote.org/api/admin/googleauthapp`,{
+    axios.post(`${portalURL}api/admin/googleauthapp`,{
       email: inputValues.email,
     })
     .then(res => {

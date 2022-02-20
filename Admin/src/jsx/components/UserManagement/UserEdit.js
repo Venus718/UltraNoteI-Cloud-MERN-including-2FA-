@@ -8,7 +8,7 @@ import "react-toastify/dist/ReactToastify.css";
 
 const UserEdit = (props) => {
   const { id } = props.match.params;
-  const { token } = props;
+  const { token, portalURL } = props;
   console.log(token);
 
   const getBase64 = (file, cb) => {
@@ -39,7 +39,7 @@ const UserEdit = (props) => {
       ...(userData.avatar && { avatar: userData.avatar }),
     };
     await axios
-      .post("https://portal.ultranote.org/api/admin/updateprofile", formData, {
+      .post(portalURL + "api/admin/updateprofile", formData, {
         headers: {
           Authorization: token.token,
           "Content-Type": "application/json",
@@ -66,13 +66,13 @@ const UserEdit = (props) => {
   };
   useEffect(() => {
     axios
-      .post("https://portal.ultranote.org/api/users/user_profile", {
+      .post(portalURL + "api/users/user_profile", {
         userId: id,
       })
       .then((res) => {
         setUserData(res.data.user);
         axios
-          .post("https://portal.ultranote.org/api/wallets/wallet_list")
+          .post(portalURL + "api/wallets/wallet_list")
           .then((resp) => {
             const { wallets } = resp.data;
             const wallet = wallets.filter(

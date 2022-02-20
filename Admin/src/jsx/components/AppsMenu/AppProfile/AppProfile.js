@@ -22,7 +22,8 @@ import profile from "../../../../images/profile/profile.png";
 import googleauth from "../../../../images/googleauth/unnamed.png";
 import PageTitle from "../../../layouts/PageTitle";
 import { setUserProfileData } from "../../../../redux/user/user.actions";
-const AppProfile = ({ userProfileData, token, setUserProfileData }) => {
+const AppProfile = ({ userProfileData, token, setUserProfileData, portalURL }) => {
+  userProfileData = !userProfileData ? token.profiledata: userProfileData;
   const [activeToggle, setActiveToggle] = useState("profile");
   const [sendMessage, setSendMessage] = useState(false);
   const [postModal, setPostModal] = useState(false);
@@ -34,7 +35,7 @@ const AppProfile = ({ userProfileData, token, setUserProfileData }) => {
   useEffect(() => {
     // Update the document title using the browser API
     axios
-      .get(`https://portal.ultranote.org/api/admin/profiledetails`, {
+      .get(`${portalURL}api/admin/profiledetails`, {
         headers: {
           Authorization: token.token,
         },
@@ -49,7 +50,7 @@ const AppProfile = ({ userProfileData, token, setUserProfileData }) => {
   }, []);
 
   const handleOnChange = () => {
-    const url = "https://portal.ultranote.org/api/admin/2faactive-inactive";
+    const url = portalURL + "api/admin/2faactive-inactive";
     axios
       .post(
         url,
@@ -87,7 +88,7 @@ const AppProfile = ({ userProfileData, token, setUserProfileData }) => {
     formData.append("lastname", data.lastname);
     formData.append("phonenumber", data.phonenumber);
     formData.append("_id", userProfileData._id);
-    const url = "https://portal.ultranote.org/api/admin/updateprofile";
+    const url = portalURL + "api/admin/updateprofile";
     axios
       .post(url, formData, {
         headers: {
@@ -98,7 +99,7 @@ const AppProfile = ({ userProfileData, token, setUserProfileData }) => {
         console.log(res);
         if (res.data.message == "Profile Updated Successfully") {
           axios
-            .get(`https://portal.ultranote.org/api/admin/profiledetails`, {
+            .get(`${portalURL}api/admin/profiledetails`, {
               headers: {
                 Authorization: token.token,
               },
@@ -121,7 +122,7 @@ const AppProfile = ({ userProfileData, token, setUserProfileData }) => {
   const resetPassword = async (event) => {
     event.preventDefault();
     event._id = userProfileData._id;
-    const url = "https://portal.ultranote.org/api/admin/updatepassword";
+    const url = portalURL + "api/admin/updatepassword";
     axios
       .post(url, event, {
         headers: {

@@ -11,7 +11,7 @@ import { selectHomeUsers } from "../../../redux/home/home.selectors";
 import WithSpinner from "../spinner/spinner";
 import PageTitle from "../../layouts/PageTitle";
 
-const Home = ({ tokem, saveUsers, users, setUserProfileData }) => {
+const Home = ({ tokem, saveUsers, users, setUserProfileData, portalURL }) => {
   const state = {
     totalUsersCount: 0,
     activeUsersCount: 0,
@@ -48,7 +48,7 @@ const Home = ({ tokem, saveUsers, users, setUserProfileData }) => {
 
   useEffect(() => {
     axios
-      .get("https://portal.ultranote.org/api/users/user_list", {
+      .get(portalURL + "api/users/user_list", {
         headers: {
           Authorization: tokem.token,
         },
@@ -74,7 +74,7 @@ const Home = ({ tokem, saveUsers, users, setUserProfileData }) => {
       })
       .catch((error) => console.log(error));
     axios
-      .get("https://portal.ultranote.org/api/admin/profiledetails", {
+      .get(portalURL + "api/admin/profiledetails", {
         headers: {
           Authorization: tokem.token,
         },

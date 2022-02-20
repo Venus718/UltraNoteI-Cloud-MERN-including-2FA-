@@ -23,9 +23,11 @@ import GoogleAuthEmailPage from "./pages/GoogleEmail";
 import GoogleAuthEnticatorSecretCodePage from "./pages/GoogleAuthticatorSecretCode";
 import { selectUserToken } from "./redux/user/user.selectors";
 import MassEmailPage from "./pages/MassEmail/MassEmail";
+import SettingsPage from "./pages/Settings";
 
 // import {setCurrentUser} from './redux/user/user.actions';
-const App = ({ width, token }) => {
+const App = (props) => {
+  const {width, token} = props;
   const body = document.querySelector("body");
   //useEffect(() => {
   //   body.setAttribute("data-typography", "poppins");
@@ -47,7 +49,7 @@ const App = ({ width, token }) => {
   //     ? body.setAttribute("data-sidebar-style", "overlay")
   //     : body.setAttribute("data-sidebar-style", "full");
   // }, [width]);
-
+  
   return (
     <ThemeContextProvider>
       <Switch>
@@ -55,53 +57,67 @@ const App = ({ width, token }) => {
         <Route
           exact
           path="/"
-          render={() => (token ? <Redirect to="/dashboard" /> : <LoginPage />)}
+          render={(props1) => (token ? <Redirect to="/dashboard" /> : <LoginPage {...props1} {...props} />)}
         />
         <Route
           exact
           path="/dashboard"
-          render={() => (token ? <DashboardPage /> : <Redirect to="/" />)}
+          render={(props1) => (token ? <DashboardPage {...props} {...props1} /> : <Redirect to="/" />)}
         />
         <Route
           exact
           path="/profile-details"
-          render={() => (token ? <ProfilePage /> : <Redirect to="/" />)}
-        />
+          // render={(props1) => (token ? <ProfilePage/> : <Redirect to="/" />)}
+        >
+          {token ? <ProfilePage {...props}/> : <Redirect to="/" />}
+          </Route>
         <Route
-          exact
-          path="/users"
-          render={() => (token ? <UserList /> : <Redirect to="/" />)}
+         exact
+         path="/settings"
+         render={(props1)=>(token ? <SettingsPage {...props} {...props1}/>: <Redirect to="/" />)}
         />
+        <Route exact path="/users">
+          {token ? <UserList {...props}/>: <Redirect to="/" />}
+        </Route>
+        
         <Route
           path="/users/:id/transactions"
-          render={(props) => {
-            props.token = token ? token : null;
-            return <UserTransactions {...props} />;
+          render={(props1) => {
+            props1.token = token ? token : null;
+            return <UserTransactions {...props1} {...props} />;
           }}
         />
         <Route
           path="/users/:id"
-          render={(props) => {
-            props.token = token ? token : null;
-            return <UserEdit {...props} />;
+          render={(props1) => {
+            props1.token = token ? token : null;
+            return <UserEdit {...props} {...props1} />;
           }}
         />
         <Route
           exact
           path="/mass-email"
-          render={() =>
-            token ? <MassEmailPage token={token.token} /> : <Redirect to="/" />
+          render={(props1) =>
+            token ? <MassEmailPage token={token.token} portalURL={props.portalURL} {...props1} /> : <Redirect to="/" />
           }
         />
-        <Route path="/forgotpassword" component={ForgotPasswordPage} />
+        <Route path="/forgotpassword" 
+        // component={ForgotPasswordPage} 
+        render={(props1)=><ForgotPasswordPage {...props} {...props1}/>}
+        />
         <Route
           path="/reset-password/:id/:token"
-          component={ResetPasswordPage}
+//          component={ResetPasswordPage}
+          render = {(props1)=><ResetPasswordPage {...props1} {...props}/>}
         />
-        <Route path="/googleauthicator" component={GoogleAuthEmailPage} />
+        <Route path="/googleauthicator" 
+        //component={GoogleAuthEmailPage} 
+        render = {(props1)=><GoogleAuthEmailPage {...props} {...props1}/>}
+        />
         <Route
           path="/googleverifycode"
-          component={GoogleAuthEnticatorSecretCodePage}
+          // component={GoogleAuthEnticatorSecretCodePage}
+          render = {(props1)=><GoogleAuthEnticatorSecretCodePage {...props} {...props1}/>}
         />
         {/* <Route path="/markmili" component={Markup} />  */}
       </Switch>

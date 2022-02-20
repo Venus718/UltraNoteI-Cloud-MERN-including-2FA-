@@ -2,7 +2,7 @@ import React from "react";
 import Nav from "../../jsx/layouts/nav";
 import Footer from "../../jsx/layouts/Footer";
 import UserList from "../../jsx/components/UserManagement/UserList";
-const UserListPage = () => (
+const UserListPage = (props) => (
   <div id="main-wrapper" className="show mh100vh ">
     <Nav />
     <div className="content-body">
@@ -10,7 +10,7 @@ const UserListPage = () => (
         className="container-fluid"
         style={{ minHeight: window.screen.height - 60 }}
       >
-        <UserList />
+        <UserList {...props}/>
       </div>
     </div>
     <Footer />

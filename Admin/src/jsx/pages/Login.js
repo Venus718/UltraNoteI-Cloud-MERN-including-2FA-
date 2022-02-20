@@ -30,7 +30,7 @@ const Login = (props) => {
     console.log("Clicking", inputValues);
     // e.preventDefault();
     axios
-      .post(`https://portal.ultranote.org/api/admin/login`, {
+      .post(`${props.portalURL}api/admin/login`, {
         email: e.email,
         password: e.password,
       })
