@@ -138,6 +138,25 @@ module.exports = {
       console.log(error);
     }
   },
+ async getWalletData(req, res) {
+  try{
+    if(!req.params.id)console.log('Error no userid:', req);
+    let wallets = await Wallet.find({walletHolder: req.params.id});
+    if (!wallets || !wallets.length) {
+      return res.status(400).json({ message: "wallets not found" });
+    }
+    let walletAddress = wallets[0].address;
+    let balance = await xuni.getBalance(walletAddress);
+    let wallet = { address: walletAddress, balance: balance };
+    return res.status(200).json(wallet);
+  }
+  catch(err) {
+    console.log('wallets/getWalletData.catch:', err);
+    return res
+      .status(400)
+      .json({ message: "ERROR WHILE GETTING WALLET DATA:", err });
+  };
+ },
  async getRPCSettings(req, res) {
   let settingsObj = {
     rpcHost: '',

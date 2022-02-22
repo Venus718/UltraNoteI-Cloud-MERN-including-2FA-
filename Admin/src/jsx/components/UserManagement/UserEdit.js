@@ -69,21 +69,37 @@ const UserEdit = (props) => {
       .post(portalURL + "api/users/user_profile", {
         userId: id,
       })
-      .then((res) => {
+      // .then((res) => {
+      //   setUserData(res.data.user);
+      //   axios
+      //     .post(portalURL + "api/wallets/wallet_list")
+      //     .then((resp) => {
+      //       const { wallets } = resp.data;
+      //       const wallet = wallets.filter(
+      //         (wallet) => wallet.walletHolder == res.data.user._id
+      //       );
+      //       // setWalletData(wallet[0]);
+      //     });
+      // })
+      // .catch((err) => {
+      //   console.log(err);
+      // });
+      .then((res)=>{
         setUserData(res.data.user);
-        axios
-          .post(portalURL + "api/wallets/wallet_list")
-          .then((resp) => {
-            const { wallets } = resp.data;
-            const wallet = wallets.filter(
-              (wallet) => wallet.walletHolder == res.data.user._id
-            );
-            setWalletData(wallet[0]);
-          });
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+        axios.get(portalURL + "api/wallets/walletdata/"+id+"/",{ headers: { Authorization: token.token, "Content-Type": "application/json" }})
+          .then(response=>{
+            console.log('data received: ', response.data);
+            let balance = response.data && response.data.balance && response.data.balance.availableBalance ? response.data.balance.availableBalance: 0;
+            let lockedBalance = response.data && response.data.balance && response.data.balance.lockedAmount ? response.data.balance.lockedAmount: 0;
+
+            balance /= 1000000;
+            lockedBalance /= 1000000;
+
+            setWalletData({address: response.data.address, balance: balance, unconfirmedBalance: lockedBalance });
+          })
+          .catch((err)=>{console.log('error getting wallet data:', err)});
+      }).catch(err=>{console.log(err)});
+
   }, []);
   const [userData, setUserData] = useState({});
   const [walletList, setWalletList] = useState([]);
@@ -133,6 +149,13 @@ const UserEdit = (props) => {
                   </span>{" "}
                   XUNI
                 </h4>
+                {/* <p style={{textAlign: 'right'}}>
+                  Unconfirmed balance:{" "}
+                  <span className="text-success">
+                    {walletData?.unconfirmedBalance || "0"}
+                  </span>{" "}
+                  XUNI
+                </p> */}
                 <p>
                   <small> {walletData?.address || "Address not found"} </small>
                 </p>

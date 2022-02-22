@@ -16,12 +16,12 @@ var currentValues={
     rpcPassword: ''
 };
 const SettingsComponent = (props) => {
-   var RPC_Status = {
-    "blockCount": 449594,
-    "knownBlockCount": 449594,
-    "lastBlockHash": "73016ee00fa98b8222f637bfa22417b9cb3fbf5cdb0defb5d75491ff8a31536e",
-    "peerCount": 1
-    };
+  //  var RPC_Status = {
+  //   "blockCount": 449594,
+  //   "knownBlockCount": 449594,
+  //   "lastBlockHash": "73016ee00fa98b8222f637bfa22417b9cb3fbf5cdb0defb5d75491ff8a31536e",
+  //   "peerCount": 1
+  //   };
    const [RPCSettings, setRPCSettings] = useState(currentValues);
    const [changesUpdateResult, setChangesUpdateResult] = useState('');
 
@@ -29,15 +29,19 @@ const SettingsComponent = (props) => {
     register,
     handleSubmit,
     formState,
-    setValue
+    setValue,
   } = useForm({defaultValues: RPCSettings});
+  const requestSettings = async ()=>{
+    let response = await axios.get(props.portalURL+'api/wallets/rpcsettings/', { headers: { Authorization: props.token.token, "Content-Type": "application/json" }});
+    if(response.status===200)
+      setRPCSettings(response.data);
+   }
 
   useEffect(()=>{
     const func=async ()=>{
-      let response = await axios.get(props.portalURL+'api/wallets/rpcsettings/', { headers: { Authorization: props.token.token, "Content-Type": "application/json" }});
-      if(response.status===200)
-        setRPCSettings(response.data);
+      await requestSettings();
     }
+
     func();
   },[]);
   useEffect(()=>{
@@ -53,7 +57,8 @@ const SettingsComponent = (props) => {
       let response = await axios.post(props.portalURL+'api/wallets/rpcsettings/',{rpcSettings: data}, { headers: { Authorization: props.token.token, "Content-Type": "application/json" }});
       let resultStr = response && response.status===200 ? 'Update successfull.': 'Update failed...';
       setChangesUpdateResult(resultStr);
-      console.log('result:', resultStr);
+      await requestSettings();
+      // console.log('result:', resultStr);
       }
       catch(err) {
         setChangesUpdateResult('Error updating data:', err);
@@ -61,8 +66,8 @@ const SettingsComponent = (props) => {
 
   }
   useEffect(()=>{
-      // console.log(formState.errors);
-      if(formState.isDirty) setChangesUpdateResult('');
+      // console.log('form state:', formState.dirtyFields);
+      // if(formState.isDirty) setChangesUpdateResult('');
   },[formState]);
 
   let errors = formState.errors;
@@ -87,7 +92,7 @@ const SettingsComponent = (props) => {
                 <div className="form-group col-md-12">{changesUpdateResult}</div>
                 </div>
 
-                <div className="form-group row"> 
+                {/* <div className="form-group row"> 
                     <div className="form-group col-md-12"> 
                     <label>Status</label>
                     </div>
@@ -96,7 +101,7 @@ const SettingsComponent = (props) => {
                         {JSON.stringify(RPC_Status)}
                         </textarea>
                         </div>
-                </div>
+                </div> */}
             </div>  
           </div>
         </div>
