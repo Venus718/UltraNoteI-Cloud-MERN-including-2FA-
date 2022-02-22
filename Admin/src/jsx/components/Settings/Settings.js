@@ -24,6 +24,8 @@ const SettingsComponent = (props) => {
   //   };
    const [RPCSettings, setRPCSettings] = useState(currentValues);
    const [changesUpdateResult, setChangesUpdateResult] = useState('');
+   const [balance, setBalance] = useState(0);
+   const [balanceMessage, setBalanceMessage] = useState('');
 
    const {
     register,
@@ -31,15 +33,30 @@ const SettingsComponent = (props) => {
     formState,
     setValue,
   } = useForm({defaultValues: RPCSettings});
+  
   const requestSettings = async ()=>{
     let response = await axios.get(props.portalURL+'api/wallets/rpcsettings/', { headers: { Authorization: props.token.token, "Content-Type": "application/json" }});
     if(response.status===200)
       setRPCSettings(response.data);
    }
 
+  const requestBalance = async ()=>{
+    const walletAddress = 'XuniiezpineJ8GUmZiSK2bZ9jfHHqPe42YgbS6Y82KXrSeSzdHiQz9J8SsJcum2ss3Udb2ry7noaoRzY1L1F6Hie6gfY7SLNsBY';
+    try{
+    let response = await axios.get(props.portalURL+'api/wallets/balance/'+walletAddress, { headers: { Authorization: props.token.token, "Content-Type": "application/json" }});
+    if(response && response.status === 200)
+      setBalance(response.data.availableBalance/1000000);
+      setBalanceMessage('');
+    }catch(err) {
+      setBalance(0);
+      setBalanceMessage('Unknown address or error getting balance.');
+    }   
+  }
+
   useEffect(()=>{
     const func=async ()=>{
       await requestSettings();
+      await requestBalance();
     }
 
     func();
@@ -77,6 +94,18 @@ const SettingsComponent = (props) => {
       <div className="row">
         <div className="col-xl-12">
           <div className="card">
+          <div>
+                <h4 className="card-title text-right">
+                   Balance:{" "}
+                  <span className="text-success">
+                    {balance || "0"}
+                  </span>{" "}
+                  XUNI
+                </h4>
+                <p style={{textAlign: 'right'}}>
+                  <small> {balanceMessage} </small>
+                </p>
+              </div>
             <div className="card-body">
               <div className="form-group row">
                 {FormFields.map((ff, index)=>{

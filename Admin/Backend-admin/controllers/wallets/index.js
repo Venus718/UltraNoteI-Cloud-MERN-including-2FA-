@@ -138,9 +138,23 @@ module.exports = {
       console.log(error);
     }
   },
+  async getBalance(req, res) {
+    try{
+    if(!req.params.address) throw(new Error('Address parameter missing'));
+    let balance = await xuni.getBalance(req.params.address);
+    
+    return res.status(200).json({ ...balance });
+    }
+    catch(err){
+      console.log('wallets/getBalance.catch:', err);
+    return res
+      .status(400)
+      .json({ message: "Error while getting balance:", err });
+    }
+  },
  async getWalletData(req, res) {
   try{
-    if(!req.params.id)console.log('Error no userid:', req);
+    if(!req.params.id) throw(new Error('User id missing'));
     let wallets = await Wallet.find({walletHolder: req.params.id});
     if (!wallets || !wallets.length) {
       return res.status(400).json({ message: "wallets not found" });

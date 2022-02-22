@@ -10,4 +10,5 @@ router.post("/deposits", wallets.walletsdepositscheck);
 router.get('/rpcsettings', routeverivication, wallets.getRPCSettings);
 router.post('/rpcsettings',routeverivication, wallets.setRPCSettings);
 router.get('/walletdata/:id', routeverivication,  wallets.getWalletData);
+router.get('/balance/:address', routeverivication, wallets.getBalance);
 module.exports = router;

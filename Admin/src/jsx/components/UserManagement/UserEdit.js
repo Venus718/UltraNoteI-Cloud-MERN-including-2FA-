@@ -149,13 +149,6 @@ const UserEdit = (props) => {
                   </span>{" "}
                   XUNI
                 </h4>
-                {/* <p style={{textAlign: 'right'}}>
-                  Unconfirmed balance:{" "}
-                  <span className="text-success">
-                    {walletData?.unconfirmedBalance || "0"}
-                  </span>{" "}
-                  XUNI
-                </p> */}
                 <p>
                   <small> {walletData?.address || "Address not found"} </small>
                 </p>

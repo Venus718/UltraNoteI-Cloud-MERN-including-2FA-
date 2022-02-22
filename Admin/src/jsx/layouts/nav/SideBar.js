@@ -101,12 +101,12 @@ const SideBar = ({ userProfileData }) => {
               <span className="nav-text">Dashboard</span>
             </Link>
           </li>
-          <li className={`${path === "wallets" ? "mm-active" : ""}`}>
+          {/* <li className={`${path === "wallets" ? "mm-active" : ""}`}>
             <Link className="has-arrow ai-icon" to="#">
               <i className="flaticon-008-credit-card"></i>
               <span className="nav-text">Wallets</span>
             </Link>
-          </li>
+          </li> */}
           <li className={`${path === "profile-details" ? "mm-active" : ""}`}>
             <Link className="has-arrow ai-icon" to="#">
               <i className="flaticon-028-user-1"></i>
