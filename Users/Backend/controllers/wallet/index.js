@@ -264,7 +264,7 @@ module.exports = {
             if(senderAddress === recipientAddress) 
                 throw new Error('Sender and receiver cannot be same.');
 
-            console.log('Transaction Sending:', transactionOptions);
+          console.log('Transaction Sending:', transactionOptions);
 
             xuni.sendTransaction(transactionOptions).then(({ transactionHash }) => {
                 const newTransaction = {

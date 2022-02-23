@@ -30,8 +30,9 @@ class UserList extends Component {
     );
   }
   componentDidMount() {
+   
     axios
-      .get(`https://portal.ultranote.org/api/users/user_list`, {
+      .get(`${this.props.portalURL}api/users/user_list`, {
         headers: {
           Authorization: this.state.token,
         },
@@ -79,7 +80,7 @@ class UserList extends Component {
     if (window.confirm("Are you sure you want to delete this user?")) {
       axios
         .put(
-          `https://portal.ultranote.org/api/users/delete_user`,
+          `${this.props.portalURL}api/users/delete_user`,
           {
             userId: id,
           },

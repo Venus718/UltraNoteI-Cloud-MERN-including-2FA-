@@ -96,7 +96,7 @@ function request(protocol, host, port, auth, timeout, post, path, resolve, rejec
     const obj = {
         hostname: host,
         port: port,
-	auth: auth,
+      	auth: auth,
         method: 'POST',
         timeout: timeout,
         path: path,

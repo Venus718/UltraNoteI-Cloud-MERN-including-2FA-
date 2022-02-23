@@ -23,7 +23,7 @@ class MassEmail extends Component {
   }
   getUsers = () => {
     axios
-      .get("https://portal.ultranote.org/api/users/user_list", {
+      .get(this.props.portalURL + "api/users/user_list", {
         headers: {
           Authorization: this.state.token,
         },
@@ -82,7 +82,7 @@ class MassEmail extends Component {
       users: this.state.selectedUsers,
     };
     axios
-      .post("https://portal.ultranote.org/api/admin/mass_email", formData, {
+      .post(this.props.portalURL + "api/admin/mass_email", formData, {
         headers: {
           Authorization: this.state.token,
         },

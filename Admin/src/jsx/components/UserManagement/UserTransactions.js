@@ -36,13 +36,13 @@ const UserTransactions = (props) => {
   });
   useEffect(() => {
     axios
-      .post("https://portal.ultranote.org/api/users/user_profile", {
+      .post(props.portalURL + "api/users/user_profile", {
         userId: id,
       })
       .then((res) => {
         setUserData(res.data.user);
         axios
-          .post("https://portal.ultranote.org/api/wallets/wallet_list")
+          .post(props.portalURL + "api/wallets/wallet_list")
           .then((resp) => {
             const { wallets } = resp.data;
             const wallet = wallets.filter(

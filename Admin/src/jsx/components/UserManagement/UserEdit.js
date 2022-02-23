@@ -8,7 +8,7 @@ import "react-toastify/dist/ReactToastify.css";
 
 const UserEdit = (props) => {
   const { id } = props.match.params;
-  const { token } = props;
+  const { token, portalURL } = props;
   console.log(token);
 
   const getBase64 = (file, cb) => {
@@ -39,7 +39,7 @@ const UserEdit = (props) => {
       ...(userData.avatar && { avatar: userData.avatar }),
     };
     await axios
-      .post("https://portal.ultranote.org/api/admin/updateprofile", formData, {
+      .post(portalURL + "api/admin/updateprofile", formData, {
         headers: {
           Authorization: token.token,
           "Content-Type": "application/json",
@@ -66,24 +66,40 @@ const UserEdit = (props) => {
   };
   useEffect(() => {
     axios
-      .post("https://portal.ultranote.org/api/users/user_profile", {
+      .post(portalURL + "api/users/user_profile", {
         userId: id,
       })
-      .then((res) => {
+      // .then((res) => {
+      //   setUserData(res.data.user);
+      //   axios
+      //     .post(portalURL + "api/wallets/wallet_list")
+      //     .then((resp) => {
+      //       const { wallets } = resp.data;
+      //       const wallet = wallets.filter(
+      //         (wallet) => wallet.walletHolder == res.data.user._id
+      //       );
+      //       // setWalletData(wallet[0]);
+      //     });
+      // })
+      // .catch((err) => {
+      //   console.log(err);
+      // });
+      .then((res)=>{
         setUserData(res.data.user);
-        axios
-          .post("https://portal.ultranote.org/api/wallets/wallet_list")
-          .then((resp) => {
-            const { wallets } = resp.data;
-            const wallet = wallets.filter(
-              (wallet) => wallet.walletHolder == res.data.user._id
-            );
-            setWalletData(wallet[0]);
-          });
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+        axios.get(portalURL + "api/wallets/walletdata/"+id+"/",{ headers: { Authorization: token.token, "Content-Type": "application/json" }})
+          .then(response=>{
+            console.log('data received: ', response.data);
+            let balance = response.data && response.data.balance && response.data.balance.availableBalance ? response.data.balance.availableBalance: 0;
+            let lockedBalance = response.data && response.data.balance && response.data.balance.lockedAmount ? response.data.balance.lockedAmount: 0;
+
+            balance /= 1000000;
+            lockedBalance /= 1000000;
+
+            setWalletData({address: response.data.address, balance: balance, unconfirmedBalance: lockedBalance });
+          })
+          .catch((err)=>{console.log('error getting wallet data:', err)});
+      }).catch(err=>{console.log(err)});
+
   }, []);
   const [userData, setUserData] = useState({});
   const [walletList, setWalletList] = useState([]);

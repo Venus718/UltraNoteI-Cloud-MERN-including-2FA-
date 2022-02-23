@@ -2,7 +2,7 @@ import React from "react";
 import Nav from "../jsx/layouts/nav";
 import Footer from "../jsx/layouts/Footer";
 import Home from "../jsx/components/Dashboard/Home";
-const DashboardPage = () => (
+const DashboardPage = (props) => (
   <div id="main-wrapper" className="show mh100vh ">
     <Nav />
     <div className="content-body">
@@ -10,7 +10,7 @@ const DashboardPage = () => (
         className="container-fluid"
         style={{ minHeight: window.screen.height - 60 }}
       >
-        <Home />
+        <Home {...props}/>
       </div>
     </div>
     <Footer />
