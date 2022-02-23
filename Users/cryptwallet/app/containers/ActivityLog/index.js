@@ -110,7 +110,7 @@ export class ActivityLog extends React.Component {
   this.state = {
     row: [],
     currentPage: 1,
-    rowsPerPage: 10,
+    rowsPerPage: 20,
     pageNumberOfPage: 1,
   };
 }

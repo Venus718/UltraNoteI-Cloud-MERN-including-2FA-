@@ -8,7 +8,6 @@ const User = require('../../models/user');
 const UserActivity = require('../../models/user_activity');
 const user_data = require('../user/user_data');
 const { baseModelName } = require('../../models/user');
-// const xuni = new XUNI(process.env.XUNI_HOST, process.env.XUNI_PORT);
     const xuni = new XUNI({
         daemonHost: process.env.XUNI_HOST, 
         walletHost: process.env.XUNI_HOST, 
@@ -257,15 +256,15 @@ module.exports = {
                     }
                 ],
                 unlockTime: 0,
-                changeAddress: senderAddress
+             changeAddress: senderAddress,
             };
 
             if(paymentId) transactionOptions.paymentId = paymentId;
-            
+
             if(senderAddress === recipientAddress) 
                 throw new Error('Sender and receiver cannot be same.');
-            
-            console.log('Transaction Sending:', transactionOptions);
+
+          console.log('Transaction Sending:', transactionOptions);
 
             xuni.sendTransaction(transactionOptions).then(({ transactionHash }) => {
                 const newTransaction = {
