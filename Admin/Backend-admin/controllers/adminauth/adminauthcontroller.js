@@ -17,18 +17,19 @@ const sendMail = require("../../helpers/sendMail");
 
 exports.gets_users_all_details = (req, res, next) => {
   Admin.find({ _id: req.userData.userId })
-    .select("firstname lastname _id username email userImage faactive ")
+    .select("firstname lastname phoneno _id username email userImage faactive ")
     .exec()
     .then((docs) => {
       const response = {
         count: docs.length,
-        products: docs.map((doc) => {
+        users: docs.map((doc) => {
           return {
             firstname: doc.firstname,
             lastname: doc.lastname,
             username: doc.username,
+            phonenumber: doc.phoneno,
             email: doc.email,
-            userImage: "https://portal.ultranote.org/" + doc.userImage,
+            userImage: doc.userImage, //"https://portal.ultranote.org/"
             _id: doc._id,
             twofastatus: doc.faactive,
             request: {
@@ -878,31 +879,34 @@ exports.post_google_auth_code_verify = async (req, res, next) => {
 };
 
 exports.post_update_profile_details = async (req, res, next) => {
-  var image = null;
-  if (req.body.avatar != undefined && req.body.avatar.length > 0) {
-    let filename = uniqid();
-    fs.writeFile(
-      "/home/Backend/src/images/" + filename + ".png",
-      req.body.avatar
-    );
-    image = filename;
-  }
-  User.updateOne(
+  
+  // if (req.body.userImage !== undefined && req.body.userImage.length > 0) {
+  //   let filename = uniqid();
+  //   fs.writeFile(
+  //     "/home/Backend/src/images/" + filename + ".png",
+  //     req.body.userImage
+  //   );
+  //   image = filename;
+  // }
+  
+  Admin.updateOne(
     { _id: req.body._id },
     {
       $set: {
-        firstName: req.body.firstname,
-        lastName: req.body.lastname,
-        phone: req.body.phone,
-        currency: req.body.currency,
-        mail: req.body.mail,
-        isActive: req.body.isActive,
-        ...(image ? { image: image } : {}),
-        two_fact_auth: req.body.two_factor_auth,
+        firstname: req.body.firstname,
+        lastname: req.body.lastname,
+        phoneno: req.body.phonenumber,
+        userImage: req.file.path,
+        // currency: req.body.currency,
+        // mail: req.body.mail,
+        // isActive: req.body.isActive,
+        // ...(image ? { image: image } : {}),
+        // two_fact_auth: req.body.two_factor_auth,
       },
     }
   )
-    .then(() => {
+    .then((r) => {
+      console.log(r);
       res.status(200).json({
         message: "Profile Updated Successfully",
       });

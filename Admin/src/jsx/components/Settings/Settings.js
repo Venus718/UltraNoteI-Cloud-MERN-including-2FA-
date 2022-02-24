@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form";
 import "./styles.css";
 import PageTitle from "../../layouts/PageTitle";
 import axios from "axios";
+import { Toast } from "react-bootstrap";
 const FormFields = [
     {caption: "RPC Host:", fieldName: "rpcHost", isRequired: true, type: 'text'},
     {caption: "Daemon RPC Port:", fieldName: "daemonRpcPort", isRequired: true, type: 'text'},
@@ -16,17 +17,14 @@ var currentValues={
     rpcPassword: ''
 };
 const SettingsComponent = (props) => {
-  //  var RPC_Status = {
-  //   "blockCount": 449594,
-  //   "knownBlockCount": 449594,
-  //   "lastBlockHash": "73016ee00fa98b8222f637bfa22417b9cb3fbf5cdb0defb5d75491ff8a31536e",
-  //   "peerCount": 1
-  //   };
    const [RPCSettings, setRPCSettings] = useState(currentValues);
    const [changesUpdateResult, setChangesUpdateResult] = useState('');
    const [balance, setBalance] = useState(0);
    const [balanceMessage, setBalanceMessage] = useState('');
-
+   const [blockStatus, setBlockStatus] = useState({blockCount:0, knownBlockCount: 0, peerCount:0});
+   const [showToast, setShowToast] = useState(false);
+   const [toastMessage, setToastMessage] = useState('');
+ 
    const {
     register,
     handleSubmit,
@@ -52,11 +50,21 @@ const SettingsComponent = (props) => {
       setBalanceMessage('Unknown address or error getting balance.');
     }   
   }
+  const requestStatus = async ()=>{
+    try{
+      let response = await axios.get(props.portalURL+'api/wallets/status', { headers: { Authorization: props.token.token, "Content-Type": "application/json" }});
+      if(response && response.status === 200)
+        setBlockStatus(response.data);
+      }catch(err) {
+        console.log('settings.requestStatus.catch:', err);
+      }   
+  }
 
   useEffect(()=>{
     const func=async ()=>{
       await requestSettings();
       await requestBalance();
+      await requestStatus();
     }
 
     func();
@@ -73,7 +81,9 @@ const SettingsComponent = (props) => {
       try {
       let response = await axios.post(props.portalURL+'api/wallets/rpcsettings/',{rpcSettings: data}, { headers: { Authorization: props.token.token, "Content-Type": "application/json" }});
       let resultStr = response && response.status===200 ? 'Update successfull.': 'Update failed...';
-      setChangesUpdateResult(resultStr);
+      setToastMessage(resultStr);
+      setShowToast(true);
+      
       await requestSettings();
       // console.log('result:', resultStr);
       }
@@ -94,7 +104,7 @@ const SettingsComponent = (props) => {
       <div className="row">
         <div className="col-xl-12">
           <div className="card">
-          <div>
+          <div style={{margin: '20px'}}>
                 <h4 className="card-title text-right">
                    Balance:{" "}
                   <span className="text-success">
@@ -105,6 +115,15 @@ const SettingsComponent = (props) => {
                 <p style={{textAlign: 'right'}}>
                   <small> {balanceMessage} </small>
                 </p>
+                <h4 className="card-title text-right">
+                  Block Count:{" "+ blockStatus.blockCount || "0"}
+                </h4>
+                <h4 className="card-title text-right">
+                  Known Block Count:{" "+ blockStatus.knownBlockCount || "0"}
+                </h4>
+                <h4 className="card-title text-right">
+                  Peer Count:{" "+ blockStatus.peerCount || "0"}
+                </h4>
               </div>
             <div className="card-body">
               <div className="form-group row">
@@ -118,20 +137,12 @@ const SettingsComponent = (props) => {
                   Update
                 </button>
                 </div>
-                <div className="form-group col-md-12">{changesUpdateResult}</div>
+                <Toast onClose={() => setShowToast(false)} className="d-inline-block m-1" bg="primary" show={showToast} delay={3000} autohide>
+                <Toast.Body style={{background:'#5a387a'}}>{toastMessage}</Toast.Body>
+                </Toast>
                 </div>
 
-                {/* <div className="form-group row"> 
-                    <div className="form-group col-md-12"> 
-                    <label>Status</label>
-                    </div>
-                        <div className="form-group col-md-12">                          
-                        <textarea disabled rows="10" cols="100">
-                        {JSON.stringify(RPC_Status)}
-                        </textarea>
-                        </div>
-                </div> */}
-            </div>  
+           </div>  
           </div>
         </div>
       </div>

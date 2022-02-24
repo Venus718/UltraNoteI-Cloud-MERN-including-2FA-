@@ -4,7 +4,7 @@ import Footer from "../../jsx/layouts/Footer";
 import MassEmail from "../../jsx/components/MassEmail/MassEmail";
 const MassEmailPage = (props) => (
   <div id="main-wrapper" className="show mh100vh ">
-    <Nav />
+    <Nav portalURL={props.portalURL}/>
     <div className="content-body">
       <div
         className="container-fluid"
