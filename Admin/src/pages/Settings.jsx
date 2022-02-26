@@ -4,7 +4,7 @@ import Footer from "../jsx/layouts/Footer";
 import SettingsComponent from "../jsx/components/Settings/Settings";
 const SettingsPage = (props) => (
   <div id="main-wrapper" className="show mh100vh ">
-    <Nav portalURL={props.portalURL}/>
+    <Nav token={props.token} portalURL={props.portalURL}/>
     <div className="content-body">
       <div
         className="container-fluid"

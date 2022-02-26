@@ -15,6 +15,8 @@ const usersRoute = require("./routes/users");
 const walletsRoute = require("./routes/wallets");
 const dashboardRoute = require("./routes/dashboard");
 const adminRoute = require("./routes/adminauthroute");
+const notificationsRoute = require("./routes/notifications");
+
 //Express setting-up
 app.use(cors());
 app.use('/uploads', express.static('uploads'));
@@ -27,6 +29,7 @@ app.use("/api/users", usersRoute);
 app.use("/api/wallets", walletsRoute);
 app.use("/api/dashboard", dashboardRoute);
 app.use("/api/admin",adminRoute);
+app.use("/api/notifications", notificationsRoute);
 
 //Mongoose DataBase connection
 mongoose

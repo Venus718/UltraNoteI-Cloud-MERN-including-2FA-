@@ -4,7 +4,7 @@ import Footer from "../../jsx/layouts/Footer";
 import UserTransactions from "../../jsx/components/UserManagement/UserTransactions";
 const UserTransactionsPage = (props) => (
   <div id="main-wrapper" className="show mh100vh ">
-    <Nav portalURL={props.portalURL}/>
+    <Nav portalURL={props.portalURL}  token={props.token}/>
     <div className="content-body">
       <div
         className="container-fluid"
