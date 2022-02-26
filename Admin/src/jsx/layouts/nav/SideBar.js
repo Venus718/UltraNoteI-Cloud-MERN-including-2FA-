@@ -32,7 +32,7 @@ class MM extends Component {
   }
 }
 
-const SideBar = ({ userProfileData }) => {
+const SideBar = ({ userProfileData, portalURL }) => {
   const { iconHover, sidebarposition, headerposition, sidebarLayout } =
     useContext(ThemeContext);
   useEffect(() => {
@@ -71,7 +71,7 @@ const SideBar = ({ userProfileData }) => {
       <PerfectScrollbar className="deznav-scroll">
         <div className="main-profile">
           {userProfileData ? (
-            <img src={userProfileData.userImage} alt="" />
+            <img src={portalURL + userProfileData.userImage} alt="" />
           ) : (
             <img src={profile} alt="" />
           )}

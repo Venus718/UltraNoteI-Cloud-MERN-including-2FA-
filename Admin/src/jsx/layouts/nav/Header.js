@@ -13,7 +13,7 @@ import { selectProfileData } from "../../../redux/user/user.selectors";
 import { createStructuredSelector } from "reselect";
 import { setCurrentUser } from "../../../redux/user/user.actions";
 import LogoImage from "../../../images/logo_512x512-e1594580991413.png";
-const Header = ({ onNote, userProfileData, setCurrentUser }) => {
+const Header = ({ onNote, userProfileData, setCurrentUser, portalURL }) => {
   var path = window.location.pathname.split("/");
   var name = path[path.length - 1].split("-");
   var filterName = name.length >= 3 ? name.filter((n, i) => i > 0) : name;
@@ -189,7 +189,7 @@ const Header = ({ onNote, userProfileData, setCurrentUser }) => {
                   data-toggle="dropdown"
                 >
                   {userProfileData ? (
-                    <img src={userProfileData.userImage} width={20} alt="" />
+                    <img src={portalURL + userProfileData.userImage} width={20} alt="" />
                   ) : (
                     <img src={profile} width={20} alt="" />
                   )}

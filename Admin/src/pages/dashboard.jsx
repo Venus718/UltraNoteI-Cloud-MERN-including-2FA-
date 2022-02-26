@@ -4,7 +4,7 @@ import Footer from "../jsx/layouts/Footer";
 import Home from "../jsx/components/Dashboard/Home";
 const DashboardPage = (props) => (
   <div id="main-wrapper" className="show mh100vh ">
-    <Nav />
+    <Nav portalURL={props.portalURL}/>
     <div className="content-body">
       <div
         className="container-fluid"
