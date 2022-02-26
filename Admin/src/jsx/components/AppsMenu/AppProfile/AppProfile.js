@@ -467,8 +467,8 @@ const AppProfile = ({ userProfileData, token, setUserProfileData, portalURL }) =
               </div>
             </div>
             <Toast onClose={() => setShowToast(false)} className="d-inline-block m-1" bg="primary" show={showToast} delay={3000} autohide>
-          <Toast.Body style={{background:'#5a387a'}}>{toastMessage}</Toast.Body>
-          </Toast>
+            <Toast.Body style={{background:'#5a387a'}}>{toastMessage}</Toast.Body>
+            </Toast>
           </div>
           
         </div>
