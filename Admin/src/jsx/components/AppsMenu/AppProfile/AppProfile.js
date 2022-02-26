@@ -470,6 +470,7 @@ const AppProfile = ({ userProfileData, token, setUserProfileData, portalURL }) =
             <Toast.Body style={{background:'#5a387a'}}>{toastMessage}</Toast.Body>
             </Toast>
           </div>
+          
         </div>
       </div>
     </Fragment>
