@@ -39,7 +39,7 @@ const UserEdit = (props) => {
       ...(userData.avatar && { avatar: userData.avatar }),
     };
     await axios
-      .post(portalURL + "api/admin/updateprofile", formData, {
+      .put(portalURL + "api/users/profile_update", formData, {
         headers: {
           Authorization: token.token,
           "Content-Type": "application/json",
