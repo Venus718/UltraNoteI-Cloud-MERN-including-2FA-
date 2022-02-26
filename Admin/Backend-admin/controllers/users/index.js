@@ -196,20 +196,20 @@ module.exports = {
     } catch (error) {
       res.status(400).json({ message: "ERROR WHILE UPDATING USER", error });
     }
-    profileUpdate;
+    
   },
   async profileUpdate(req, res) {
     try {
-      if (!req.body.userId) {
+      if (!req.body._id) {
         return res.status(400).json({
-          message: "UserId  is required",
+          message: "User's _id is required",
         });
       }
-      const { userId, firstName, lastName, phone, country } = req.body;
+      const { _id, firstname, lastname, phone, currency, isActive, two_factor_auth } = req.body;
 
       const profileUpdated = await User.findOneAndUpdate(
-        { _id: ObjectId(userId) },
-        { $set: { firstName, lastName, phone, country } }
+        { _id: ObjectId(_id) },
+        { $set: { firstName: firstname, lastName: lastname, phone: phone, currency: currency, isActive: isActive, two_factor_auth: two_factor_auth } }
       );
       if (!profileUpdated)
         return res.status(400).json({ message: "user doesn't exist!" });
