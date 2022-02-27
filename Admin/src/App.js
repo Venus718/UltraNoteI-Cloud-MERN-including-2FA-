@@ -24,6 +24,7 @@ import GoogleAuthEnticatorSecretCodePage from "./pages/GoogleAuthticatorSecretCo
 import { selectUserToken } from "./redux/user/user.selectors";
 import MassEmailPage from "./pages/MassEmail/MassEmail";
 import SettingsPage from "./pages/Settings";
+import NotificationsContextProvider from "./context/NotificationsContext";
 
 // import {setCurrentUser} from './redux/user/user.actions';
 const App = (props) => {
@@ -52,6 +53,7 @@ const App = (props) => {
   
   return (
     <ThemeContextProvider>
+      <NotificationsContextProvider portalURL={props.portalURL} token={token}>
       <Switch>
         <Route path="/register" component={RegisterPage} />
         <Route
@@ -121,6 +123,7 @@ const App = (props) => {
         />
         {/* <Route path="/markmili" component={Markup} />  */}
       </Switch>
+      </NotificationsContextProvider>
     </ThemeContextProvider>
   );
 };
