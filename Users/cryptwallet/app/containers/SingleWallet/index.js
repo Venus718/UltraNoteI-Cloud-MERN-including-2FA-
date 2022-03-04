@@ -52,7 +52,7 @@ export class SingleWallet extends React.Component {
 
 
   render() {
-    const { row, tab, tabChangeHandler, viewAllWalletOpenHandle, awNewWalletAddress } = this.props;
+    const { row, tab, tabChangeHandler, viewAllWalletOpenHandle, awNewWalletAddress, optimizeWallet } = this.props;
     return (
       <Grid className="container">
         <AppBar className="walletTabsBar" position="static" color="default">
@@ -90,7 +90,7 @@ export class SingleWallet extends React.Component {
         </AppBar>
         {tab === 0 && (
           <TabContainer>
-            <SingleWalletDeposite row={row} awNewWalletAddress={awNewWalletAddress} />
+            <SingleWalletDeposite row={row} awNewWalletAddress={awNewWalletAddress} optimizeWallet={optimizeWallet}/>
           </TabContainer>
         )}
         {tab === 1 && (
