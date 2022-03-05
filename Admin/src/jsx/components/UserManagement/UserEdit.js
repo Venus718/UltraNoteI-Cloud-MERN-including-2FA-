@@ -1,14 +1,16 @@
-import React, { Fragment, useState, useEffect } from "react";
+import React, { Fragment, useState, useEffect, useContext } from "react";
 import { Button } from "react-bootstrap";
 import axios from "axios";
 import "../AppsMenu/AppProfile/AppProfile.css";
 import PageTitle from "../../layouts/PageTitle";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { NotificationsContext } from '../../../context/NotificationsContext';
 
 const UserEdit = (props) => {
   const { id } = props.match.params;
   const { token, portalURL } = props;
+  const { requestNotifications } = useContext(NotificationsContext);
   console.log(token);
 
   const getBase64 = (file, cb) => {
@@ -46,6 +48,7 @@ const UserEdit = (props) => {
         },
       })
       .then((res) => {
+        requestNotifications();
         toast.success("User updated successfully", {
           position: "top-right",
           autoClose: 5000,
