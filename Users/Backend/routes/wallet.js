@@ -14,6 +14,7 @@ router
     .post('/messages', walletCtr.getAllMessages)
     .post('/attachment', walletCtr.downloadAttachment)
     .post('/sendmsg', walletCtr.sendMsg)
+    .put('/optimize', walletCtr.optimizeWallet)
 
 
 module.exports = router;

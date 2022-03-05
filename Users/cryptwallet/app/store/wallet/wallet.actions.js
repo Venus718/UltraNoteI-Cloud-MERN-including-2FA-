@@ -23,6 +23,18 @@ export const updateWalletSuccess = (payload) => ({
     payload
 });
 
+export const optimizeWalletStart = (payload) => ({
+    type: WalletTypes.OPTIMIZE_WALLET_START,
+    payload
+});
+
+
+export const optimizeWalletSuccess = (payload) => ({
+    type: WalletTypes.OPTIMIZE_WALLET_SUCCESS,
+    payload
+});
+
+
 export const withdrawWalletStart = (payload) => ({
     type: WalletTypes.WITHDRAW_WALLET_START,
     payload

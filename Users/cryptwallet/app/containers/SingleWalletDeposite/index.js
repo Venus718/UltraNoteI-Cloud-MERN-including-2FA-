@@ -112,6 +112,12 @@ export class SingleWalletDeposite extends React.Component {
     const { row } = this.props;
     awNewWalletAddress(row);
   };
+  optimizeWalletHandler = async () => {
+    if(window.confirm('Please allow 10 min for wallet optimization.')) {
+      const {optimizeWallet} = this.props;
+      optimizeWallet(this.props.row);
+    }
+  };
 
   showAddressHandler = () => {
     this.setState({
@@ -184,6 +190,15 @@ export class SingleWalletDeposite extends React.Component {
             >
               Generate a new address
             </Typography>
+            <p>
+            <Typography
+              onClick={this.optimizeWalletHandler}
+              className="generateNewAdress"
+              component="p"
+            >
+              Optimize Wallet
+            </Typography>
+            </p>
             <Grid className="addressList">
               <Button
                 onClick={this.showAddressHandler}

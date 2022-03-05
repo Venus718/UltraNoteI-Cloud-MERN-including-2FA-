@@ -757,6 +757,34 @@ module.exports = {
         } catch (error) {
             res.json(error)
         }
+    },
+    async optimizeWallet(req, res) {
+        let errorMsg = '';
+        try{
+            
+        if(req && req.body && req.body.payload && req.body.payload.id) {
+            const walletId = req.body.payload.id;
+            const wallets = await Wallets.findOne({ _id: walletId });
+            if( wallets && wallets.address ) {
+                const result = await xuni.estimateFusion({threshold:100000, addresses:[wallets.address]});
+
+                if(result && result.readyCount > 0) {
+                    const fresult = await xuni.sendFusionTransaction({threshold: 100000, addresses:[wallets.address], destinationAddress: wallets.address });
+                    console.log('sendFusionTx:', fresult);
+                    res.status(200).json({message: 'Success', result: fresult});
+                    return;
+                }
+                errorMsg = 'A fusion transaction cannot be created.';
+            }
+            else errorMsg = 'Unknow wallet id.';
+          }
+          else errorMsg = 'Wallet id is required';
+        }
+        catch(error) {
+            errorMsg = 'Error during fusion process.';
+            console.log('optimizeWallet.catch:', error);
+        }
+        res.status(500).json({message: errorMsg, result: ''});
     }
 }
 

@@ -1,6 +1,6 @@
 import { toast } from "react-toastify";
 import { all, call, put, takeLatest } from "redux-saga/effects";
-import { addWalletSuccess, updateWalletSuccess, sendMsgSuccess, getTransactionsByWalletAddressSuccess, getWalletSuccess, getMessageSuccess, walletResetSuccess, withdrawWalletSuccess, throwError, downloadAttachmentSuccess } from "./wallet.actions";
+import { addWalletSuccess, updateWalletSuccess, sendMsgSuccess, getTransactionsByWalletAddressSuccess, getWalletSuccess, getMessageSuccess, walletResetSuccess, withdrawWalletSuccess, throwError, downloadAttachmentSuccess, optimizeWalletSuccess } from "./wallet.actions";
 import { getUserSuccess } from '../auth/auth.actions';
 import WalletTypes from "./wallet.types";
 import { clientHttp } from '../../utils/services/httpClient';
@@ -47,6 +47,22 @@ export function* onUpdateWallet() {
     yield takeLatest(WalletTypes.UPDATE_WALLET_START, updateWalletAsync);
 }
 
+export function* onOptimizeWallet() {
+    yield takeLatest(WalletTypes.OPTIMIZE_WALLET_START, optimizeWallet);
+}
+export function* optimizeWallet(payload) {
+    try{
+    const result = yield clientHttp.put('/wallets/optimize', payload);
+    if(result && result.data) {
+        toast.success('Wallet optimization requested.');
+        yield put(optimizeWalletSuccess(result.data));
+    }   
+    }
+    catch(error) {
+        console.log(error);
+        yield put(throwError(error));
+    }
+}
 
 export function* withdrawWalletAsync({payload}) {
     
@@ -191,6 +207,7 @@ export function* walletSagas() {
         call(onWalletReset),
         call(onGetMessages),
         call(onDownloadAttachment),
-        call(onSendMsgStart)
+        call(onSendMsgStart),
+        call(onOptimizeWallet),
     ]);
 };

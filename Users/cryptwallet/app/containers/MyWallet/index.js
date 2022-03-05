@@ -42,7 +42,7 @@ import { isAmount } from '../../utils/commonFunctions';
 import SingleWallet from '../SingleWallet';
 import { toast } from 'react-toastify';
 import {selectUser} from '../../store/auth/auth.selectors';
-import {addWalletStart, updateWalletStart, getTransactionsByWalletAddressStart, getWalletStart} from '../../store/wallet/wallet.actions';
+import {addWalletStart, updateWalletStart, getTransactionsByWalletAddressStart, getWalletStart, optimizeWalletStart} from '../../store/wallet/wallet.actions';
 import {getUser} from '../../store/auth/auth.actions';
 import { selectWallets } from '../../store/wallet/wallet.selectors';
 
@@ -214,7 +214,10 @@ export class MyWallet extends React.Component {
     }
 
   };
-
+  optimizeWallet = (row) => {
+    const {optimizeWallet} = this.props;
+    optimizeWallet({id: row.id, name: row.name});
+  }
   awNewWalletAddress = (row) => {
 
     const {connectedUser} = this.props;
@@ -420,6 +423,7 @@ export class MyWallet extends React.Component {
             row={selectedWallet}
             viewAllWalletOpenHandle={this.viewAllWalletOpenHandle}
             awNewWalletAddress = {this.awNewWalletAddress}
+            optimizeWallet = {this.optimizeWallet}
           />
         ) : (
           ''
@@ -460,6 +464,7 @@ const mapDispatchToProps = (dispatch) => ({
   getTransactionsByWallet: (address) => dispatch(getTransactionsByWalletAddressStart(address)),
   updateWallet: (payload) => dispatch(updateWalletStart(payload)),
   getUser: () => dispatch(getUser()),
+  optimizeWallet: (payload) => dispatch(optimizeWalletStart(payload))
 });
 
 const withConnect = connect(
