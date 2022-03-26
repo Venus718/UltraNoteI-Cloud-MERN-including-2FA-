@@ -351,7 +351,7 @@ export class MyWallet extends React.Component {
                 </Grid>
                 <Grid item xs={12} sm={6}>
                   <Grid className="walletMenus">
-                    {this.props.connectedUser?.isWalletCreated && <Button
+                    {!this.props.connectedUser?.isWalletCreated && <Button
                       onClick={this.awHandleClickOpen}
                       className="btn btnBlue"
                     >
