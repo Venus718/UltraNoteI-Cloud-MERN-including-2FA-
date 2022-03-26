@@ -721,10 +721,7 @@ module.exports = {
                 if(senderAddress=='')   { senderAddress = uniqid(); }    
 
                 const transactionFromDb = await Transactions.findOne({
-                    $or: [
-                        { recipientAdress: recipientAddress },
-                        { senderAdress: senderAddress }
-                    ]
+                    hash: transaction.transactionHash
                 })
 
                 const note = transactionFromDb ? transactionFromDb.note : ""

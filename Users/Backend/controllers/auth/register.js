@@ -75,7 +75,7 @@ module.exports = {
                     }
                     await UserActivity.create(newUserActivity);
 
-                    return res.redirect(`${process.env.HOST}${process.env.PORT_FRONT}/login`);
+                    return res.redirect(`${process.env.HOST}${process.env.PORT_FRONT}/login/successfulInvitation`);
                 } catch (error) {
                     console.log(error);
                     return res.status(400).json({ message: 'ERROR OUCCURED', error });
