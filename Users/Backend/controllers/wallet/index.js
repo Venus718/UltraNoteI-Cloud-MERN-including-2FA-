@@ -720,12 +720,21 @@ module.exports = {
 
                 if(senderAddress=='')   { senderAddress = uniqid(); }    
 
+                const transactionFromDb = await Transactions.findOne({
+                    $or: [
+                        { recipientAdress: recipientAddress },
+                        { senderAdress: senderAddress }
+                    ]
+                })
+
+                const note = transactionFromDb ? transactionFromDb.note : ""
+
                 transactionObj = {
                     senderAdress: senderAddress,
                     recipientAdress: recipientAddress,
                     updatedAt: (new Date(transaction.timestamp*1000)).toISOString(),
                     amount: Math.abs(transaction.transfers[0].amount),
-                    note: '',
+                    note,
                     hash: transaction.transactionHash
                 }
                 totalTransactions.push(transactionObj);

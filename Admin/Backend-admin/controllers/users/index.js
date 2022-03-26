@@ -126,15 +126,11 @@ module.exports = {
         });
       }
       const { userId } = req.body;
-      const deletedUser = await User.findOneAndUpdate(
-        { _id: userId },
-        { deleted: true },
-        {
-          new: true,
-        }
-      );
+      const deletedUser = await User.findByIdAndDelete(userId)
+      
       if (!deletedUser)
         return res.status(400).json({ message: "user doesn't exist!" });
+
       else res.status(200).json({ message: "User deleted successfully" });
     } catch (error) {
       res.status(400).json({ message: "ERROR WHILE ADDING USER", error });

@@ -52,23 +52,19 @@ module.exports = {
             const ip = requestIp.getClientIp(req);
             const geo = geoip.lookup(ip) || {city: '', country: ''};
             const token = req.params.token;
+
             if (!token) {
                 res.status(400).json({ message: 'No token provided' });
             } else {
                 const decodedToken = jwt.verify(token, process.env.TOKENCODE);
-                await User.updateOne({ _id: decodedToken.data._id }, {
-                    $set: {
-                        isActive: true
-                    }
-                }).then(() => {
-                    res.redirect(`${process.env.HOST}${process.env.PORT_FRONT}/login`);
-                    // res.status(200).json({message: "account activated successfully", user});
-                }).catch((error) => {
-                    console.log(error);
-                    res.status(400).json({ message: 'ERROR OUCCURED', error });
-                });
 
                 try {
+                    await User.updateOne({ _id: decodedToken.data._id }, {
+                        $set: {
+                            isActive: true
+                        }
+                    })
+
                     const newUserActivity = {
                         userId: decodedToken.data._id,
                         action: 'Account Activate',
@@ -77,11 +73,12 @@ module.exports = {
                         location: geo.city + " " + geo.country,
                         date: Date.now(),
                     }
-                    const userActivity = await UserActivity.create(newUserActivity);
-                    res.status(200).json({ message: 'wallet Created successfully', userActivity });
-                } catch (err) {
-                    console.log(err);
-                    res.status(400).json({ message: 'ERROR WHILE CREATING A NEW WALLET', err });
+                    await UserActivity.create(newUserActivity);
+
+                    return res.redirect(`${process.env.HOST}${process.env.PORT_FRONT}/login`);
+                } catch (error) {
+                    console.log(error);
+                    return res.status(400).json({ message: 'ERROR OUCCURED', error });
                 }
             }
         } catch (error) {
