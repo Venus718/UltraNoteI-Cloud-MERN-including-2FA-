@@ -19,8 +19,8 @@ class MassEmail extends Component {
       message: "",
       errors: [],
     };
-    this.setState(this.state);
   }
+  
   getUsers = () => {
     axios
       .get(this.props.portalURL + "api/users/user_list", {
@@ -32,7 +32,7 @@ class MassEmail extends Component {
         let mailList = [];
         let allUsers = [];
         res.data.users.forEach((user) => {
-          mailList.push(user.mail);
+          mailList.push(user.mail ?? "N/A");
           allUsers.push({
             name: user.firstName,
             email: user.mail,
@@ -147,7 +147,7 @@ class MassEmail extends Component {
                       />
                     ) : (
                       <button
-                        class="btn btn-primary btn-block dropdown-toggle justify-content-between d-flex disabled"
+                        className="btn btn-primary btn-block dropdown-toggle justify-content-between d-flex disabled"
                         disabled
                       >
                         <span>Loading users</span>
@@ -169,32 +169,32 @@ class MassEmail extends Component {
                   {errors.length > 0 && (
                     <div
                       role="alert"
-                      class="fade alert-dismissible left-icon-big alert alert-danger show"
+                      className="fade alert-dismissible left-icon-big alert alert-danger show"
                     >
                       <button
                         ata-dismiss="alert"
                         aria-label="Close"
                         type="button"
-                        class="close  btn"
+                        className="close  btn"
                         onClick={() => {
                           this.setState({ errors: [] });
                         }}
                       >
                         <span>
-                          <i class="mdi mdi-close"></i>
+                          <i className="mdi mdi-close"></i>
                         </span>
                       </button>
-                      <div class="media">
-                        <div class="alert-left-icon-big">
+                      <div className="media">
+                        <div className="alert-left-icon-big">
                           <span>
-                            <i class="mdi mdi-alert"></i>
+                            <i className="mdi mdi-alert"></i>
                           </span>
                         </div>
-                        <div class="media-body">
-                          <h6 class="mt-1 mb-2">Oops!</h6>
+                        <div className="media-body">
+                          <h6 className="mt-1 mb-2">Oops!</h6>
 
                           {errors.map((error, index) => (
-                            <p class="mb-0" key={index}>
+                            <p className="mb-0" key={index}>
                               {error}
                             </p>
                           ))}
@@ -204,7 +204,7 @@ class MassEmail extends Component {
                   )}
                 </div>
 
-                <div class="form-group">
+                <div className="form-group">
                   <label>Subject</label>
                   <input
                     type="text"
