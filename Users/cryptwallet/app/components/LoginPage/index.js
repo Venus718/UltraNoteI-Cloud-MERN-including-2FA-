@@ -13,6 +13,9 @@ import {
   Button,
 } from '@material-ui/core';
 
+import { toast } from 'react-toastify';
+import ReCAPTCHA from 'react-google-recaptcha';
+import { connect } from 'react-redux';
 import messages from './messages';
 
 // uistyle
@@ -25,10 +28,7 @@ import ShowPass from '../../images/icon/eye.svg';
 import Pass from '../../images/icon/eye2.svg';
 
 import '../SignupPage/account.scss';
-import { toast } from 'react-toastify';
-import ReCAPTCHA from "react-google-recaptcha";
 import { loginStart } from '../../store/auth/auth.actions';
-import { connect } from 'react-redux';
 
 class LoginPage extends Component {
   state = {
@@ -36,8 +36,17 @@ class LoginPage extends Component {
     password: '',
     passwordShow: false,
     error: {},
-    verifiedCaptcha: null
+    verifiedCaptcha: null,
   };
+
+  componentDidMount() {
+    const msg = this.props.match?.params?.msg;
+
+    if (msg === 'successfulInvitation') {
+      toast.success('Account activated successfully');
+      this.props.history.replace('/login');
+    }
+  }
 
   t(msg, values) {
     return this.props.intl.formatMessage(msg, values);
@@ -128,9 +137,9 @@ class LoginPage extends Component {
 
   onChangeCap = value => {
     this.setState({
-      verifiedCaptcha: value
+      verifiedCaptcha: value,
     });
-  }
+  };
 
   render() {
     const { email, password } = this.state;
@@ -147,13 +156,18 @@ class LoginPage extends Component {
           <Grid className="container" container>
             <Grid item lg={6} xs={12}>
               <Grid className="accountImage">
-                <div className="logo-left" >
-                <img src={Logo} alt="logo" style={{width:"100px"}, {height:"100px"}}/>
-                <span>UltraNote Cloud</span>
+                <div className="logo-left">
+                  <img
+                    src={Logo}
+                    alt="logo"
+                    style={({ width: '100px' }, { height: '100px' })}
+                  />
+                  <span>UltraNote Cloud</span>
                 </div>
 
                 <p>
-                  Store, Access and manange your UltraNote Infinity coins with ease securely on your cloud wallet.
+                  Store, Access and manange your UltraNote Infinity coins with
+                  ease securely on your cloud wallet.
                 </p>
               </Grid>
             </Grid>
@@ -202,14 +216,19 @@ class LoginPage extends Component {
                       this.state.error.password ? this.state.error.password : ''
                     }
                   />
-                  <ReCAPTCHA className="recaptcha"
-                      sitekey="6LdqlfoZAAAAAMLxltM3BSoqaFQInUh_lxtZ88cC"
-                      onChange={this.onChangeCap}
-                    />
+                  <ReCAPTCHA
+                    className="recaptcha"
+                    sitekey="6LdqlfoZAAAAAMLxltM3BSoqaFQInUh_lxtZ88cC"
+                    onChange={this.onChangeCap}
+                  />
                   <Grid className="forgotPassword">
                     <Link to="/forgot-password/reset">Forgot Password ?</Link>
                   </Grid>
-                  <Button type="submit" className="submitButton" disabled={!this.state.verifiedCaptcha}>
+                  <Button
+                    type="submit"
+                    className="submitButton"
+                    disabled={!this.state.verifiedCaptcha}
+                  >
                     Sign In
                   </Button>
                   <Typography variant="h6">
@@ -226,7 +245,12 @@ class LoginPage extends Component {
 }
 
 const mapDispatchToProps = dispatch => ({
-  login: (payload) => dispatch(loginStart(payload))
+  login: payload => dispatch(loginStart(payload)),
 });
 
-export default withRouter(connect(null, mapDispatchToProps)(LoginPage));
+export default withRouter(
+  connect(
+    null,
+    mapDispatchToProps,
+  )(LoginPage),
+);
