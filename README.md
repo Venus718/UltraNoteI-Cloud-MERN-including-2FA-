@@ -16,6 +16,7 @@ Edit .htaccess file and activate https
 ## Building Backend 
 
 - cd UltraNoteI-Cloud/Backend
+- npm install ejs html-to-text juice --save
 - npm install
 
 ## Run Backend
