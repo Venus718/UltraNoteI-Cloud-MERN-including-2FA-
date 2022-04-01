@@ -19,8 +19,8 @@ const notificationsRoute = require("./routes/notifications");
 
 //Express setting-up
 app.use(cors());
-app.use('/uploads', express.static('uploads'));
-app.use('/qubucket', express.static('qubucket'));
+app.use("/uploads", express.static("uploads"));
+app.use("/qubucket", express.static("qubucket"));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 //routing
@@ -28,7 +28,7 @@ app.use("/api", apiRoute);
 app.use("/api/users", usersRoute);
 app.use("/api/wallets", walletsRoute);
 app.use("/api/dashboard", dashboardRoute);
-app.use("/api/admin",adminRoute);
+app.use("/api/admin", adminRoute);
 app.use("/api/notifications", notificationsRoute);
 
 //Mongoose DataBase connection
@@ -36,7 +36,7 @@ mongoose
   .connect(process.env.DB_HOST, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
-    useFindAndModify: true,
+    useFindAndModify: false,
     useCreateIndex: true,
   })
   .then(() => {
