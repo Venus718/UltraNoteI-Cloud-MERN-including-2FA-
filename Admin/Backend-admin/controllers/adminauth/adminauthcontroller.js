@@ -488,51 +488,28 @@ exports.get_admin_reset_password = (req, res, next) => {
     });
 };
 
-exports.post_admin_reset_password = (req, res, next) => {
-  const { id, token } = req.params;
-  const { password, conformpassword } = req.body;
-
-  Admin.findOne({ _id: id })
-    .exec()
-    .then((admin) => {
-      if (admin === undefined || admin == null || admin.length <= 0) {
-        return res.status(200).json({
-          message: "User Not Exist",
-        });
-      }
-
-      const serect = JWT_SERECT + admin.password;
-      try {
-        const payload = jwt.verify(token, serect);
-
-        bcrypt.hash(password, 10, (err, hash) => {
-          if (err) {
-            return res.status(200).json({
-              error: err,
-              message: "system err",
-            });
-          } else {
-            admin.password = hash;
-            admin.save();
-            return res.status(200).json({
-              message: "User Password changed",
-              data: admin,
-            });
-          }
-        });
-      } catch (error) {
-        console.log(error);
-        return res.status(200).json({
-          message: error.message,
-        });
-      }
-    })
-    .catch((err) => {
-      console.log(err);
-      res.status(200).json({
-        error: err,
+exports.post_admin_reset_password = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { password } = req.body;
+    let admin = await Admin.findById(id);
+    if (!admin) {
+      return res.status(200).json({
+        message: "User Not Exist",
       });
+    }
+    admin.password = await bcrypt.hash(password, 10);
+    await admin.save();
+    return res.status(200).json({
+      message: "User Password changed",
+      data: admin,
     });
+  } catch (ex) {
+    return res.status(200).json({
+      error: ex.message,
+      message: ex.message,
+    });
+  }
 };
 
 exports.post_google_authenticator = async (req, res, next) => {
@@ -879,7 +856,6 @@ exports.post_google_auth_code_verify = async (req, res, next) => {
 };
 
 exports.post_update_profile_details = async (req, res, next) => {
-  
   // if (req.body.userImage !== undefined && req.body.userImage.length > 0) {
   //   let filename = uniqid();
   //   fs.writeFile(
@@ -888,7 +864,7 @@ exports.post_update_profile_details = async (req, res, next) => {
   //   );
   //   image = filename;
   // }
-  
+
   Admin.updateOne(
     { _id: req.body._id },
     {

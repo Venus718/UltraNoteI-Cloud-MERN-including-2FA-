@@ -22,8 +22,13 @@ import profile from "../../../../images/profile/profile.png";
 import googleauth from "../../../../images/googleauth/unnamed.png";
 import PageTitle from "../../../layouts/PageTitle";
 import { setUserProfileData } from "../../../../redux/user/user.actions";
-const AppProfile = ({ userProfileData, token, setUserProfileData, portalURL }) => {
-  userProfileData = !userProfileData ? token.profiledata: userProfileData;
+const AppProfile = ({
+  userProfileData,
+  token,
+  setUserProfileData,
+  portalURL,
+}) => {
+  userProfileData = !userProfileData ? token.profiledata : userProfileData;
   const [activeToggle, setActiveToggle] = useState("profile");
   const [sendMessage, setSendMessage] = useState(false);
   const [postModal, setPostModal] = useState(false);
@@ -32,7 +37,7 @@ const AppProfile = ({ userProfileData, token, setUserProfileData, portalURL }) =
   const [replayModal, setReplayModal] = useState(false);
   const [checked, setChecked] = useState(userProfileData.twofastatus);
   const [showToast, setShowToast] = useState(false);
-  const [toastMessage, setToastMessage] = useState('');
+  const [toastMessage, setToastMessage] = useState("");
 
   useEffect(() => {
     // Update the document title using the browser API
@@ -44,10 +49,10 @@ const AppProfile = ({ userProfileData, token, setUserProfileData, portalURL }) =
       })
       .then((res) => {
         // console.log('user data:', res.data.users[0]);
-        const userData = res.data.users[0]
-        setValue('firstname', userData.firstname);
-        setValue('lastname', userData.lastname);
-        setValue('phonenumber', userData.phonenumber);
+        const userData = res.data.users[0];
+        setValue("firstname", userData.firstname);
+        setValue("lastname", userData.lastname);
+        setValue("phonenumber", userData.phonenumber);
 
         setUserProfileData(userData);
       })
@@ -107,7 +112,7 @@ const AppProfile = ({ userProfileData, token, setUserProfileData, portalURL }) =
       .then((res) => {
         // console.log(res);
         if (res.data.message === "Profile Updated Successfully") {
-          setToastMessage('Profile updated successfully...');
+          setToastMessage("Profile updated successfully...");
           setShowToast(true);
           axios
             .get(`${portalURL}api/admin/profiledetails`, {
@@ -131,7 +136,7 @@ const AppProfile = ({ userProfileData, token, setUserProfileData, portalURL }) =
   };
 
   const resetPassword = async (event) => {
-    event.preventDefault();
+    // event.preventDefault();
     event._id = userProfileData._id;
     const url = portalURL + "api/admin/updatepassword";
     axios
@@ -428,7 +433,11 @@ const AppProfile = ({ userProfileData, token, setUserProfileData, portalURL }) =
                               </div>
                             </div>
 
-                            <button className="btn btn-primary" type="submit">
+                            <button
+                              className="btn btn-primary"
+                              type="submit"
+                              htmlType="submit"
+                            >
                               Reset Password
                             </button>
                           </form>
@@ -466,11 +475,19 @@ const AppProfile = ({ userProfileData, token, setUserProfileData, portalURL }) =
                 </div>
               </div>
             </div>
-            <Toast onClose={() => setShowToast(false)} className="d-inline-block m-1" bg="primary" show={showToast} delay={3000} autohide>
-            <Toast.Body style={{background:'#5a387a'}}>{toastMessage}</Toast.Body>
+            <Toast
+              onClose={() => setShowToast(false)}
+              className="d-inline-block m-1"
+              bg="primary"
+              show={showToast}
+              delay={3000}
+              autohide
+            >
+              <Toast.Body style={{ background: "#5a387a" }}>
+                {toastMessage}
+              </Toast.Body>
             </Toast>
           </div>
-          
         </div>
       </div>
     </Fragment>
