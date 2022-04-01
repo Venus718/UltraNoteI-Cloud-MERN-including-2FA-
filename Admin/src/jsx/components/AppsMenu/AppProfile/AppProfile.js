@@ -136,7 +136,7 @@ const AppProfile = ({
   };
 
   const resetPassword = async (event) => {
-    event.preventDefault();
+    // event.preventDefault();
     event._id = userProfileData._id;
     const url = portalURL + "api/admin/updatepassword";
     axios
