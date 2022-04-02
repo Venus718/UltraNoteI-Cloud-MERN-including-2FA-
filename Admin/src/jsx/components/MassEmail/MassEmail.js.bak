@@ -20,7 +20,7 @@ class MassEmail extends Component {
       errors: [],
     };
   }
-
+  
   getUsers = () => {
     axios
       .get(this.props.portalURL + "api/users/user_list", {

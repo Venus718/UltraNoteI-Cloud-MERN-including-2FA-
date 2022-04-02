@@ -954,15 +954,10 @@ exports.twofachagestatus = async (req, res, next) => {
 exports.post_mass_email = async (req, res, next) => {
   try {
     let { subject, message, users } = req.body;
-    let chunks = [];
-    let chunkSize = 5;
-    for (let i = 0; i < users.length; i += chunkSize) {
-      chunks.push(users.slice(i, i + chunkSize));
-    }
-    const delay = () => new Promise((resolve) => setTimeout(resolve, 1000));
-    const sendEmail = async (chunk) => {
-      for (let i = 0; i < chunk.length; i++) {
-        const mailOptions = {
+    let email_list = [];
+    for (let i = 0; i < users.length; i++) {
+      email_list.push(
+        sendMail({
           from: process.env.EMAIL_FROM,
           to: users[i].email,
           subject: subject,
@@ -970,18 +965,13 @@ exports.post_mass_email = async (req, res, next) => {
             title: users[i].name,
             message: message,
           },
-        };
-        await sendMail(mailOptions).catch((ex) => {
-          console.log(ex);
-        });
-      }
-    };
-    for (let i = 0; i < chunks.length; i++) {
-      await sendEmail(chunks[i]);
-      await delay();
+        })
+      );
     }
-    return res.status(200).json({
-      message: "Email Sent",
+    Promise.all(email_list).then(() => {
+      res.status(200).json({
+        message: "Email Has Been Send",
+      });
     });
   } catch (error) {
     console.log(error);

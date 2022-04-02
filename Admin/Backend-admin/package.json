@@ -1,13 +1,13 @@
 {
   "name": "backend",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "backend for UltraNoteI",
   "main": "index.js",
   "scripts": {
     "start": "nodemon index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "Mallat Mohamed",
+  "author": "UltraNote Team",
   "license": "ISC",
   "dependencies": {
     "@sendgrid/mail": "^7.5.0",
