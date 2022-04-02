@@ -2,7 +2,6 @@ const nodemailer = require("nodemailer");
 const fs = require("fs");
 const path = require("path");
 const ejs = require("ejs");
-const { htmlToText } = require("html-to-text");
 const juice = require("juice");
 
 const smtp = nodemailer.createTransport({
@@ -30,13 +29,9 @@ const sendMail = ({
     if (fs.existsSync(tmp)) {
       const template = fs.readFileSync(tmp, "utf-8");
       const html = ejs.render(template, templateVars);
-      const text = htmlToText(templateVars.message);
-      const htmlWithStylesInlined = juice(html);
-
-      options.html = htmlWithStylesInlined;
-      options.text = text;
+      const inline = juice(html);
+      options.html = inline;
     }
-
     resolve(smtp.sendMail(options));
   });
 };
