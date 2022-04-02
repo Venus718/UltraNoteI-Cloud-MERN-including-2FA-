@@ -1,7 +1,9 @@
 # UltraNoteI-Cloud
+
 UltraNote Infinity Cloud Wallet
 
 ## Installing Frontend
+
 - cd UltraNoteI-Cloud/cryptwallet
 - nvm install 14
 - nvm use 14.19.0
@@ -11,13 +13,14 @@ UltraNote Infinity Cloud Wallet
 - chown -R www-data:www-data /var/www
 
 Edit .htaccess file and activate https
+
 - nano /var/www/Cloud/.htaccess
 
-## Building Backend 
+## Building Backend
 
 - cd UltraNoteI-Cloud/Backend
-- npm install ejs html-to-text juice --save
-- npm install
+- yarn
 
 ## Run Backend
+
 - Using pm2: pm2 start ./index.js --name=backend
