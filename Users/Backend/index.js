@@ -26,7 +26,7 @@ app.use("/api/wallets", walletRoute);
 mongoose
   .connect(process.env.DB_HOST, {
     useNewUrlParser: true,
-    useUnifiedTopology: false,
+    useUnifiedTopology: true,
   })
   .then(() => {
     console.log("DATABASE CONNECTED");
