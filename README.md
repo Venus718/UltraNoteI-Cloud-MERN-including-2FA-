@@ -24,3 +24,10 @@ Edit .htaccess file and activate https
 ## Run Backend
 
 - Using pm2: pm2 start ./index.js --name=backend
+
+## Important
+
+-Use yarn for building Admin/Backend-admin
+-Use yarn for building Users/Backend
+
+-For everything else use npm i
