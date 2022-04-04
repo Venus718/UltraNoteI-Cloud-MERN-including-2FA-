@@ -21,7 +21,7 @@ function Footer() {
       <Grid container alignItems="center" className="container">
         <Grid item xs={12} sm={12}>
           <Typography component="p">
-            {currentYear} | All Right Reserved By <strong>UltraNote Infinity Cloud</strong>
+            {currentYear} | All Right Reserved By <strong>UltraNote Cloud</strong>
           </Typography>
         </Grid>
       </Grid>

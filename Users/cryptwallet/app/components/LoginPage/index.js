@@ -162,7 +162,7 @@ class LoginPage extends Component {
                     alt="logo"
                     style={({ width: '100px' }, { height: '100px' })}
                   />
-                  <span>UltraNote Cloud</span>
+                  <span>UltraNote Infinity Cloud</span>
                 </div>
 
                 <p>
