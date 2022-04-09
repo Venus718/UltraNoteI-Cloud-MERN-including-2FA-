@@ -414,7 +414,7 @@ export class LandingPage extends Component {
                   </a>
                 </Typography>
                 <Typography paragraph>
-                  2020 | All Right Reserved By <Typography component="span">
+                    {currentYear} | All Right Reserved By <strong>UltraNote Infinity Cloud</strong> <Typography component="span">
                     UltraNote.org
                   </Typography>
                   {'  '}
