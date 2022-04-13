@@ -958,13 +958,13 @@ exports.post_mass_email = async (req, res, next) => {
     const delay = async () =>
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
-    for (let i = 0; i < users.length; i++) {
+    for (let i = 0; i < users?.length; i++) {
       const mailOptions = {
-        from: process.env.EMAIL_FROM,
-        to: users[i].email,
+        from: process?.env?.EMAIL_FROM,
+        to: users[i]?.email,
         subject: subject,
         templateVars: {
-          title: users[i].name,
+          title: users[i]?.name,
           message: message,
         },
       };
