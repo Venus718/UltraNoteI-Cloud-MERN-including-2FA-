@@ -955,11 +955,14 @@ exports.post_mass_email = async (req, res, next) => {
   try {
     let { subject, message, users } = req.body;
     let chunks = [];
-    let chunkSize = 5;
+    let chunkSize = 1;
     for (let i = 0; i < users.length; i += chunkSize) {
       chunks.push(users.slice(i, i + chunkSize));
     }
-    const delay = () => new Promise((resolve) => setTimeout(resolve, 1000));
+
+    const delay = async () =>
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
     const sendEmail = async (chunk) => {
       for (let i = 0; i < chunk.length; i++) {
         const mailOptions = {
