@@ -52,7 +52,7 @@ const AppProfile = ({
         const userData = res.data.users[0];
         setValue("firstname", userData.firstname);
         setValue("lastname", userData.lastname);
-        setValue("phonenumber", userData.phonenumber);
+        // setValue("phonenumber", userData.phonenumber);
 
         setUserProfileData(userData);
       })
@@ -100,7 +100,7 @@ const AppProfile = ({
     formData.append("userImage", data.Imageupload[0]);
     formData.append("firstname", data.firstname);
     formData.append("lastname", data.lastname);
-    formData.append("phonenumber", data.phonenumber);
+    // formData.append("phonenumber", data.phonenumber);
     formData.append("_id", userProfileData._id);
     const url = portalURL + "api/admin/updateprofile";
     axios
@@ -320,7 +320,7 @@ const AppProfile = ({
                               </div>
                             </div>
                             <div className="form-row">
-                              <div className="form-group col-md-6">
+                              {/* <div className="form-group col-md-6">
                                 <label>Phone No</label>
                                 <input
                                   type="text"
@@ -333,7 +333,7 @@ const AppProfile = ({
                                 {errors.phonenumber && (
                                   <span>This Field is required</span>
                                 )}
-                              </div>
+                              </div> */}
                               <div className="form-group col-md-4">
                                 <label>Image</label>
                                 <input

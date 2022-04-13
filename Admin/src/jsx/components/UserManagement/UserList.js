@@ -30,39 +30,37 @@ class UserList extends Component {
     );
   }
 
-
-
   componentDidMount() {
-    this.getUsers()
+    this.getUsers();
   }
 
   getUsers = () => {
     axios
-    .get(`${this.props.portalURL}api/users/user_list`, {
-      headers: {
-        Authorization: this.state.token,
-      },
-    })
-    .then((res) => {
-      this.setState({
-        allUsers: res.data.users,
-        data: res.data.users,
-        activeUsers: res.data.users.filter((user) => user.isActive == true),
-        inactiveUsers: res.data.users.filter(
-          (user) => user.isActive == false
-        ),
-        suspendedUsers: res.data.users.filter(
-          (user) => user.suspended == true
-        ),
-        deletedUsers: res.data.users.filter((user) => user.deleted == true),
-        totalUsers: res.data.users.length,
-        walletUsers: res.data.users.filter((user) => user.isWalletCreated == true), // prettier-ignore
+      .get(`${this.props.portalURL}api/users/user_list`, {
+        headers: {
+          Authorization: this.state.token,
+        },
+      })
+      .then((res) => {
+        this.setState({
+          allUsers: res.data.users,
+          data: res.data.users,
+          activeUsers: res.data.users.filter((user) => user.isActive == true),
+          inactiveUsers: res.data.users.filter(
+            (user) => user.isActive == false
+          ),
+          suspendedUsers: res.data.users.filter(
+            (user) => user.suspended == true
+          ),
+          deletedUsers: res.data.users.filter((user) => user.deleted == true),
+          totalUsers: res.data.users.length,
+          walletUsers: res.data.users.filter((user) => user.isWalletCreated == true), // prettier-ignore
+        });
+      })
+      .catch(function (error) {
+        console.log(error);
       });
-    })
-    .catch(function (error) {
-      console.log(error);
-    });
-  }
+  };
 
   chageData = (frist, sec) => {
     for (var i = 0; i < this.state.data.length; ++i) {
@@ -98,7 +96,7 @@ class UserList extends Component {
         )
         .then((res) => {
           console.log(res);
-          this.getUsers()
+          this.getUsers();
           toast.success("User deleted successfully");
         })
         .catch((error) => {
@@ -108,8 +106,8 @@ class UserList extends Component {
   };
 
   searchHandler = (e) => {
-    const search = e.target.value;
-    if (search == "") {
+    const search = e.target.value.trim();
+    if (search === "") {
       this.setState({
         data: this.state.allUsers,
       });

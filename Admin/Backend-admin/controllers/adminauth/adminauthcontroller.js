@@ -871,7 +871,7 @@ exports.post_update_profile_details = async (req, res, next) => {
       $set: {
         firstname: req.body.firstname,
         lastname: req.body.lastname,
-        phoneno: req.body.phonenumber,
+        // phoneno: req.body.phonenumber,
         userImage: req.file.path,
         // currency: req.body.currency,
         // mail: req.body.mail,
