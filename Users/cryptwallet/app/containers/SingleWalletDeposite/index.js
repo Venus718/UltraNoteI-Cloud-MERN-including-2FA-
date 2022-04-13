@@ -183,13 +183,13 @@ export class SingleWalletDeposite extends React.Component {
               />
               <Button type="submit">Copy</Button>
             </Form>
-            <Typography
+            {/*<Typography
               onClick={this.generateAddressHandler}
               className="generateNewAdress"
               component="p"
             >
               Generate a new address
-            </Typography>
+              </Typography>*/}
             <p>
             <Typography
               onClick={this.optimizeWalletHandler}

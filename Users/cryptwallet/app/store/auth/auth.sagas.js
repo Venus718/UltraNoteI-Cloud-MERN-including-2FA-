@@ -14,7 +14,7 @@ export function* signupStartAsync({payload}) {
             firstName: payload.firstName,
             lastName: payload.lastName,
             mail: payload.email,
-            phone: payload.phone,
+            // phone: payload.phone,
             password: payload.password
         };
         const result = yield clientHttp.post('/signup', requestData);

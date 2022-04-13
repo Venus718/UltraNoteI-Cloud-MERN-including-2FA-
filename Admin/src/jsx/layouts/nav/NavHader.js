@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import { ThemeContext } from "../../../context/ThemeContext";
 
 import  LogoImage  from '../../../images/Ultralogo/logo150.png';
-import LogoImagesquare from '../../../images/Ultralogo/logobanner.png';
+import LogoImagesquare from '../../../images/Ultralogo/logobanner.png'; 
 const NavHader = () => {
   const [toggle, setToggle] = useState(false);
   const { navigationHader, openMenuToggle, background } = useContext(
