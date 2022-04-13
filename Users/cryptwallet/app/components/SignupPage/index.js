@@ -47,7 +47,7 @@ class SignupPage extends Component {
     firstName: '',
     lastName: '',
     email: '',
-    phone: '',
+    // phone: '',
     password: '',
     confirmPassword: '',
     passwordShow: false,
@@ -147,11 +147,11 @@ class SignupPage extends Component {
     return errors;
   };
 
-  handleOnChange = value => {
-    this.setState({
-      phone: value,
-    });
-  };
+  // handleOnChange = value => {
+  //   this.setState({
+  //     phone: value,
+  //   });
+  // };
 
   submitHandler = event => {
     event.preventDefault();
@@ -245,7 +245,7 @@ class SignupPage extends Component {
                       this.state.error.email ? this.state.error.email : ''
                     }
                   />
-                  <Grid className="phoneNumber">
+                  {/* <Grid className="phoneNumber">
                     <ReactPhoneInput
                       inputExtraProps={{
                         name: 'phone',
@@ -258,7 +258,7 @@ class SignupPage extends Component {
                       value={phone}
                       onChange={this.handleOnChange}
                     />
-                  </Grid>
+                  </Grid> */}
                   <TextField
                     label="Password"
                     className="inputStyle"

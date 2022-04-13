@@ -126,11 +126,10 @@ module.exports = {
         });
       }
       const { userId } = req.body;
-      const deletedUser = await User.findByIdAndDelete(userId)
-      
+      const deletedUser = await User.findByIdAndDelete(userId);
+
       if (!deletedUser)
         return res.status(400).json({ message: "user doesn't exist!" });
-
       else res.status(200).json({ message: "User deleted successfully" });
     } catch (error) {
       res.status(400).json({ message: "ERROR WHILE ADDING USER", error });
@@ -192,7 +191,6 @@ module.exports = {
     } catch (error) {
       res.status(400).json({ message: "ERROR WHILE UPDATING USER", error });
     }
-    
   },
   async profileUpdate(req, res) {
     try {
@@ -201,11 +199,28 @@ module.exports = {
           message: "User's _id is required",
         });
       }
-      const { _id, firstname, lastname, phone, currency, isActive, two_factor_auth } = req.body;
+      const {
+        _id,
+        firstname,
+        lastname,
+        // phone,
+        currency,
+        isActive,
+        two_factor_auth,
+      } = req.body;
 
       const profileUpdated = await User.findOneAndUpdate(
         { _id: ObjectId(_id) },
-        { $set: { firstName: firstname, lastName: lastname, phone: phone, currency: currency, isActive: isActive, two_factor_auth: two_factor_auth } }
+        {
+          $set: {
+            firstName: firstname,
+            lastName: lastname,
+            // phone: phone,
+            currency: currency,
+            isActive: isActive,
+            two_factor_auth: two_factor_auth,
+          },
+        }
       );
       if (!profileUpdated)
         return res.status(400).json({ message: "user doesn't exist!" });

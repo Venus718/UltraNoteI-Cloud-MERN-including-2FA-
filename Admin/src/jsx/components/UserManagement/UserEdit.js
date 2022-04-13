@@ -5,7 +5,7 @@ import "../AppsMenu/AppProfile/AppProfile.css";
 import PageTitle from "../../layouts/PageTitle";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { NotificationsContext } from '../../../context/NotificationsContext';
+import { NotificationsContext } from "../../../context/NotificationsContext";
 
 const UserEdit = (props) => {
   const { id } = props.match.params;
@@ -34,7 +34,7 @@ const UserEdit = (props) => {
       firstname: userData.firstName,
       lastname: userData.lastName,
       mail: userData.mail,
-      phone: userData.phone,
+      // phone: userData.phone,
       currency: userData.currency,
       isActive: userData.isActive,
       two_factor_auth: userData.two_fact_auth,
@@ -87,22 +87,46 @@ const UserEdit = (props) => {
       // .catch((err) => {
       //   console.log(err);
       // });
-      .then((res)=>{
+      .then((res) => {
         setUserData(res.data.user);
-        axios.get(portalURL + "api/wallets/walletdata/"+id+"/",{ headers: { Authorization: token.token, "Content-Type": "application/json" }})
-          .then(response=>{
-            console.log('data received: ', response.data);
-            let balance = response.data && response.data.balance && response.data.balance.availableBalance ? response.data.balance.availableBalance: 0;
-            let lockedBalance = response.data && response.data.balance && response.data.balance.lockedAmount ? response.data.balance.lockedAmount: 0;
+        axios
+          .get(portalURL + "api/wallets/walletdata/" + id + "/", {
+            headers: {
+              Authorization: token.token,
+              "Content-Type": "application/json",
+            },
+          })
+          .then((response) => {
+            console.log("data received: ", response.data);
+            let balance =
+              response.data &&
+              response.data.balance &&
+              response.data.balance.availableBalance
+                ? response.data.balance.availableBalance
+                : 0;
+            let lockedBalance =
+              response.data &&
+              response.data.balance &&
+              response.data.balance.lockedAmount
+                ? response.data.balance.lockedAmount
+                : 0;
 
             balance /= 1000000;
             lockedBalance /= 1000000;
 
-            setWalletData({address: response.data.address, balance: balance, unconfirmedBalance: lockedBalance });
+            setWalletData({
+              address: response.data.address,
+              balance: balance,
+              unconfirmedBalance: lockedBalance,
+            });
           })
-          .catch((err)=>{console.log('error getting wallet data:', err)});
-      }).catch(err=>{console.log(err)});
-
+          .catch((err) => {
+            console.log("error getting wallet data:", err);
+          });
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   }, []);
   const [userData, setUserData] = useState({});
   const [walletList, setWalletList] = useState([]);
@@ -207,7 +231,7 @@ const UserEdit = (props) => {
                         }
                       />
                     </div>
-                    <div className="form-group">
+                    {/* <div className="form-group">
                       <label>Phone</label>
                       <input
                         type="text"
@@ -221,7 +245,7 @@ const UserEdit = (props) => {
                           })
                         }
                       />
-                    </div>
+                    </div> */}
 
                     <div className="form-group">
                       <label>Avatar</label>
