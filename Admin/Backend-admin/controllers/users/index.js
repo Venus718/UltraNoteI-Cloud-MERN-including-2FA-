@@ -202,6 +202,7 @@ module.exports = {
       const {
         _id,
         firstname,
+        mail,
         lastname,
         // phone,
         currency,
@@ -216,6 +217,7 @@ module.exports = {
             firstName: firstname,
             lastName: lastname,
             // phone: phone,
+            mail: mail,
             currency: currency,
             isActive: isActive,
             two_factor_auth: two_factor_auth,
