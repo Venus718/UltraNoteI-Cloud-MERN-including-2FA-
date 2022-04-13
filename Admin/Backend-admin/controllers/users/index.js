@@ -95,7 +95,7 @@ module.exports = {
         firstName: req.body.firstName,
         lastName: req.body.lastName,
         mail: mail,
-        phone: req.body.phone,
+        // phone: req.body.phone,
         role: req.body.role,
       });
       const savedUser = await user.save().then((user) => {
