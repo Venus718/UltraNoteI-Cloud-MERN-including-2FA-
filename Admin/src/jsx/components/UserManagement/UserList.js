@@ -41,20 +41,19 @@ class UserList extends Component {
           Authorization: this.state.token,
         },
       })
-      .then((res) => {
+      .then(({ data: { users } }) => {
+        console.log({
+          walletUsers: users.filter((user) => user.isWalletCreated === true),
+        });
         this.setState({
-          allUsers: res.data.users,
-          data: res.data.users,
-          activeUsers: res.data.users.filter((user) => user.isActive == true),
-          inactiveUsers: res.data.users.filter(
-            (user) => user.isActive == false
-          ),
-          suspendedUsers: res.data.users.filter(
-            (user) => user.suspended == true
-          ),
-          deletedUsers: res.data.users.filter((user) => user.deleted == true),
-          totalUsers: res.data.users.length,
-          walletUsers: res.data.users.filter((user) => user.isWalletCreated == true), // prettier-ignore
+          allUsers: users,
+          data: users,
+          activeUsers: users.filter((user) => user.isActive === true),
+          inactiveUsers: users.filter((user) => user.isActive === false),
+          suspendedUsers: users.filter((user) => user.suspended === true),
+          deletedUsers: users.filter((user) => user.deleted === true),
+          totalUsers: users.length,
+          walletUsers: users.filter((user) => user.isWalletCreated === true),
         });
       })
       .catch(function (error) {
@@ -114,7 +113,12 @@ class UserList extends Component {
       return;
     }
     const searchUsers = this.state.data.filter((user) => {
-      return user.mail?.toLowerCase().includes(search.toLowerCase());
+      return (
+        user.mail?.toLowerCase().includes(search.toLowerCase()) ||
+        user?.wallet?.[0]?.address
+          ?.toLowerCase()
+          ?.includes(search?.toLowerCase())
+      );
     });
     this.setState({
       data: searchUsers,
@@ -180,7 +184,7 @@ class UserList extends Component {
             <input
               type="text"
               className="form-control mr-2"
-              placeholder="Enter email"
+              placeholder="Enter email / wallet number"
               onChange={this.searchHandler}
             />
             <div className="form-group mb-0">
@@ -251,10 +255,7 @@ class UserList extends Component {
                         dataField: "isActive",
                         text: "Status",
                         formatter: (cell, row) => {
-                          if (
-                            row.isActive === true &&
-                            row.suspended === false
-                          ) {
+                          if (row.isActive && !row.suspended) {
                             return (
                               <span className="badge badge-success">
                                 Active
