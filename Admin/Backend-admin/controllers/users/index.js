@@ -4,7 +4,16 @@ const User = require("../../models/user");
 
 module.exports = {
   async userList(req, res) {
-    await User.find()
+    await User.aggregate([
+      {
+        $lookup: {
+          from: "wallets",
+          localField: "_id",
+          foreignField: "walletHolder",
+          as: "wallet",
+        },
+      },
+    ])
       .then((users) => {
         if (!users) {
           return res.status(400).json({ message: "Users not found" });
