@@ -104,7 +104,7 @@ export class Profile extends React.Component {
                     <strong className="danger">{connectedUser.isActive == true ? "Active" : "Pending"}</strong>
                   </TableCell>
                 </TableRow>
-                <TableRow>
+                {/* <TableRow>
                   <TableCell>Contact</TableCell>
 
                   <TableCell className="colon">
@@ -125,7 +125,7 @@ export class Profile extends React.Component {
                   <TableCell>
                     <strong>Active</strong>
                   </TableCell>
-                </TableRow>
+                </TableRow> */}
                 <TableRow>
                   <TableCell>Status</TableCell>
 
