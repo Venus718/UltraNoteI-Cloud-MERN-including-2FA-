@@ -82,7 +82,7 @@ class MassEmail extends Component {
       users: this.state.selectedUsers,
     };
     axios
-      .post("http://localhost:5000/api/admin/mass_email", formData, {
+      .post(this.props.portalURL + "api/admin/mass_email", formData, {
         headers: {
           Authorization: this.state.token,
         },
