@@ -954,33 +954,23 @@ exports.twofachagestatus = async (req, res, next) => {
 exports.post_mass_email = async (req, res, next) => {
   try {
     let { subject, message, users } = req.body;
-    let chunks = [];
-    let chunkSize = 1;
-    for (let i = 0; i < users.length; i += chunkSize) {
-      chunks.push(users.slice(i, i + chunkSize));
-    }
 
     const delay = async () =>
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
-    const sendEmail = async (chunk) => {
-      for (let i = 0; i < chunk.length; i++) {
-        const mailOptions = {
-          from: process.env.EMAIL_FROM,
-          to: users[i].email,
-          subject: subject,
-          templateVars: {
-            title: users[i].name,
-            message: message,
-          },
-        };
-        await sendMail(mailOptions).catch((ex) => {
-          console.log(ex);
-        });
-      }
-    };
-    for (let i = 0; i < chunks.length; i++) {
-      await sendEmail(chunks[i]);
+    for (let i = 0; i < users?.length; i++) {
+      const mailOptions = {
+        from: process?.env?.EMAIL_FROM,
+        to: users[i]?.email,
+        subject: subject,
+        templateVars: {
+          title: users[i]?.name,
+          message: message,
+        },
+      };
+      await sendMail(mailOptions).catch((ex) => {
+        console.log(ex);
+      });
       await delay();
     }
     return res.status(200).json({
