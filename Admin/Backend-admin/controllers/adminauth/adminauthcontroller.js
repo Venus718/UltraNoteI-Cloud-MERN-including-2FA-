@@ -953,7 +953,7 @@ exports.twofachagestatus = async (req, res, next) => {
 
 exports.post_mass_email = async (req, res, next) => {
   try {
-    let { subject, message, users } = req;
+    let { subject, message, users } = req.body;
 
     const delay = async () =>
       await new Promise((resolve) => setTimeout(resolve, 1000));
