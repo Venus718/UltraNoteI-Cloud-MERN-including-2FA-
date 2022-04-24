@@ -503,7 +503,7 @@ export class Messages extends React.Component {
     setTimeout(() => {
       getWallets(connectedUser.id);
       getMessages(connectedUser.id);
-    }, 100000);
+    }, 1000);
   }
 
   componentDidMount() {
