@@ -47,9 +47,9 @@ import { compose } from 'redux';
  import './style.scss';
  import { toast } from 'react-toastify';
  import { selectUser, selectAllUsers } from '../../store/auth/auth.selectors';
- import {getMessageStart, downloadAttachmentStart, sendMsgStart, getWalletStart } from '../../store/wallet/wallet.actions';
+ import {getMessageStart, downloadAttachmentStart, sendMsgStart, getWalletStart, updateUnReadMessageCountSuccess, updateUnReadMessageCountAPI } from '../../store/wallet/wallet.actions';
  import {getUser} from '../../store/auth/auth.actions';
- import { selectMessages } from '../../store/wallet/wallet.selectors';
+ import { selectMessages, selectUnreadMessagesCount } from '../../store/wallet/wallet.selectors';
  
  import { isAmount, skipSpace, valueIsNumber } from '../../utils/commonFunctions';
 
@@ -513,6 +513,29 @@ export class Messages extends React.Component {
       addr_list: connectedUser.contacts,
     });
   }
+  componentDidUpdate(){
+  const { connectedUser,unreadMsgCount, updateUnReadMsgCount, updateUnReadMessageAPI }=this.props
+   
+  try {
+     if( connectedUser ) {
+       if( this.state.message?.isRead===false &&unreadMsgCount >0 ){
+           updateUnReadMsgCount(unreadMsgCount-1)
+           console.log({
+            id:connectedUser.id,
+            hash:this.state.message.hash
+          });
+           updateUnReadMessageAPI({
+             id:connectedUser.id,
+             hash:this.state.message.hash
+           })
+      }
+     }
+
+   }
+   catch(err){
+    updateUnReadMsgCount(unreadMsgCount+1)
+   }
+  }
 
   componentWillReceiveProps(nextProps) {
     const { messages, connectedUser } = nextProps;
@@ -856,6 +879,7 @@ Messages.propTypes = {
 const mapStateToProps = state => ({
   connectedUser: selectUser(state),
   messages: selectMessages(state),
+  unreadMsgCount: selectUnreadMessagesCount(state),
 });
 
 const mapDispatchToProps = (dispatch) => ({
@@ -863,7 +887,9 @@ const mapDispatchToProps = (dispatch) => ({
   getUser: () => dispatch(getUser()),
   downloadAttachment: (payload) => dispatch(downloadAttachmentStart(payload)),
   sendMsg: (payload) => dispatch(sendMsgStart(payload)),
-  getWallets: (payload) => dispatch(getWalletStart(payload))
+  getWallets: (payload) => dispatch(getWalletStart(payload)),
+  updateUnReadMsgCount:(payload)=>dispatch(updateUnReadMessageCountSuccess(payload)),
+  updateUnReadMessageAPI: (payload)=>dispatch(updateUnReadMessageCountAPI(payload)) 
 });
 
 const withConnect = connect(

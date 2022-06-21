@@ -115,6 +115,7 @@
         "sanitize.css": "4.1.0",
         "sass-loader": "^7.1.0",
         "slick-carousel": "^1.8.1",
+        "socket.io-client": "^4.5.1",
         "styled-components": "4.0.2",
         "tinymce": "^5.10.2",
         "victory": "^32.2.3",

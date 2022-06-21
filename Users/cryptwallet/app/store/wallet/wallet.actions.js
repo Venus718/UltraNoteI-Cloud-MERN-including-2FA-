@@ -52,6 +52,11 @@ export const getWalletStart = (payload) => ({
     payload
 });
 
+export const getUnreadMsgCountStart = (payload) => ({
+    type: WalletTypes.GET_UNREAD_MESSAGE_COUNT,
+    payload
+});
+
 
 export const getWalletSuccess = (payload) => ({
     type: WalletTypes.GET_ALL_WALLETS_SUCCESS,
@@ -68,6 +73,14 @@ export const getMessageSuccess = (payload) => ({
     payload
 })
 
+export const updateUnReadMessageCountSuccess = (payload) => ({
+    type: WalletTypes.UPDATE_UNREAD_MESSAGE_COUNT_SUCCESS,
+    payload
+})
+export const updateUnReadMessageCountAPI = (payload) => ({
+    type: WalletTypes.UPDATE_API_UNREAD_MESSAGE_COUNT,
+    payload
+})
 export const downloadAttachmentStart = (payload) => ({
     type: WalletTypes.DOWNLOAD_ATTACHMENT_START,
     payload

@@ -29,6 +29,7 @@ import Pass from '../../images/icon/eye2.svg';
 
 import '../SignupPage/account.scss';
 import { loginStart } from '../../store/auth/auth.actions';
+import SocketContext from '../../context';
 
 class LoginPage extends Component {
   state = {
@@ -121,7 +122,7 @@ class LoginPage extends Component {
     return errors;
   };
 
-  submitHandler = event => {
+  submitHandler = (event, setSocket) => {
     event.preventDefault();
     const error = this.validate();
     this.setState({
@@ -131,7 +132,7 @@ class LoginPage extends Component {
     const { login } = this.props;
     if (!error) {
       this.state.history = this.props.history;
-      login(this.state);
+      login({...this.state, setSocket});
     }
   };
 
@@ -151,95 +152,108 @@ class LoginPage extends Component {
     }
 
     return (
-      <Fragment>
-        <Grid className="accountArea">
-          <Grid className="container" container>
-            <Grid item lg={6} xs={12}>
-              <Grid className="accountImage">
-                <div className="logo-left">
-                  <img
-                    src={Logo}
-                    alt="logo"
-                    style={({ width: '100px' }, { height: '100px' })}
-                  />
-                  <span>UltraNote Infinity Cloud</span>
-                </div>
+      <SocketContext.Consumer>
+        {({ setSocket }) => (
+          <Fragment>
+            <Grid className="accountArea">
+              <Grid className="container" container>
+                <Grid item lg={6} xs={12}>
+                  <Grid className="accountImage">
+                    <div className="logo-left">
+                      <img
+                        src={Logo}
+                        alt="logo"
+                        style={({ width: '100px' }, { height: '100px' })}
+                      />
+                      <span>UltraNote Infinity Cloud</span>
+                    </div>
 
-                <p>
-                  Store, Access and manange your UltraNote Infinity coins with
-                  ease securely on your cloud wallet.
-                </p>
-              </Grid>
-            </Grid>
-            <Grid item lg={6} xs={12}>
-              <Grid className="accountContent">
-                <Typography variant="h3">Sign In</Typography>
-                <Typography className="text" paragraph>
-                  Please sign in to your account.
-                </Typography>
-                <Form onSubmit={this.submitHandler}>
-                  <TextField
-                    label="Email"
-                    className="inputStyle"
-                    name="email"
-                    variant="outlined"
-                    onChange={this.changeHandler}
-                    value={email}
-                    helperText={
-                      this.state.error.email ? this.state.error.email : ''
-                    }
-                  />
-                  <TextField
-                    label="Password"
-                    className="inputStyle"
-                    name="password"
-                    variant="outlined"
-                    type={this.state.passwordShow ? 'text' : 'password'}
-                    onChange={this.changeHandler}
-                    value={password}
-                    InputProps={{
-                      endAdornment: (
-                        <InputAdornment className="showPassword" position="end">
-                          <IconButton
-                            onClick={() =>
-                              this.handleClickShowPassword('passwordShow')
-                            }
-                          >
-                            <Image
-                              src={this.state.passwordShow ? Pass : ShowPass}
-                            />
-                          </IconButton>
-                        </InputAdornment>
-                      ),
-                    }}
-                    helperText={
-                      this.state.error.password ? this.state.error.password : ''
-                    }
-                  />
-                  <ReCAPTCHA
-                    className="recaptcha"
-                    sitekey="6LdqlfoZAAAAAMLxltM3BSoqaFQInUh_lxtZ88cC"
-                    onChange={this.onChangeCap}
-                  />
-                  <Grid className="forgotPassword">
-                    <Link to="/forgot-password/reset">Forgot Password ?</Link>
+                    <p>
+                      Store, Access and manange your UltraNote Infinity coins
+                      with ease securely on your cloud wallet.
+                    </p>
                   </Grid>
-                  <Button
-                    type="submit"
-                    className="submitButton"
-                    disabled={!this.state.verifiedCaptcha}
-                  >
-                    Sign In
-                  </Button>
-                  <Typography variant="h6">
-                    Don’t have account ? <Link to="/signup">Sign Up</Link>
-                  </Typography>
-                </Form>
+                </Grid>
+                <Grid item lg={6} xs={12}>
+                  <Grid className="accountContent">
+                    <Typography variant="h3">Sign In</Typography>
+                    <Typography className="text" paragraph>
+                      Please sign in to your account.
+                    </Typography>
+                    <Form onSubmit={e => this.submitHandler(e, setSocket)}>
+                      <TextField
+                        label="Email"
+                        className="inputStyle"
+                        name="email"
+                        variant="outlined"
+                        onChange={this.changeHandler}
+                        value={email}
+                        helperText={
+                          this.state.error.email ? this.state.error.email : ''
+                        }
+                      />
+                      <TextField
+                        label="Password"
+                        className="inputStyle"
+                        name="password"
+                        variant="outlined"
+                        type={this.state.passwordShow ? 'text' : 'password'}
+                        onChange={this.changeHandler}
+                        value={password}
+                        InputProps={{
+                          endAdornment: (
+                            <InputAdornment
+                              className="showPassword"
+                              position="end"
+                            >
+                              <IconButton
+                                onClick={() =>
+                                  this.handleClickShowPassword('passwordShow')
+                                }
+                              >
+                                <Image
+                                  src={
+                                    this.state.passwordShow ? Pass : ShowPass
+                                  }
+                                />
+                              </IconButton>
+                            </InputAdornment>
+                          ),
+                        }}
+                        helperText={
+                          this.state.error.password
+                            ? this.state.error.password
+                            : ''
+                        }
+                      />
+                      <ReCAPTCHA
+                        className="recaptcha"
+                        sitekey="6LdqlfoZAAAAAMLxltM3BSoqaFQInUh_lxtZ88cC"
+                        onChange={this.onChangeCap}
+                      />
+                      <Grid className="forgotPassword">
+                        <Link to="/forgot-password/reset">
+                          Forgot Password ?
+                        </Link>
+                      </Grid>
+                      <Button
+                        type="submit"
+                        className="submitButton"
+                        disabled={!this.state.verifiedCaptcha}
+                      >
+                        Sign In
+                      </Button>
+                      <Typography variant="h6">
+                        Don’t have account ? <Link to="/signup">Sign Up</Link>
+                      </Typography>
+                    </Form>
+                  </Grid>
+                </Grid>
               </Grid>
             </Grid>
-          </Grid>
-        </Grid>
-      </Fragment>
+          </Fragment>
+        )}
+      </SocketContext.Consumer>
     );
   }
 }

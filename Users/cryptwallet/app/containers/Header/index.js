@@ -26,6 +26,7 @@ import Button from '@material-ui/core/Button';
 import Hidden from '@material-ui/core/Hidden';
 import IconButton from '@material-ui/core/IconButton';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
+import Badge from '@material-ui/core/Badge';
 
 import MenuList from '@material-ui/core/MenuList';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -33,6 +34,7 @@ import cookie from 'js-cookie';
 import saga from './saga';
 import reducer from './reducer';
 import makeSelectHeader from './selectors';
+import { selectUnreadMessagesCount } from '../../store/wallet/wallet.selectors';
 import FontAwesome from '../../components/uiStyle/FontAwesome';
 
 import UserDefaultImage from '../../images/author/user-image.jpg';
@@ -40,12 +42,16 @@ import Logo from '../../components/Logo';
 import { toast } from 'react-toastify';
 import Redirect from 'react-router-dom/es/Redirect';
 import { selectUser } from '../../store/auth/auth.selectors';
-import { getWalletStart, walletReset } from '../../store/wallet/wallet.actions';
+import {
+  getWalletStart,
+  walletReset,
+  getUnreadMsgCountStart,
+} from '../../store/wallet/wallet.actions';
 import { authReset } from '../../store/auth/auth.actions';
+import SocketContext from '../../context';
 
 /* eslint-disable react/prefer-stateless-function */
 class Header extends React.Component {
-
   state = {
     anchorEl: null,
     open: false,
@@ -81,16 +87,20 @@ class Header extends React.Component {
     });
   };
 
-  logOutHandler = () => {
-    
+  logOutHandler = socket => {
     cookie.remove('Auth');
 
-    toast.warn("You have been loged out!");
+    toast.warn('You have been loged out!');
     this.setState({ state: this.state });
     this.props.walletReset();
     this.props.authReset();
+    socket?.disconnect();
   };
-  
+
+  componentDidMount() {
+    const { getUnreadMsgCount, connectedUser } = this.props;
+    if (connectedUser) getUnreadMsgCount(connectedUser.id);
+  }
 
   render() {
     const { anchorEl, open, placement, sideMenu } = this.state;
@@ -101,157 +111,183 @@ class Header extends React.Component {
     }
 
     return (
-      <Grid className="mainHeadeArea">
-        <Grid container alignItems="center" className="container">
-          <Grid item xs={12} sm={4} md={2} >
-            <div style={{display:"flex",flexDirection:"row"}}>
-            <Logo logo={logo} alt="CryptWallet" link="/dashboard" /> <span style={{fontSize:"20px",fontWeight:"bold",color:"white",marginTop:"5px"}}>UltraNote</span> 
-            </div>
-
-          </Grid>
-          <Hidden smDown>
-            <Grid item md={8}>
-              <List className="mainMenu">
-                <ListItem className="menuItem">
-                  <NavLink to="/dashboard">Dashboard</NavLink>
-                </ListItem>
-                <ListItem className="menuItem">
-                  <NavLink to="/my-wallet">My Wallet</NavLink>
-                </ListItem>
-                <ListItem className="menuItem">
-                  <NavLink to="/my-profile">My Profile</NavLink>
-                </ListItem>
-                <ListItem className="menuItem">
-                  <NavLink to="/settings">Settings</NavLink>
-                </ListItem>
-                <ListItem className="menuItem">
-                  <NavLink to="/address-book">Address Book</NavLink>
-                </ListItem>
-                <ListItem className="menuItem">
-                  <NavLink to="/messages">Messages</NavLink>
-                </ListItem>
-                <ListItem className="menuItem">
-                  <NavLink to="/billing">Billing</NavLink>
-                </ListItem>
-              </List>
-            </Grid>
-          </Hidden>
-
-          <Grid item xs={12} sm={8} md={2} className="profileMenu">
-            <ClickAwayListener onClickAway={this.handleClickAway}>
-              <Grid>
-                <Button
-                  disableRipple
-                  className="profileBtn"
-                  onClick={this.handleClick('bottom-end')}
-                >
-                  <Typography className="userImage" component="div">
-                    <Image src={connectedUser.image ? connectedUser.image : UserDefaultImage} />
-                  </Typography>
-                  <Typography className="userName" component="span">
-                     {connectedUser.firstName + " " + connectedUser.lastName}
-                  </Typography>
-                  <FontAwesome name={!open ? 'caret-down' : 'caret-up'} />
-                </Button>
-
-                <Popper
-                  open={open}
-                  anchorEl={anchorEl}
-                  placement={placement}
-                  transition
-                >
-                  {({ TransitionProps }) => (
-                    <Fade {...TransitionProps} timeout={350}>
-                      <Paper>
-                        <List className="profileMenuList">
-                          <ListItem>
-                            <NavLink to="/my-profile">My Profile</NavLink>
-                          </ListItem>
-                          {Auth ? (
-                            <ListItem>
-                              <Button
-                                onClick={this.logOutHandler}
-                                disableRipple
-                              >
-                                Sign Out
-                              </Button>
-                            </ListItem>
-                          ) : (
-                            <ListItem>
-                              <NavLink to="/login">Login</NavLink>
-                            </ListItem>
-                          )}
-                        </List>
-                      </Paper>
-                    </Fade>
-                  )}
-                </Popper>
+      <SocketContext.Consumer>
+        {({ socket }) => (
+          <Grid className="mainHeadeArea">
+            <Grid container alignItems="center" className="container">
+              <Grid item xs={12} sm={4} md={2}>
+                <div style={{ display: 'flex', flexDirection: 'row' }}>
+                  <Logo logo={logo} alt="CryptWallet" link="/dashboard" />{' '}
+                  <span
+                    style={{
+                      fontSize: '20px',
+                      fontWeight: 'bold',
+                      color: 'white',
+                      marginTop: '5px',
+                    }}
+                  >
+                    UltraNote
+                  </span>
+                </div>
               </Grid>
-            </ClickAwayListener>
+              <Hidden smDown>
+                <Grid item md={8}>
+                  <List className="mainMenu">
+                    <ListItem className="menuItem">
+                      <NavLink to="/dashboard">Dashboard</NavLink>
+                    </ListItem>
+                    <ListItem className="menuItem">
+                      <NavLink to="/my-wallet">My Wallet</NavLink>
+                    </ListItem>
+                    <ListItem className="menuItem">
+                      <NavLink to="/my-profile">My Profile</NavLink>
+                    </ListItem>
+                    <ListItem className="menuItem">
+                      <NavLink to="/settings">Settings</NavLink>
+                    </ListItem>
+                    <ListItem className="menuItem">
+                      <NavLink to="/address-book">Address Book</NavLink>
+                    </ListItem>
+                    <ListItem className="menuItem">
+                      <NavLink to="/messages">
+                        
+                    <Badge badgeContent={this.props.unreadMsgCount} color="primary">
+                        Messages
+                      </Badge>
+                        
+                        </NavLink>
+                    </ListItem>
+                    <ListItem className="menuItem">
+                      <NavLink to="/billing">Billing</NavLink>
+                    </ListItem>
+                  </List>
+                </Grid>
+              </Hidden>
+
+              <Grid item xs={12} sm={8} md={2} className="profileMenu">
+                <ClickAwayListener onClickAway={this.handleClickAway}>
+                  <Grid>
+                    <Button
+                      disableRipple
+                      className="profileBtn"
+                      onClick={this.handleClick('bottom-end')}
+                    >
+                      <Typography className="userImage" component="div">
+                        <Image
+                          src={
+                            connectedUser.image
+                              ? connectedUser.image
+                              : UserDefaultImage
+                          }
+                        />
+                      </Typography>
+                      <Typography className="userName" component="span">
+                        {connectedUser.firstName + ' ' + connectedUser.lastName}
+                      </Typography>
+                      <FontAwesome name={!open ? 'caret-down' : 'caret-up'} />
+                    </Button>
+
+                    <Popper
+                      open={open}
+                      anchorEl={anchorEl}
+                      placement={placement}
+                      transition
+                    >
+                      {({ TransitionProps }) => (
+                        <Fade {...TransitionProps} timeout={350}>
+                          <Paper>
+                            <List className="profileMenuList">
+                              <ListItem>
+                                <NavLink to="/my-profile">My Profile</NavLink>
+                              </ListItem>
+                              {Auth ? (
+                                <ListItem>
+                                  <Button
+                                    onClick={() => this.logOutHandler(socket)}
+                                    disableRipple
+                                  >
+                                    Sign Out
+                                  </Button>
+                                </ListItem>
+                              ) : (
+                                <ListItem>
+                                  <NavLink to="/login">Login</NavLink>
+                                </ListItem>
+                              )}
+                            </List>
+                          </Paper>
+                        </Fade>
+                      )}
+                    </Popper>
+                  </Grid>
+                </ClickAwayListener>
+                <Hidden mdUp>
+                  <IconButton
+                    className="hamBurger"
+                    color="primary"
+                    aria-label="Menu"
+                    onClick={this.sMenuHandler}
+                  >
+                    <FontAwesome name={sideMenu ? 'times' : 'bars'} />
+                  </IconButton>
+                </Hidden>
+              </Grid>
+            </Grid>
             <Hidden mdUp>
-              <IconButton
-                className="hamBurger"
-                color="primary"
-                aria-label="Menu"
-                onClick={this.sMenuHandler}
-              >
-                <FontAwesome name={sideMenu ? 'times' : 'bars'} />
-              </IconButton>
-            </Hidden>
-          </Grid>
-        </Grid>
-        <Hidden mdUp>
-          <Grid className={`sidebarMenu ${sideMenu ? 'showSidebar' : ''}`}>
-            <Typography
-              onClick={this.sMenuHandleClose}
-              component="div"
-              className="backDrop"
-            />
-            <MenuList>
-              <MenuItem>
-                <NavLink to="/dashboard">Dashboard</NavLink>
-              </MenuItem>
-              {/* <MenuItem>
+              <Grid className={`sidebarMenu ${sideMenu ? 'showSidebar' : ''}`}>
+                <Typography
+                  onClick={this.sMenuHandleClose}
+                  component="div"
+                  className="backDrop"
+                />
+                <MenuList>
+                  <MenuItem>
+                    <NavLink to="/dashboard">Dashboard</NavLink>
+                  </MenuItem>
+                  {/* <MenuItem>
                 <NavLink to="/buy-coin">Buy Coin</NavLink>
               </MenuItem> */}
-              <MenuItem>
-                <NavLink to="/my-wallet">My Wallet</NavLink>
-              </MenuItem>
-              <MenuItem>
-                <NavLink to="/my-profile">My Profile</NavLink>
-              </MenuItem>
-              <MenuItem>
-                <NavLink to="/settings">Settings</NavLink>
-              </MenuItem>
-              <MenuItem>
-                <NavLink to="/address-book">Address Book</NavLink>
-              </MenuItem>
-              <MenuItem>
-                <NavLink to="/messages">Messages</NavLink>
-              </MenuItem>
-              <MenuItem>
-                <NavLink to="/billing">Billing</NavLink>
-              </MenuItem>
-              {/* <MenuItem>
+                  <MenuItem>
+                    <NavLink to="/my-wallet">My Wallet</NavLink>
+                  </MenuItem>
+                  <MenuItem>
+                    <NavLink to="/my-profile">My Profile</NavLink>
+                  </MenuItem>
+                  <MenuItem>
+                    <NavLink to="/settings">Settings</NavLink>
+                  </MenuItem>
+                  <MenuItem>
+                    <NavLink to="/address-book">Address Book</NavLink>
+                  </MenuItem>
+                  <MenuItem>
+                    <NavLink to="/messages">Messages</NavLink>
+                  </MenuItem>
+                  <MenuItem>
+                    <NavLink to="/billing">Billing</NavLink>
+                  </MenuItem>
+                  {/* <MenuItem>
                 <NavLink to="/referral">Referral</NavLink>
               </MenuItem> */}
-            </MenuList>
+                </MenuList>
+              </Grid>
+            </Hidden>
           </Grid>
-        </Hidden>
-      </Grid>
+        )}
+      </SocketContext.Consumer>
     );
   }
 }
 
-
 const mapStateToProps = state => ({
   header: makeSelectHeader(state),
   connectedUser: selectUser(state),
+  unreadMsgCount:selectUnreadMessagesCount(state)
 });
 
-const mapDispatchToProps = (dispatch) =>  ({
-  walletReset: (payload) => dispatch(walletReset(payload)),
-  authReset: (payload) => dispatch(authReset(payload))
+const mapDispatchToProps = dispatch => ({
+  walletReset: payload => dispatch(walletReset(payload)),
+  authReset: payload => dispatch(authReset(payload)),
+  getUnreadMsgCount: payload => dispatch(getUnreadMsgCountStart(payload)),
 });
 
 const withConnect = connect(
