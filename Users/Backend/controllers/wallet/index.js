@@ -456,6 +456,45 @@ module.exports = {
                         err,
                       });
                     });
+
+                    Wallets.findOne({
+                      address: recipientAddress,
+                    })
+                      .then(({ walletHolder }) => {
+                        // const { html, origin_html, headers } =
+                        //   ParseMessage(msg_body);
+
+                        // const msg = {
+                        //   message: html,
+                        //   full_message: origin_html,
+                        //   headers: headers,
+                        //   timestamp: Date.now(),
+                        //   datetime: new Date()
+                        //     .toISOString()
+                        //     .slice(0, 19)
+                        //     .replace("T", " ")
+                        //     .slice(0, 16),
+                        //   totalAmount: amount,
+                        //   amount: amount,
+                        //   walletAddress: recipientAddress,
+                        //   type: amount > 0 ? "IN" : "OUT",
+                        //   blockHeight: 0,
+                        //   hash: transactionHash,
+                        //   isRead: false,
+                        // };
+                        req.io.emit(
+                          `New Message Recieved ${walletHolder.toHexString()}`,
+                          newMessage
+                        );
+                      })
+                      .catch((err) => {
+                        console.log(err);
+                        return res.status(400).json({
+                          message:
+                            "ERROR WHILE SENDING NEW MESSAGE NOTIFICATION",
+                          err,
+                        });
+                      });
                   });
               })
               .catch((err) => {
@@ -672,7 +711,8 @@ module.exports = {
                     type: transaction.amount > 0 ? "IN" : "OUT",
                     blockHeight: transaction.blockIndex,
                     hash: transaction.transactionHash,
-                    isRead:db_msg?.isRead===false?db_msg?.isRead:true
+                    isRead: db_msg?.isRead === false ? db_msg?.isRead : true,
+                    senderID: db_msg?.senderID,
                   });
                 }
               }
@@ -770,7 +810,8 @@ module.exports = {
                   type: transaction.amount > 0 ? "IN" : "OUT",
                   blockHeight: transaction.blockIndex,
                   hash: transaction.transactionHash,
-                  isRead:db_msg?.isRead===false?db_msg?.isRead:true
+                  isRead: db_msg?.isRead === false ? db_msg?.isRead : true,
+                  senderID: db_msg?.senderID,
                 });
               }
             }
