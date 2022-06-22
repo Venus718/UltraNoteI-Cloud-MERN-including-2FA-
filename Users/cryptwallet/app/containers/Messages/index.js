@@ -578,6 +578,7 @@ export class Messages extends React.Component {
       is_next,
       minimumAmount
     } = this.state;
+    const { connectedUser } = this.props;
 
     const indexOfLastRow = currentPage * rowsPerPage;
     const indexOfFirstRow = indexOfLastRow - rowsPerPage;
@@ -707,7 +708,7 @@ export class Messages extends React.Component {
                   </TableHead>
                   <TableBody>
                     {currentRows.map((row, index) => (
-                      <TableRow key={index}  className={!row.isRead?"unreadMsgRow":""}  >
+                      <TableRow key={index}  className={!row.isRead && row?.senderID !== connectedUser.id ? "unreadMsgRow" : ""}  >
                         <TableCell>{row.datetime}</TableCell>
                         <TableCell>{row.type}</TableCell>
                         <TableCell>{row.blockHeight}</TableCell>

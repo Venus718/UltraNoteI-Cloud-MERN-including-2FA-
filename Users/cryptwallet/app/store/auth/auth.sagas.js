@@ -72,9 +72,13 @@ export function* loginStartAsync({payload}) {
                 toast.success('Successfully login');
                 payload.history.push('/dashboard');
                 if (setSocket) {
-                  const socketConnectionOptions = { transportOptions: { polling: { extraHeaders: { Authorization: `Bearer ${result.data.token}` || '' } } } };
-                  socketConnection = io(process.env.REACT_APP_SERVER_SOCKET_URL || 'http://localhost:3600', socketConnectionOptions);
-                  setSocket(socketConnection);
+                    try {
+                      const socketConnectionOptions = { transportOptions: { polling: { extraHeaders: { Authorization: `Bearer ${result.data.token}` || '' } } } };
+                      const socketConnection = io(process.env.REACT_APP_SERVER_SOCKET_URL || 'http://localhost:3600', socketConnectionOptions);
+                      setSocket(socketConnection);
+                    } catch (err) {
+                      console.log('Error in socket connection', err);
+                    }
                 }
             }
         }

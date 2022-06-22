@@ -25,11 +25,34 @@ const walletRoute = require("./routes/wallet");
 app.use(cors());
 app.use(BodyParser.json({ limit: "50mb" }));
 app.use(BodyParser.urlencoded({ limit: "50mb", extended: true }));
+app.use(function (req, res, next) {
+  req.io = io;
+  next();
+});
 
 //routing
 app.use("/api", authRoute);
 app.use("/api/user", userRoute);
 app.use("/api/wallets", walletRoute);
+
+// Socket connection
+
+io.on("connection", (socket) => {
+  try {
+    const authorization = socket.handshake.headers.authorization;
+    const token = authorization.split(" ")[1];
+    const decodedToken = jwt.verify(token, process.env.TOKENCODE);
+
+    if (!token || !decodedToken?.data?._id) {
+      socket.disconnect();
+    }
+  } catch (err) {
+    console.log("Error::", err);
+    socket.disconnect();
+  }
+});
+
+
 
 //Mongoose DataBase connection
 mongoose
@@ -44,24 +67,7 @@ mongoose
     console.log("ERROR OUCCURED", error);
   });
 
-// Socket connection
 
-io.on("connection", (socket) => {
-  try {
-    const authorization = socket.handshake.headers.authorization;
-    const token = authorization.split(" ")[1];
-    const decodedToken = jwt.verify(token, process.env.TOKENCODE);
-
-    if (!token || !decodedToken?.data?._id) socket.disconnect();
-
-    // socket.on("disconnect", (reason) => {
-    //   console.log("socket is disconnected", socket.id);
-    // });
-  } catch (err) {
-    console.log("Error::", err);
-    socket.disconnect();
-  }
-});
 
 //lancing the server
 server.listen(process.env.RUNNING_PORT, () => {

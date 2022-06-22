@@ -10,7 +10,8 @@ const INITIAL_STATE = {
     transactions: {deposit: [], withdraw: []},
     error: null,
     messages: [],
-    unreadMessagesCount:0
+    unreadMessagesCount:0,
+    senderID:""
 };
 
 
