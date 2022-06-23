@@ -67,7 +67,7 @@
                 </TableRow>
               </TableHead>
               <TableBody>
-                {addresses.map((row, index) => (
+                {addresses?.map((row, index) => (
                   <TableRow key={index} onDoubleClick={adModalSelectHandler(row[1])}>
                     <TableCell>{row[0]}</TableCell>
                     <TableCell>{row[1]}</TableCell>

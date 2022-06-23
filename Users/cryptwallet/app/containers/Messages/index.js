@@ -539,7 +539,7 @@ export class Messages extends React.Component {
     const { connectedUser } = this.props;
     this.setState({
       ...this.state,
-      addr_list: connectedUser.contacts,
+      addr_list: connectedUser?.contacts,
     });
   }
 
@@ -548,7 +548,7 @@ export class Messages extends React.Component {
     if(messages) {
       this.setState({
         row: messages,
-        addr_list: connectedUser.contacts
+        addr_list: connectedUser?.contacts
       });
     }
   }
@@ -600,7 +600,7 @@ export class Messages extends React.Component {
       </ListItem>
     ));
 
-    const renderAddresses = addresses.map((row,index) => (
+    const renderAddresses = addresses?.map((row,index) => (
       <Grid container spacing={16} key={index}>
         <Grid item xs={10}>
           <TextField
