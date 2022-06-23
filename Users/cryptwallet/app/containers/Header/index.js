@@ -15,7 +15,7 @@ import injectSaga from 'utils/injectSaga';
 import injectReducer from 'utils/injectReducer';
 import Image from 'components/uiStyle/Images';
 import { Grid, List, ListItem } from '@material-ui/core';
-import logo from 'images/logo.png'; 
+import logo from 'images/logo.png';
 
 import './style.scss';
 import Typography from '@material-ui/core/Typography';
@@ -34,7 +34,10 @@ import cookie from 'js-cookie';
 import saga from './saga';
 import reducer from './reducer';
 import makeSelectHeader from './selectors';
-import { selectUnreadMessagesCount } from '../../store/wallet/wallet.selectors';
+import {
+  selectUnreadMessagesCount,
+  selectMessages,
+} from '../../store/wallet/wallet.selectors';
 import FontAwesome from '../../components/uiStyle/FontAwesome';
 
 import UserDefaultImage from '../../images/author/user-image.jpg';
@@ -44,6 +47,7 @@ import Redirect from 'react-router-dom/es/Redirect';
 import { selectUser } from '../../store/auth/auth.selectors';
 import {
   getWalletStart,
+  getMessageSuccess,
   walletReset,
   getUnreadMsgCountStart,
   updateUnReadMessageCountSuccess,
@@ -57,6 +61,7 @@ class Header extends React.Component {
     open: false,
     placement: null,
     sideMenu: false,
+    newMessageArrived: null,
   };
 
   handleClick = placement => event => {
@@ -98,10 +103,15 @@ class Header extends React.Component {
   };
 
   componentDidUpdate() {
-    const { connectedUser, updateUnReadMsgCount, unreadMsgCount } = this.props;
-    this.props.socket?.on(`New Message Recieved ${connectedUser.id}`, data => {
+    if (this.state.newMessageArrived) {
+      const { updateUnReadMsgCount, unreadMsgCount, updateMessages, messages } = this.props;
       updateUnReadMsgCount(unreadMsgCount + 1);
-    });
+
+      if (window.location.pathname === '/messages') updateMessages({
+          msgList: [this.state.newMessageArrived, ...messages],
+        });
+      this.setState({ newMessageArrived: null });
+    }
   }
 
   componentWillUnmount() {
@@ -109,8 +119,12 @@ class Header extends React.Component {
   }
 
   componentDidMount() {
-    const { getUnreadMsgCount, connectedUser } = this.props;
-    if (connectedUser) getUnreadMsgCount(connectedUser.id);
+    const { connectedUser, socket, getUnreadMsgCount } = this.props;
+    if (connectedUser) getUnreadMsgCount(connectedUser?.id);
+    socket?.on(`New Message Recieved ${connectedUser?.id}`, data => {
+      this.setState({ newMessageArrived: data });
+      toast.success('You have received a new message!');
+    });
   }
 
   render() {
@@ -289,7 +303,8 @@ class Header extends React.Component {
 const mapStateToProps = state => ({
   header: makeSelectHeader(state),
   connectedUser: selectUser(state),
-  unreadMsgCount:selectUnreadMessagesCount(state)
+  unreadMsgCount: selectUnreadMessagesCount(state),
+  messages: selectMessages(state),
 });
 
 const mapDispatchToProps = dispatch => ({
@@ -298,6 +313,7 @@ const mapDispatchToProps = dispatch => ({
   getUnreadMsgCount: payload => dispatch(getUnreadMsgCountStart(payload)),
   updateUnReadMsgCount: payload =>
     dispatch(updateUnReadMessageCountSuccess(payload)),
+  updateMessages: payload => dispatch(getMessageSuccess(payload)),
 });
 
 const withConnect = connect(

@@ -8,6 +8,7 @@ const User = require("../../models/user");
 const UserActivity = require("../../models/user_activity");
 const user_data = require("../user/user_data");
 const { baseModelName } = require("../../models/user");
+const ParseMessage = require("../../helpers/messages");
 const xuni = new XUNI({
   daemonHost: process.env.XUNI_HOST,
   walletHost: process.env.XUNI_HOST,
@@ -461,31 +462,50 @@ module.exports = {
                       address: recipientAddress,
                     })
                       .then(({ walletHolder }) => {
-                        // const { html, origin_html, headers } =
-                        //   ParseMessage(msg_body);
+                        ultranote
+                          .getTransaction(transactionHash)
+                          .then((data) => {
+                            let blockHeight = 0;
 
-                        // const msg = {
-                        //   message: html,
-                        //   full_message: origin_html,
-                        //   headers: headers,
-                        //   timestamp: Date.now(),
-                        //   datetime: new Date()
-                        //     .toISOString()
-                        //     .slice(0, 19)
-                        //     .replace("T", " ")
-                        //     .slice(0, 16),
-                        //   totalAmount: amount,
-                        //   amount: amount,
-                        //   walletAddress: recipientAddress,
-                        //   type: amount > 0 ? "IN" : "OUT",
-                        //   blockHeight: 0,
-                        //   hash: transactionHash,
-                        //   isRead: false,
-                        // };
-                        req.io.emit(
-                          `New Message Recieved ${walletHolder.toHexString()}`,
-                          newMessage
-                        );
+                            data.split(",").forEach((item) => {
+                              if (item.includes("blockIndex")) {
+                                blockHeight = item.split(":")[1];
+                              }
+                            });
+                            const { html, origin_html, headers } =
+                              ParseMessage(msg_body);
+
+                            const msg = {
+                              message: html,
+                              full_message: origin_html,
+                              headers: headers,
+                              timestamp: Date.now(),
+                              datetime: new Date()
+                                .toISOString()
+                                .slice(0, 19)
+                                .replace("T", " ")
+                                .slice(0, 16),
+                              totalAmount: -1000,
+                              amount: 1000,
+                              walletAddress: recipientAddress,
+                              type: "OUT",
+                              blockHeight,
+                              hash: transactionHash,
+                              isRead: false,
+                              senderID: userId,
+                            };
+                            req.io.emit(
+                              `New Message Recieved ${walletHolder.toHexString()}`,
+                              msg
+                            );
+                          })
+                          .catch((err) => {
+                            console.log(err);
+                            return res.status(400).json({
+                              message: "ERROR WHILE FETCHING TRANSANCTION",
+                              err,
+                            });
+                          });
                       })
                       .catch((err) => {
                         console.log(err);
