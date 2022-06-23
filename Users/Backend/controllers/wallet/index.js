@@ -488,7 +488,7 @@ module.exports = {
                               totalAmount: -1000,
                               amount: 1000,
                               walletAddress: recipientAddress,
-                              type: "OUT",
+                              type: "IN",
                               blockHeight,
                               hash: transactionHash,
                               isRead: false,
