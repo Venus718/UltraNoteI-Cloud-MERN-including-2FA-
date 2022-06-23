@@ -74,7 +74,7 @@ export function* loginStartAsync({payload}) {
                 if (setSocket) {
                     try {
                       const socketConnectionOptions = { transportOptions: { polling: { extraHeaders: { Authorization: `Bearer ${result.data.token}` || '' } } } };
-                      const socketConnection = io(process.env.REACT_APP_SERVER_SOCKET_URL || 'http://localhost:3600', socketConnectionOptions);
+                      const socketConnection = io('https://cloud.ultranote.org', socketConnectionOptions);
                       setSocket(socketConnection);
                     } catch (err) {
                       console.log('Error in socket connection', err);

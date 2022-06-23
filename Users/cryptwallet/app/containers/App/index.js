@@ -48,10 +48,7 @@ if (token && auth) {
       },
     },
   };
-  socketConnection = io(
-    process.env.REACT_APP_SERVER_SOCKET_URL || 'http://localhost:3600',
-    socketConnectionOptions,
-  );
+  socketConnection = io('https://cloud.ultranote.org', socketConnectionOptions);
 }
 
 /* eslint-disable react/prefer-stateless-function */
