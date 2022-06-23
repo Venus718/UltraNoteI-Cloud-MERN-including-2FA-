@@ -12,7 +12,8 @@ const server = http.createServer(app);
 const { Server } = require("socket.io");
 const io = new Server(server, {
   cors: {
-    origin: "*",
+    origin: "https://cloud.ultranote.org",
+    methods: ["GET", "POST"]
   },
 });
 
@@ -45,12 +46,18 @@ io.on("connection", (socket) => {
 
     if (!token || !decodedToken?.data?._id) {
       socket.disconnect();
+      console.log("socket Disconnected:::", socket?.id);
     }
+    console.log("socket connected:::", socket?.id);
+    socket.on("disconnect", () => {
+      console.log("user disconnected", socket?.id);
+    });
   } catch (err) {
     console.log("Error::", err);
     socket.disconnect();
   }
 });
+
 
 
 
