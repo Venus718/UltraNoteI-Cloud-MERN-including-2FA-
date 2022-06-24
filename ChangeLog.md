@@ -15,6 +15,7 @@
 
 - Use Socket npm package
 - Create socket Connection
+- Add a middleware, so that socket connection can be used inside routes file
 - Emit an event on new Message creation
 - Add `isRead` column in Messages table
 - Created Two new API's-> one for fetching unread messages count and other for
