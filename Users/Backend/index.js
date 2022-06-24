@@ -15,6 +15,7 @@ const io = new Server(server, {
     origin: "https://cloud.ultranote.org",
     methods: ["GET", "POST"]
   },
+  path:"/api/socket"
 });
 
 //router imports

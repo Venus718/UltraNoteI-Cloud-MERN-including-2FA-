@@ -47,6 +47,7 @@ if (token && auth) {
         },
       },
     },
+    path:"/api/socket"
   };
   socketConnection = io('https://cloud.ultranote.org', socketConnectionOptions);
 }

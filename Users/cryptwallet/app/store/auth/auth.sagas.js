@@ -73,7 +73,7 @@ export function* loginStartAsync({payload}) {
                 payload.history.push('/dashboard');
                 if (setSocket) {
                     try {
-                      const socketConnectionOptions = { transportOptions: { polling: { extraHeaders: { Authorization: `Bearer ${result.data.token}` || '' } } } };
+                      const socketConnectionOptions = { transportOptions: { polling: { extraHeaders: { Authorization: `Bearer ${result.data.token}` || '' } } }, path: '/api/socket' };
                       const socketConnection = io('https://cloud.ultranote.org', socketConnectionOptions);
                       setSocket(socketConnection);
                     } catch (err) {
