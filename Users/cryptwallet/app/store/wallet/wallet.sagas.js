@@ -1,6 +1,19 @@
 import { toast } from "react-toastify";
 import { all, call, put, takeLatest } from "redux-saga/effects";
-import { addWalletSuccess, updateWalletSuccess, sendMsgSuccess, getTransactionsByWalletAddressSuccess, getWalletSuccess, getMessageSuccess, walletResetSuccess, withdrawWalletSuccess, throwError, downloadAttachmentSuccess, optimizeWalletSuccess } from "./wallet.actions";
+import {
+  addWalletSuccess,
+  updateWalletSuccess,
+  sendMsgSuccess,
+  getTransactionsByWalletAddressSuccess,
+  getWalletSuccess,
+  getMessageSuccess,
+  walletResetSuccess,
+  withdrawWalletSuccess,
+  throwError,
+  downloadAttachmentSuccess,
+  optimizeWalletSuccess,
+  updateUnReadMessageCountSuccess,
+} from './wallet.actions';
 import { getUserSuccess } from '../auth/auth.actions';
 import WalletTypes from "./wallet.types";
 import { clientHttp } from '../../utils/services/httpClient';
@@ -102,6 +115,47 @@ export function* getWalletsAsync({payload}) {
 export function* onGetWallets() {
     yield takeLatest(WalletTypes.GET_ALL_WALLETS, getWalletsAsync);
 }
+
+export function* getUnreadMsgCountAsync({ payload }) {
+  try {
+    const { data } = yield clientHttp.post('/wallets/unread_messages_count', {
+      id: payload,
+    });
+
+    yield put(updateUnReadMessageCountSuccess(data?.unreadMessagesCount || 0));
+  } catch (error) {
+    yield put(throwError(error));
+  }
+}
+
+export function* onGetUnreadMsgCount() {
+  yield takeLatest(
+    WalletTypes.GET_UNREAD_MESSAGE_COUNT,
+    getUnreadMsgCountAsync,
+  );
+}
+
+export function* updateUnreadMsgCountApiAsync({ payload }) {
+    try {
+        const { id, hash } =payload
+        if( id && hash )
+          yield clientHttp.post('/wallets/update_unread_messages_count', {
+           userId: id,
+           hash 
+      });
+    } catch (error) {
+      yield put(throwError(error));
+    }
+  }
+
+
+export function* onUpdateUnreadMsgApi() {
+    yield takeLatest(
+      WalletTypes.UPDATE_API_UNREAD_MESSAGE_COUNT,
+      updateUnreadMsgCountApiAsync
+    );
+  }
+  
 
 export function* getMessagesAsync({payload}) {
     
@@ -209,5 +263,7 @@ export function* walletSagas() {
         call(onDownloadAttachment),
         call(onSendMsgStart),
         call(onOptimizeWallet),
+        call(onGetUnreadMsgCount),
+        call(onUpdateUnreadMsgApi)
     ]);
 };

@@ -12,6 +12,8 @@ router
     .get('/balance/:address', walletCtr.getBalance)
     .post('/my-wallet', walletCtr.getAllWallets)
     .post('/messages', walletCtr.getAllMessages)
+    .post('/unread_messages_count', walletCtr.getUnreadMsgsCount)
+    .post('/update_unread_messages_count', walletCtr.UpdateUnreadMsgsCount)
     .post('/attachment', walletCtr.downloadAttachment)
     .post('/sendmsg', walletCtr.sendMsg)
     .put('/optimize', walletCtr.optimizeWallet)

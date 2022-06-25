@@ -47,9 +47,9 @@ import { compose } from 'redux';
  import './style.scss';
  import { toast } from 'react-toastify';
  import { selectUser, selectAllUsers } from '../../store/auth/auth.selectors';
- import {getMessageStart, downloadAttachmentStart, sendMsgStart, getWalletStart } from '../../store/wallet/wallet.actions';
+ import { getMessageStart, downloadAttachmentStart, sendMsgStart, getWalletStart, updateUnReadMessageCountSuccess, updateUnReadMessageCountAPI, getMessageSuccess } from '../../store/wallet/wallet.actions';
  import {getUser} from '../../store/auth/auth.actions';
- import { selectMessages } from '../../store/wallet/wallet.selectors';
+ import { selectMessages, selectUnreadMessagesCount } from '../../store/wallet/wallet.selectors';
  
  import { isAmount, skipSpace, valueIsNumber } from '../../utils/commonFunctions';
 
@@ -236,6 +236,7 @@ export class Messages extends React.Component {
       const is_prev = index > 0 ? false : true;
       const is_next = index < row.length - 1 ? false : true;
       this.setState({ ...this.state, adModalOpen: true, message: item, is_prev, is_next, message_index: index });
+      this.handleMessageUpdate(item)
     }
   }
 
@@ -251,6 +252,7 @@ export class Messages extends React.Component {
       const is_prev = index > 0 ? false : true;
       const is_next = index < row.length - 1 ? false : true;
       this.setState({ ...this.state, adModalOpen: true, message: item, is_prev, is_next, message_index: index });
+      this.handleMessageUpdate(item)
     }
   }
 
@@ -312,7 +314,34 @@ export class Messages extends React.Component {
     const is_prev = index > 0 ? false : true;
     const is_next = index < row.length - 1 ? false : true;
     this.setState({ ...this.state, adModalOpen: true, message: item, is_prev, is_next, message_index: index });
+    this.handleMessageUpdate(item)
   };
+
+  handleMessageUpdate=(item)=>{
+    const { connectedUser, unreadMsgCount, updateUnReadMsgCount, updateUnReadMessageAPI } = this.props;
+    const selectedRowIndex = this.state.row.findIndex(row => row.hash === item.hash);
+    const selectedRow = { ...this.state.row[selectedRowIndex] };
+    if (selectedRow) {
+      selectedRow.isRead = true;
+      const newRows = [...this.state.row.slice(0, selectedRowIndex), selectedRow, ...this.state.row.slice(selectedRowIndex + 1)];
+      this.props.updateMessages({ msgList: newRows });
+    }
+
+    try {
+      if (connectedUser) {
+        if (item?.isRead === false && unreadMsgCount > 0) {
+          updateUnReadMsgCount(unreadMsgCount - 1);
+          updateUnReadMessageAPI({
+            id: connectedUser.id,
+            hash: item?.hash,
+          });
+        }
+      }
+    } catch (err) {
+      updateUnReadMsgCount(unreadMsgCount + 1);
+      this.props.updateMessages({ msgList: this.state.row });
+    }
+  }
 
   changeAddressHandler = (index) => e => {
     const { addresses } = this.state;
@@ -510,7 +539,7 @@ export class Messages extends React.Component {
     const { connectedUser } = this.props;
     this.setState({
       ...this.state,
-      addr_list: connectedUser.contacts,
+      addr_list: connectedUser?.contacts,
     });
   }
 
@@ -519,7 +548,7 @@ export class Messages extends React.Component {
     if(messages) {
       this.setState({
         row: messages,
-        addr_list: connectedUser.contacts
+        addr_list: connectedUser?.contacts
       });
     }
   }
@@ -549,6 +578,7 @@ export class Messages extends React.Component {
       is_next,
       minimumAmount
     } = this.state;
+    const { connectedUser } = this.props;
 
     const indexOfLastRow = currentPage * rowsPerPage;
     const indexOfFirstRow = indexOfLastRow - rowsPerPage;
@@ -570,7 +600,7 @@ export class Messages extends React.Component {
       </ListItem>
     ));
 
-    const renderAddresses = addresses.map((row,index) => (
+    const renderAddresses = addresses?.map((row,index) => (
       <Grid container spacing={16} key={index}>
         <Grid item xs={10}>
           <TextField
@@ -678,7 +708,7 @@ export class Messages extends React.Component {
                   </TableHead>
                   <TableBody>
                     {currentRows.map((row, index) => (
-                      <TableRow key={index}>
+                      <TableRow key={index}  className={!row.isRead && row?.senderID !== connectedUser.id ? "unreadMsgRow" : ""}  >
                         <TableCell>{row.datetime}</TableCell>
                         <TableCell>{row.type}</TableCell>
                         <TableCell>{row.blockHeight}</TableCell>
@@ -856,14 +886,20 @@ Messages.propTypes = {
 const mapStateToProps = state => ({
   connectedUser: selectUser(state),
   messages: selectMessages(state),
+  unreadMsgCount: selectUnreadMessagesCount(state),
 });
 
-const mapDispatchToProps = (dispatch) => ({
-  getMessages: (payload) => dispatch(getMessageStart(payload)),
+const mapDispatchToProps = dispatch => ({
+  getMessages: payload => dispatch(getMessageStart(payload)),
+  updateMessages: payload => dispatch(getMessageSuccess(payload)),
   getUser: () => dispatch(getUser()),
-  downloadAttachment: (payload) => dispatch(downloadAttachmentStart(payload)),
-  sendMsg: (payload) => dispatch(sendMsgStart(payload)),
-  getWallets: (payload) => dispatch(getWalletStart(payload))
+  downloadAttachment: payload => dispatch(downloadAttachmentStart(payload)),
+  sendMsg: payload => dispatch(sendMsgStart(payload)),
+  getWallets: payload => dispatch(getWalletStart(payload)),
+  updateUnReadMsgCount: payload =>
+    dispatch(updateUnReadMessageCountSuccess(payload)),
+  updateUnReadMessageAPI: payload =>
+    dispatch(updateUnReadMessageCountAPI(payload)),
 });
 
 const withConnect = connect(

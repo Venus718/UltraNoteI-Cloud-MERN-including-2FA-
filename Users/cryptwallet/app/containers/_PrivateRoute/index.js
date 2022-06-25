@@ -12,22 +12,23 @@ import Header from '../Header';
 import BreadCrumbs from '../BreadCrumbs';
 import Footer from '../../components/Footer';
 import { selectAvailableBalance } from '../../store/wallet/wallet.selectors';
+import SocketContext from '../../context/index';
 
 export class PrivateRoute extends Component {
   render() {
     const Component = this.props.component;
     this.props = { ...this.props, component: null };
     const {availableBalance} = this.props;
-    return (
-      <Fragment>
+    return <Fragment>
         <Grid className="headerWrapper">
-          <Header />
+          <SocketContext.Consumer>
+            {({ socket }) => <Header socket={socket} />}
+          </SocketContext.Consumer>
           <BreadCrumbs icon={this.props.icon} title={this.props.title} />
         </Grid>
         <Route {...this.props} render={props => <Component {...props} />} />
         <Footer />
-      </Fragment>
-    );
+      </Fragment>;
   }
 }
 

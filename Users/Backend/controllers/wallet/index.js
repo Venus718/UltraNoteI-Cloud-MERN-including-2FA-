@@ -8,6 +8,7 @@ const User = require("../../models/user");
 const UserActivity = require("../../models/user_activity");
 const user_data = require("../user/user_data");
 const { baseModelName } = require("../../models/user");
+const ParseMessage = require("../../helpers/messages");
 const xuni = new XUNI({
   daemonHost: process.env.XUNI_HOST,
   walletHost: process.env.XUNI_HOST,
@@ -203,12 +204,10 @@ module.exports = {
 
         await UserActivity.create(newUserActivity);
 
-        res
-          .status(200)
-          .json({
-            message: "wallet Created successfully",
-            data: [wallet, userData],
-          });
+        res.status(200).json({
+          message: "wallet Created successfully",
+          data: [wallet, userData],
+        });
       } catch (err) {
         console.log(err);
         res
@@ -329,12 +328,10 @@ module.exports = {
                 .json({ message: "New transaction sent", newTransaction });
             })
             .catch((err) => {
-              res
-                .status(400)
-                .json({
-                  message: "ERROR WHILE SAVING THE TRANSACTION IN THE DATABASE",
-                  err,
-                });
+              res.status(400).json({
+                message: "ERROR WHILE SAVING THE TRANSACTION IN THE DATABASE",
+                err,
+              });
             });
         })
         .catch((err) => {
@@ -450,17 +447,74 @@ module.exports = {
                       anonymity: anonymity,
                       message: msg_body,
                       blockHeight: 0,
+                      isRead: false,
                     };
                     Messages.create(newMessage).catch((err) => {
                       console.log(err);
-                      return res
-                        .status(400)
-                        .json({
+                      return res.status(400).json({
+                        message:
+                          "ERROR WHILE SAVING THE TRANSACTION IN THE DATABASE",
+                        err,
+                      });
+                    });
+
+                    Wallets.findOne({
+                      address: recipientAddress,
+                    })
+                      .then(({ walletHolder }) => {
+                        ultranote
+                          .getTransaction(transactionHash)
+                          .then((data) => {
+                            let blockHeight = 0;
+
+                            data.split(",").forEach((item) => {
+                              if (item.includes("blockIndex")) {
+                                blockHeight = item.split(":")[1];
+                              }
+                            });
+                            const { html, origin_html, headers } =
+                              ParseMessage(msg_body);
+
+                            const msg = {
+                              message: html,
+                              full_message: origin_html,
+                              headers: headers,
+                              timestamp: Date.now(),
+                              datetime: new Date()
+                                .toISOString()
+                                .slice(0, 19)
+                                .replace("T", " ")
+                                .slice(0, 16),
+                              totalAmount: -1000,
+                              amount: 1000,
+                              walletAddress: recipientAddress,
+                              type: "IN",
+                              blockHeight,
+                              hash: transactionHash,
+                              isRead: false,
+                              senderID: userId,
+                            };
+                            req.io.emit(
+                              `New Message Recieved ${walletHolder.toHexString()}`,
+                              msg
+                            );
+                          })
+                          .catch((err) => {
+                            console.log(err);
+                            return res.status(400).json({
+                              message: "ERROR WHILE FETCHING TRANSANCTION",
+                              err,
+                            });
+                          });
+                      })
+                      .catch((err) => {
+                        console.log(err);
+                        return res.status(400).json({
                           message:
-                            "ERROR WHILE SAVING THE TRANSACTION IN THE DATABASE",
+                            "ERROR WHILE SENDING NEW MESSAGE NOTIFICATION",
                           err,
                         });
-                    });
+                      });
                   });
               })
               .catch((err) => {
@@ -677,6 +731,8 @@ module.exports = {
                     type: transaction.amount > 0 ? "IN" : "OUT",
                     blockHeight: transaction.blockIndex,
                     hash: transaction.transactionHash,
+                    isRead: db_msg?.isRead === false ? db_msg?.isRead : true,
+                    senderID: db_msg?.senderID,
                   });
                 }
               }
@@ -774,6 +830,8 @@ module.exports = {
                   type: transaction.amount > 0 ? "IN" : "OUT",
                   blockHeight: transaction.blockIndex,
                   hash: transaction.transactionHash,
+                  isRead: db_msg?.isRead === false ? db_msg?.isRead : true,
+                  senderID: db_msg?.senderID,
                 });
               }
             }
@@ -797,6 +855,66 @@ module.exports = {
       res.status(500).json(error);
     }
   },
+
+  async getUnreadMsgsCount(req, res) {
+    try {
+      const userId = req.body.id;
+      const wallets = await Wallets.find({ walletHolder: userId });
+
+      let unreadMessagesCount = 0;
+
+      for (const wallet of wallets) {
+        const count = await Messages.countDocuments({
+          isRead: false,
+          recipientAdress: wallet.address,
+        });
+        unreadMessagesCount += count;
+      }
+      res.status(200).json({ unreadMessagesCount });
+    } catch (err) {
+      console.log("*".repeat(50), "Error: ", error);
+      res.status(500).json(error);
+    }
+  },
+
+  async UpdateUnreadMsgsCount(req, res) {
+    try {
+      const { userId, hash } = req.body;
+
+      // Reset All Unread Messages Count to 0
+      if (!hash) {
+        const wallets = await Wallets.find({ walletHolder: userId });
+
+        for (const wallet of wallets) {
+          await Messages.updateMany(
+            { recipientAdress: wallet.address },
+            {
+              $set: {
+                isRead: true,
+              },
+            }
+          );
+        }
+      } else {
+        await Messages.updateOne(
+          { hash },
+          {
+            $set: {
+              isRead: true,
+            },
+          }
+        );
+      }
+
+      res
+        .status(200)
+        .json({ success: true, message: "Count Sucessfully Updated" });
+    } catch (err) {
+      console.log("*".repeat(50), "Error: ", error);
+      res.status(500).json(error);
+    }
+  },
+
   async getTransactions(req, res) {
     // try {
     const walletAddress = req.params.address;

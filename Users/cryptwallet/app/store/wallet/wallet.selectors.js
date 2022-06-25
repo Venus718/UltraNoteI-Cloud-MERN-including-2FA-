@@ -14,6 +14,10 @@ export const selectMessages = createSelector(
   [walletSelector],
   (wallets) => wallets.messages
 );
+export const selectUnreadMessagesCount = createSelector(
+  [walletSelector],
+  (wallets) => wallets.unreadMessagesCount
+);
 export const selectAvailableBalance = createSelector(
   [walletSelector],
   (wallets) => wallets.availableBalance

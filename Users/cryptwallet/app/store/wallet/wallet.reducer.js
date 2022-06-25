@@ -9,7 +9,9 @@ const INITIAL_STATE = {
     selectedWallet: {},
     transactions: {deposit: [], withdraw: []},
     error: null,
-    messages: []
+    messages: [],
+    unreadMessagesCount:0,
+    senderID:""
 };
 
 
@@ -42,6 +44,11 @@ const walletReducer = (state = INITIAL_STATE, action) => {
             return {
                 ...state,
                 messages: action.payload.msgList
+            };
+        case WalletTypes.UPDATE_UNREAD_MESSAGE_COUNT_SUCCESS:
+            return {
+                ...state,
+                unreadMessagesCount:action.payload
             };
         case WalletTypes.SEND_MSG_SUCCESS:
             return {

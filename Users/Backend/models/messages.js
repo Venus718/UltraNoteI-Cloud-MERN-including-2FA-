@@ -13,7 +13,8 @@ const MessagesSchema = mongoose.Schema({
     hash: {type: String, required: true},
     anonymity: {type: Number, required: true},
     message: {type: String},
-    blockHeight: {type: Number}
+    blockHeight: {type: Number},
+    isRead: {type: Boolean}
 });
 
 module.exports = mongoose.model('Messages', MessagesSchema);

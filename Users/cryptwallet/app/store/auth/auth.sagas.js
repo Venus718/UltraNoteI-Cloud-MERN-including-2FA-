@@ -1,10 +1,26 @@
 import { toast } from 'react-toastify';
+import { io } from 'socket.io-client';
 import cookie from 'js-cookie';
 import { takeLatest, call, put, all } from 'redux-saga/effects';
 import { clientHttp } from '../../utils/services/httpClient';
-import { loginFailure, signupFailure, signupSuccess, loginSuccess, enableTwoAuthSuccess, sendTwoCodeFailure, sendTwoCodeSuccess,
-         updateProfileSuccess, updateProfileFailure, depositAndWithdrawSuccess, authResetSuccess, addContactSuccess, 
-         deleteContactSuccess, userActivitySuccess, throwError, changeCurrencySuccess } from './auth.actions';
+import {
+  loginFailure,
+  signupFailure,
+  signupSuccess,
+  loginSuccess,
+  enableTwoAuthSuccess,
+  sendTwoCodeFailure,
+  sendTwoCodeSuccess,
+  updateProfileSuccess,
+  updateProfileFailure,
+  depositAndWithdrawSuccess,
+  authResetSuccess,
+  addContactSuccess,
+  deleteContactSuccess,
+  userActivitySuccess,
+  throwError,
+  changeCurrencySuccess,
+} from './auth.actions';
 
 import AuthTypes from './auth.types';
 
@@ -35,6 +51,7 @@ export function* onSignupStart() {
 
 export function* loginStartAsync({payload}) {
     try {
+        const { setSocket } = payload;
         const requestData = {
             mail: payload.email,
             password: payload.password
@@ -54,8 +71,15 @@ export function* loginStartAsync({payload}) {
                 localStorage.setItem('token', result.data.token);
                 toast.success('Successfully login');
                 payload.history.push('/dashboard');
-                
-                
+                if (setSocket) {
+                    try {
+                      const socketConnectionOptions = { transportOptions: { polling: { extraHeaders: { Authorization: `Bearer ${result.data.token}` || '' } } }, path: '/api/socket' };
+                      const socketConnection = io('https://cloud.ultranote.org', socketConnectionOptions);
+                      setSocket(socketConnection);
+                    } catch (err) {
+                      console.log('Error in socket connection', err);
+                    }
+                }
             }
         }
     }

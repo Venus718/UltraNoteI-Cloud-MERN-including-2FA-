@@ -15,7 +15,7 @@ import injectSaga from 'utils/injectSaga';
 import injectReducer from 'utils/injectReducer';
 import Image from 'components/uiStyle/Images';
 import { Grid, List, ListItem } from '@material-ui/core';
-import logo from 'images/logo.png'; 
+import logo from 'images/logo.png';
 
 import './style.scss';
 import Typography from '@material-ui/core/Typography';
@@ -26,6 +26,7 @@ import Button from '@material-ui/core/Button';
 import Hidden from '@material-ui/core/Hidden';
 import IconButton from '@material-ui/core/IconButton';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
+import Badge from '@material-ui/core/Badge';
 
 import MenuList from '@material-ui/core/MenuList';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -33,6 +34,10 @@ import cookie from 'js-cookie';
 import saga from './saga';
 import reducer from './reducer';
 import makeSelectHeader from './selectors';
+import {
+  selectUnreadMessagesCount,
+  selectMessages,
+} from '../../store/wallet/wallet.selectors';
 import FontAwesome from '../../components/uiStyle/FontAwesome';
 
 import UserDefaultImage from '../../images/author/user-image.jpg';
@@ -40,17 +45,23 @@ import Logo from '../../components/Logo';
 import { toast } from 'react-toastify';
 import Redirect from 'react-router-dom/es/Redirect';
 import { selectUser } from '../../store/auth/auth.selectors';
-import { getWalletStart, walletReset } from '../../store/wallet/wallet.actions';
+import {
+  getWalletStart,
+  getMessageSuccess,
+  walletReset,
+  getUnreadMsgCountStart,
+  updateUnReadMessageCountSuccess,
+} from '../../store/wallet/wallet.actions';
 import { authReset } from '../../store/auth/auth.actions';
 
 /* eslint-disable react/prefer-stateless-function */
 class Header extends React.Component {
-
   state = {
     anchorEl: null,
     open: false,
     placement: null,
     sideMenu: false,
+    newMessageArrived: null,
   };
 
   handleClick = placement => event => {
@@ -82,15 +93,39 @@ class Header extends React.Component {
   };
 
   logOutHandler = () => {
-    
     cookie.remove('Auth');
 
-    toast.warn("You have been loged out!");
+    toast.warn('You have been loged out!');
     this.setState({ state: this.state });
     this.props.walletReset();
     this.props.authReset();
+    this.props.socket?.disconnect();
   };
-  
+
+  componentDidUpdate() {
+    if (this.state.newMessageArrived) {
+      const { updateUnReadMsgCount, unreadMsgCount, updateMessages, messages } = this.props;
+      updateUnReadMsgCount(unreadMsgCount + 1);
+
+      if (window.location.pathname === '/messages') updateMessages({
+          msgList: [this.state.newMessageArrived, ...messages],
+        });
+      this.setState({ newMessageArrived: null });
+    }
+  }
+
+  componentWillUnmount() {
+    this.props.socket?.off('New Message Recieved', () => {});
+  }
+
+  componentDidMount() {
+    const { connectedUser, socket, getUnreadMsgCount } = this.props;
+    if (connectedUser) getUnreadMsgCount(connectedUser?.id);
+    socket?.on(`New Message Recieved ${connectedUser?.id}`, data => {
+      this.setState({ newMessageArrived: data });
+      toast.success('You have received a new message!');
+    });
+  }
 
   render() {
     const { anchorEl, open, placement, sideMenu } = this.state;
@@ -103,11 +138,20 @@ class Header extends React.Component {
     return (
       <Grid className="mainHeadeArea">
         <Grid container alignItems="center" className="container">
-          <Grid item xs={12} sm={4} md={2} >
-            <div style={{display:"flex",flexDirection:"row"}}>
-            <Logo logo={logo} alt="CryptWallet" link="/dashboard" /> <span style={{fontSize:"20px",fontWeight:"bold",color:"white",marginTop:"5px"}}>UltraNote</span> 
+          <Grid item xs={12} sm={4} md={2}>
+            <div style={{ display: 'flex', flexDirection: 'row' }}>
+              <Logo logo={logo} alt="CryptWallet" link="/dashboard" />{' '}
+              <span
+                style={{
+                  fontSize: '20px',
+                  fontWeight: 'bold',
+                  color: 'white',
+                  marginTop: '5px',
+                }}
+              >
+                UltraNote
+              </span>
             </div>
-
           </Grid>
           <Hidden smDown>
             <Grid item md={8}>
@@ -128,7 +172,14 @@ class Header extends React.Component {
                   <NavLink to="/address-book">Address Book</NavLink>
                 </ListItem>
                 <ListItem className="menuItem">
-                  <NavLink to="/messages">Messages</NavLink>
+                  <NavLink to="/messages">
+                    <Badge
+                      badgeContent={this.props.unreadMsgCount}
+                      color="primary"
+                    >
+                      Messages
+                    </Badge>
+                  </NavLink>
                 </ListItem>
                 <ListItem className="menuItem">
                   <NavLink to="/billing">Billing</NavLink>
@@ -146,10 +197,16 @@ class Header extends React.Component {
                   onClick={this.handleClick('bottom-end')}
                 >
                   <Typography className="userImage" component="div">
-                    <Image src={connectedUser.image ? connectedUser.image : UserDefaultImage} />
+                    <Image
+                      src={
+                        connectedUser.image
+                          ? connectedUser.image
+                          : UserDefaultImage
+                      }
+                    />
                   </Typography>
                   <Typography className="userName" component="span">
-                     {connectedUser.firstName + " " + connectedUser.lastName}
+                    {connectedUser.firstName + ' ' + connectedUser.lastName}
                   </Typography>
                   <FontAwesome name={!open ? 'caret-down' : 'caret-up'} />
                 </Button>
@@ -243,15 +300,20 @@ class Header extends React.Component {
   }
 }
 
-
 const mapStateToProps = state => ({
   header: makeSelectHeader(state),
   connectedUser: selectUser(state),
+  unreadMsgCount: selectUnreadMessagesCount(state),
+  messages: selectMessages(state),
 });
 
-const mapDispatchToProps = (dispatch) =>  ({
-  walletReset: (payload) => dispatch(walletReset(payload)),
-  authReset: (payload) => dispatch(authReset(payload))
+const mapDispatchToProps = dispatch => ({
+  walletReset: payload => dispatch(walletReset(payload)),
+  authReset: payload => dispatch(authReset(payload)),
+  getUnreadMsgCount: payload => dispatch(getUnreadMsgCountStart(payload)),
+  updateUnReadMsgCount: payload =>
+    dispatch(updateUnReadMessageCountSuccess(payload)),
+  updateMessages: payload => dispatch(getMessageSuccess(payload)),
 });
 
 const withConnect = connect(
