@@ -12,7 +12,7 @@ const server = http.createServer(app);
 const { Server } = require("socket.io");
 const io = new Server(server, {
   cors: {
-    origin: "https://cloud.ultranote.org",
+    origin: "*",
     methods: ["GET", "POST"]
   },
   path:"/api/socket"

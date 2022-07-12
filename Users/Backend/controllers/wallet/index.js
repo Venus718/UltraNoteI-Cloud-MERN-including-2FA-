@@ -467,9 +467,9 @@ module.exports = {
                           .then((data) => {
                             let blockHeight = 0;
 
-                            data.split(",").forEach((item) => {
-                              if (item.includes("blockIndex")) {
-                                blockHeight = item.split(":")[1];
+                            data?.split(",")?.forEach((item) => {
+                              if (item?.includes("blockIndex")) {
+                                blockHeight = item?.split(":")[1]||0;
                               }
                             });
                             const { html, origin_html, headers } =
