@@ -180,7 +180,7 @@ export class SingleWalletDeposite extends React.Component {
   };
 
   render() {
-    const { address, qr_code, showAddress } = this.state;
+    const { address, qr_code, showAddress, rwModalOpen, wallet_name } = this.state;
 
     const AddressTable = (
       <Grid className="addressTable">
