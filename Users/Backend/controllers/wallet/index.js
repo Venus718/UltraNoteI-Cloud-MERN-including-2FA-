@@ -225,11 +225,13 @@ module.exports = {
       const newAddress = resRPC.address;
       const id = req.body.id;
       const userId = req.body.user_id;
+      const name = req.body.wallet_name;
       const ip = requestIp.getClientIp(req);
       const geo = geoip.lookup(ip) || { city: "", country: "" };
 
       const updateWallet = {
         address: newAddress,
+        name: name,
         updatedAt: Date.now(),
       };
       Wallet.updateOne({ _id: id }, { $set: updateWallet })
