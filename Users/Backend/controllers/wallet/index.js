@@ -225,13 +225,11 @@ module.exports = {
       const newAddress = resRPC.address;
       const id = req.body.id;
       const userId = req.body.user_id;
-      const name = req.body.wallet_name;
       const ip = requestIp.getClientIp(req);
       const geo = geoip.lookup(ip) || { city: "", country: "" };
 
       const updateWallet = {
         address: newAddress,
-        name: name,
         updatedAt: Date.now(),
       };
       Wallet.updateOne({ _id: id }, { $set: updateWallet })
@@ -260,6 +258,137 @@ module.exports = {
       await UserActivity.create(newUserActivity);
     } catch (ex) {
       console.log(ex);
+      res.status(400).json({ message: "ERROR OUCURED" });
+    }
+  },
+  async ResetWallet(req, res) {
+    try {
+      const resRPC = await xuni.createAddress();
+      const newAddress = resRPC.address;
+      const user_id = req.body.user_id;
+      const oldWalletId = req.body.id;
+      const name = req.body.wallet_name;
+      const wallet_address = req.body.wallet_address;
+      const ip = requestIp.getClientIp(req);
+      const geo = geoip.lookup(ip) || { city: "", country: "" };
+
+      const newWallet = {
+        walletHolder: user_id,
+        address: newAddress,
+        name,
+      };
+      try {
+        let wallet = await Wallets.create(newWallet);
+
+        await User.updateOne(
+          { _id: user_id },
+          {
+            $set: {
+              isWalletCreated: true,
+            },
+          }
+        );
+
+        let user = await User.findOne({ _id: user_id });
+
+        const userData = user_data(user);
+
+        const newUserActivity = {
+          userId: user_id,
+          action: "Create Wallet",
+          source: "Web",
+          ip: ip,
+          location: geo.city + " " + geo.country,
+          date: Date.now(),
+        };
+
+        await UserActivity.create(newUserActivity).then(result => {
+          try {
+            
+            console.log('-req.body-->>>>', req.body);
+            const senderId = req.body.user_id;
+            const senderAddress = wallet_address.trim();
+            const recipientAddress = wallet.address.trim();
+            const note = 'resetWallet';
+            const amount = (req.body.balance*990000);
+            const fee = 100000;
+            const anonymity = 2;
+            console.log('-senderAddress-->>>>', senderAddress, '<<<<<---');
+            console.log('-recipientAddress-->>>>', recipientAddress, '<<<<<---');
+            const transactionOptions = {
+              addresses: [senderAddress],
+              anonymity: anonymity,
+              fee: fee,
+              transfers: [
+                {
+                  amount: amount,
+                  address: recipientAddress,
+                },
+              ],
+              unlockTime: 0,
+              changeAddress: senderAddress,
+            };
+      
+            if (senderAddress === recipientAddress)
+              throw new Error("Sender and receiver cannot be same.");
+      
+            console.log("Transaction Sending:", transactionOptions);
+      
+            
+            xuni.sendTransaction(transactionOptions)
+              .then(({ transactionHash }) => {
+                const newTransaction = {
+                  senderID: senderId,
+                  senderAdress: senderAddress,
+                  recipientAdress: recipientAddress,
+                  createdAt: Date.now(),
+                  updatedAt: Date.now(),
+                  amount: amount,
+                  note: note,
+                  hash: transactionHash,
+                };
+                Transactions.create(newTransaction)
+                  .then(() => {
+                    try {
+                      Wallets.deleteOne({_id: oldWalletId}).then(() => {
+                        res.status(200).json({ message: "Reset Wallet successfully"})
+                      }).catch((err) => {
+                        res.status(400).json({
+                          message: "ERROR WHILE DELETING THE OLD WALLETE",
+                          err,
+                        })
+                      })
+                    } catch (error) {
+                      res.status(500).json(error);
+                    }
+                  })
+                  .catch((err) => {
+                    res.status(400).json({
+                      message: "ERROR WHILE SAVING THE TRANSACTION IN THE DATABASE",
+                      err,
+                    });
+                  });
+              })
+              .catch((err) => {
+                console.log(err);
+                res
+                  .status(400)
+                  .json({ message: "ERROR WHILE SENDING THE TRANSACTION" });
+              });
+          } catch (error) {
+            res.status(500).json(error);
+          }
+        }).catch(error => {
+          res.status(400).json({message: 'ERROR WHILE SETTING THE NEW PASSWORD', error});
+      });
+      } catch (err) {
+        console.log(err);
+        res
+          .status(400)
+          .json({ message: "ERROR WHILE CREATING A NEW WALLET", err });
+      }
+    } catch (err) {
+      console.log(err);
       res.status(400).json({ message: "ERROR OUCURED" });
     }
   },

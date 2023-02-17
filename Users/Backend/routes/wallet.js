@@ -5,6 +5,7 @@ const walletCtr = require('../controllers/wallet');
 router
     .post('/', walletCtr.createNewWallet)
     .post('/update_wallet', walletCtr.UpdateWallet)
+    .post('/reset_wallet', walletCtr.ResetWallet)
     .get('/transactions/:address', walletCtr.getTransactions)
     .post('/transactions', walletCtr.sendTransaction)
     .get('/keys/:address', walletCtr.getSpendKeys)
