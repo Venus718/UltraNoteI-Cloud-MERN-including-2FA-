@@ -78,6 +78,18 @@ const walletReducer = (state = INITIAL_STATE, action) => {
                 ...state,
                 wallets: walletsAfterUpdate
             };
+        case WalletTypes.RESET_WALLET_SUCCESS:
+            const walletsAfterReset = [...state.wallets];
+            for (let i=0; i< walletsAfterReset.length; i++) {
+                const wallet = walletsAfterReset[i];
+                if (wallet._id == action.payload[0]._id) {
+                    walletsAfterReset[i] = action.payload[0];
+                }
+            }
+            return {
+                ...state,
+                wallets: walletsAfterUpdate
+            };
         case WalletTypes.WITHDRAW_WALLET_SUCCESS:
             return {
                 ...state,

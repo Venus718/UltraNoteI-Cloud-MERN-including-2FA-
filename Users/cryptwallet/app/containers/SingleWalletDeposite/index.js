@@ -13,7 +13,7 @@ import { createStructuredSelector } from 'reselect';
 import { compose } from 'redux';
 import CopyAction from '../../images/icon/action/copy-action.png';
 import { getUser } from "../../store/auth/auth.actions";
-import { updateWalletStart } from "../../store/wallet/wallet.actions";
+import { resetWalletStart } from "../../store/wallet/wallet.actions";
 
 import { toast } from 'react-toastify';
 
@@ -158,7 +158,9 @@ export class SingleWalletDeposite extends React.Component {
     const newWallet = {
       id: this.props.row.id,
       wallet_name: this.state.wallet_name,
-      user_id: this.props.row.walletHolder
+      wallet_address: this.state.address,
+      user_id: this.props.row.walletHolder,
+      balance: this.props.row.balance
     };
     const {resetWallet} = this.props;
     // console.log('--getUser------->>',getUser,'<<<-----------');
@@ -296,7 +298,7 @@ const mapStateToProps = createStructuredSelector({
 
 const mapDispatchToProps = (dispatch) => ({
   getUser: () => dispatch(getUser()),
-  resetWallet: (payload) => dispatch(updateWalletStart(payload)),
+  resetWallet: (payload) => dispatch(resetWalletStart(payload)),
 });
 
 

@@ -3,6 +3,7 @@ import { all, call, put, takeLatest } from "redux-saga/effects";
 import {
   addWalletSuccess,
   updateWalletSuccess,
+  resetWalletSuccess,
   sendMsgSuccess,
   getTransactionsByWalletAddressSuccess,
   getWalletSuccess,
@@ -58,6 +59,26 @@ export function* updateWalletAsync({payload}) {
 
 export function* onUpdateWallet() {
     yield takeLatest(WalletTypes.UPDATE_WALLET_START, updateWalletAsync);
+}
+
+export function* resetWalletAsync({payload}) {
+
+    try {
+        const result = yield clientHttp.post(`/wallets/reset_wallet`, payload);
+        if (result && result.data) {
+            toast.success('Wallet reseted successfully !!');
+            yield put(resetWalletSuccess(result.data.wallet));
+        }
+    }
+    catch(error) {
+        console.log(error);
+        yield put(throwError(error));
+    }
+}
+
+
+export function* onResetWallet() {
+    yield takeLatest(WalletTypes.RESET_WALLET_START, resetWalletAsync);
 }
 
 export function* onOptimizeWallet() {
@@ -255,6 +276,7 @@ export function* walletSagas() {
     yield all([
         call(onAddNewWallet),
         call(onUpdateWallet),
+        call(onResetWallet),
         call(onGetWallets),
         call(onWithdrawWallet),
         call(onGetTransactionsByWalletAddress),
