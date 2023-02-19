@@ -778,8 +778,8 @@ module.exports = {
         const walletAddress = wallet.address;
 
         const opts = {
-          firstBlockIndex: 203000,
-          blockCount: 500000,
+          firstBlockIndex: 300000,
+          blockCount: 900000,
           addresses: [walletAddress],
         };
 
@@ -1051,8 +1051,8 @@ module.exports = {
     const walletAddress = req.params.address;
 
     const opts = {
-      firstBlockIndex: 203000,
-      blockCount: 5000000,
+      firstBlockIndex: 300000,
+      blockCount: 9000000,
       addresses: [walletAddress],
     };
 
