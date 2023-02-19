@@ -10,6 +10,7 @@
 - Add an Api call to get unread message count on User login
 - Add an Api call on reading an unread message
 - Change states on reading any unread message
+- Added reset option
 
 **Back-End Changes**
 
