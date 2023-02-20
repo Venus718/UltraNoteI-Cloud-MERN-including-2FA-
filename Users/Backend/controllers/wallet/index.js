@@ -1052,7 +1052,7 @@ module.exports = {
 
     const opts = {
       firstBlockIndex: 300000,
-      blockCount: 9000000,
+      blockCount: 900000,
       addresses: [walletAddress],
     };
 
