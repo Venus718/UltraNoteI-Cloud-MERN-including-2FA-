@@ -14,7 +14,7 @@ function reconnectXUNI() {
     daemonHost: settings.rpcHost || process.env.XUNI_HOST || "http://127.0.0.1", 
     walletHost: settings.rpcHost || process.env.XUNI_HOST || "http://127.0.0.1", 
     daemonRpcPort: settings.daemonRpcPort || process.env.DAEMONRPC_PORT || "43000",
-    walletRpcPort: settings.walletRpcPort || process.env.XUNI_PORT || "8070",
+    walletRpcPort: settings.walletRpcPort || process.env.XUNI_PORT || "9090",
     rpcUser: settings.rpcUser || process.env.RPC_USER,
     rpcPassword: settings.rpcPassword || process.env.RPC_PASSWORD
     });
@@ -43,8 +43,8 @@ module.exports = {
     const walletAddress = req.params.address;
 
     const opts = {
-      firstBlockIndex: 203000,
-      blockCount: 5000000,
+      firstBlockIndex: 300000,
+      blockCount: 900000,
       addresses: [walletAddress],
     };
 
