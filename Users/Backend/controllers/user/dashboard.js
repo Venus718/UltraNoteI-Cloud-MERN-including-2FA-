@@ -54,8 +54,8 @@ module.exports = {
           walletsAddresses.push(wallet.address);
         }
         const opts = {
-          firstBlockIndex: 203000,
-          blockCount: 500000,
+          firstBlockIndex: 300000,
+          blockCount: 900000,
           addresses: walletsAddresses,
         };
         const totalTransactions = await xuni.getTransactions(opts);
