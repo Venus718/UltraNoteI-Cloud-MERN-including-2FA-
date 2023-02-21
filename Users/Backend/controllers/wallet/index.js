@@ -39,6 +39,7 @@ const ultranote = new UltraNote(
 );
 
 var fs = require("fs");
+const UltraLogger = require("../../helpers/logger");
 
 module.exports = {
   async getWalletStatus(req, res) {
@@ -53,11 +54,14 @@ module.exports = {
 
   async getAllWallets(req, res) {
     const userId = req.body.id;
+    const logSerial = req.logSerial
+    UltraLogger.debug(logSerial,'start get all wallets',userId)
     let unconfirmedBalance = 0;
     let availableBalance = 0;
     let usdAvailabeBalance = 0;
     let usdUnconfirmedBalance = 0;
     let walletsList = [];
+
     try {
       const wallets = await Wallets.find({ walletHolder: userId });
       for (let i = 0; i < wallets.length; i++) {
@@ -770,6 +774,8 @@ module.exports = {
   async getAllMessages(req, res) {
     const userId = req.body.id;
     let msgList = [];
+    const logSerial = req.logSerial
+    UltraLogger.debug(logSerial,'start get all messages',userId)
 
     try {
       const wallets = await Wallets.find({ walletHolder: userId });
@@ -1049,7 +1055,8 @@ module.exports = {
   async getTransactions(req, res) {
     // try {
     const walletAddress = req.params.address;
-
+    const logSerial = req.logSerial
+    UltraLogger.debug(logSerial,'start get transaction',walletAddress)
     const opts = {
       firstBlockIndex: 300000,
       blockCount: 900000,
@@ -1057,6 +1064,7 @@ module.exports = {
     };
 
     const data = await xuni.getTransactions(opts);
+    UltraLogger.debug(logSerial,'get transactions from xuni:'+ JSON.stringify(data), walletAddress)
     const totalTransactions = [];
 
     for (let i = 0; i < data.items.length; i++) {
@@ -1118,6 +1126,7 @@ module.exports = {
           deposit.push(transaction);
       });
     }
+    UltraLogger.debug(logSerial,'history transactions return:'+JSON.stringify({deposit,withdraw}),walletAddress)
     res.status(200).json({ deposit, withdraw });
   },
   async getBalance(req, res) {

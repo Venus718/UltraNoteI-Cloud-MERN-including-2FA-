@@ -3,6 +3,7 @@ const BodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const jwt = require("jsonwebtoken");
+const moment = require("moment")
 require("dotenv").config();
 
 //defining app as the main Express Handler
@@ -31,6 +32,12 @@ app.use(function (req, res, next) {
   req.io = io;
   next();
 });
+app.use(function(req,res,next){
+  req.logSerial = 'UltraNote-' + moment().format('YYYMMDD-hhmmss') + '-' +Math.floor(
+    Math.random() * (Math.pow(10, 5) - Math.pow(10, 4) - 1) + Math.pow(10, 4)
+  )
+  next()
+})
 
 //routing
 app.use("/api", authRoute);
