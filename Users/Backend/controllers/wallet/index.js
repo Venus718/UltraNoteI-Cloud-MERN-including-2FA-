@@ -39,6 +39,7 @@ const ultranote = new UltraNote(
 );
 
 var fs = require("fs");
+const UltraLogger = require("../../helpers/logger");
 
 module.exports = {
   async getWalletStatus(req, res) {
@@ -51,8 +52,10 @@ module.exports = {
     }
   },
 
-  async getAllWallets(req, res) {
+  async getAllWallets(req, res,next) {
     const userId = req.body.id;
+    const logSerial = req.logSerial
+    UltraLogger.debug(logSerial,'start get all wallets',userId)
     let unconfirmedBalance = 0;
     let availableBalance = 0;
     let usdAvailabeBalance = 0;
@@ -85,6 +88,7 @@ module.exports = {
       }
     } catch (ex) {
       console.log(ex);
+      next(ex)
     }
 
     let data;
@@ -159,8 +163,11 @@ module.exports = {
       }
     } catch (error) {
       console.log("*".repeat(50), "Error: ", error);
+      next(error)
       res.status(500).json(error);
+      
     }
+
   },
 
   async createNewWallet(req, res) {
@@ -767,9 +774,11 @@ module.exports = {
     );
   },
 
-  async getAllMessages(req, res) {
+  async getAllMessages(req, res,next) {
     const userId = req.body.id;
     let msgList = [];
+    const logSerial = req.logSerial
+    UltraLogger.debug(logSerial,'start get all messages',userId)
 
     try {
       const wallets = await Wallets.find({ walletHolder: userId });
@@ -778,8 +787,8 @@ module.exports = {
         const walletAddress = wallet.address;
 
         const opts = {
-          firstBlockIndex: 300000,
-          blockCount: 900000,
+          firstBlockIndex: 700000,
+          blockCount: 400000,
           addresses: [walletAddress],
         };
 
@@ -983,6 +992,7 @@ module.exports = {
       }
     } catch (error) {
       console.log("*".repeat(50), "Error: ", error);
+      next(error)
       res.status(500).json(error);
     }
   },
@@ -1008,7 +1018,7 @@ module.exports = {
     }
   },
 
-  async UpdateUnreadMsgsCount(req, res) {
+  async UpdateUnreadMsgsCount(req, res,next) {
     try {
       const { userId, hash } = req.body;
 
@@ -1042,84 +1052,94 @@ module.exports = {
         .json({ success: true, message: "Count Sucessfully Updated" });
     } catch (err) {
       console.log("*".repeat(50), "Error: ", error);
+      next(err)
       res.status(500).json(error);
     }
   },
 
-  async getTransactions(req, res) {
-    // try {
-    const walletAddress = req.params.address;
+  async getTransactions(req, res,next) {
+    try{
+      const walletAddress = req.params.address;
+      const logSerial = req.logSerial
+      UltraLogger.debug(logSerial,'start get transaction',walletAddress)
+      const opts = {
+        firstBlockIndex: 700000,
+        blockCount: 400000,
+        addresses: [walletAddress],
+      };
 
-    const opts = {
-      firstBlockIndex: 300000,
-      blockCount: 900000,
-      addresses: [walletAddress],
-    };
+      const data = await xuni.getTransactions(opts);
+      UltraLogger.debug(logSerial,'get transactions from xuni:'+ JSON.stringify(data), walletAddress)
+      const totalTransactions = [];
 
-    const data = await xuni.getTransactions(opts);
-    const totalTransactions = [];
+      for (let i = 0; i < data.items.length; i++) {
+        const item = data.items[i];
+        for (let j = 0; j < item.transactions.length; j++) {
+          const transaction = item.transactions[j];
 
-    for (let i = 0; i < data.items.length; i++) {
-      const item = data.items[i];
-      for (let j = 0; j < item.transactions.length; j++) {
-        const transaction = item.transactions[j];
-
-        var message = [];
-        try {
-          const transaction_message = await ultranote.getTransaction(
-            transaction.transactionHash
-          );
-          var message_list = transaction_message.split('"message":"');
-          for (let k = 0; k < message_list.length; k++) {
-            var msg_list = message_list[k].split('","type"');
-            if (k > 0 && msg_list.length > 0 && msg_list[0].length > 0) {
-              message.push(msg_list[0]);
+          var message = [];
+          try {
+            const transaction_message = await ultranote.getTransaction(
+              transaction.transactionHash
+            );
+            var message_list = transaction_message.split('"message":"');
+            for (let k = 0; k < message_list.length; k++) {
+              var msg_list = message_list[k].split('","type"');
+              if (k > 0 && msg_list.length > 0 && msg_list[0].length > 0) {
+                message.push(msg_list[0]);
+              }
             }
+            transaction.message = message;
+          } catch (ex) {
+            console.log(ex);
           }
-          transaction.message = message;
-        } catch (ex) {
-          console.log(ex);
+
+          const recipientAddress = transaction.transfers[0].address;
+          var senderAddress = transaction.transfers[1].address;
+
+          if (senderAddress == "") {
+            senderAddress = uniqid();
+          }
+
+          const transactionFromDb = await Transactions.findOne({
+            hash: transaction.transactionHash,
+          });
+
+          const note = transactionFromDb ? transactionFromDb.note : "";
+
+          transactionObj = {
+            senderAdress: senderAddress,
+            recipientAdress: recipientAddress,
+            updatedAt: new Date(transaction.timestamp * 1000).toISOString(),
+            amount: Math.abs(transaction.transfers[0].amount),
+            note,
+            hash: transaction.transactionHash,
+          };
+          totalTransactions.push(transactionObj);
         }
-
-        const recipientAddress = transaction.transfers[0].address;
-        var senderAddress = transaction.transfers[1].address;
-
-        if (senderAddress == "") {
-          senderAddress = uniqid();
-        }
-
-        const transactionFromDb = await Transactions.findOne({
-          hash: transaction.transactionHash,
-        });
-
-        const note = transactionFromDb ? transactionFromDb.note : "";
-
-        transactionObj = {
-          senderAdress: senderAddress,
-          recipientAdress: recipientAddress,
-          updatedAt: new Date(transaction.timestamp * 1000).toISOString(),
-          amount: Math.abs(transaction.transfers[0].amount),
-          note,
-          hash: transaction.transactionHash,
-        };
-        totalTransactions.push(transactionObj);
       }
-    }
 
-    const transactions = totalTransactions;
-    const deposit = [];
-    const withdraw = [];
-    if (transactions && transactions.length) {
-      transactions.forEach((transaction) => {
-        if (transaction.senderAdress === walletAddress)
-          withdraw.push(transaction);
+      const transactions = totalTransactions;
+      const deposit = [];
+      const withdraw = [];
+      if (transactions && transactions.length) {
+        transactions.forEach((transaction) => {
+          if (transaction.senderAdress === walletAddress)
+            withdraw.push(transaction);
 
-        if (transaction.recipientAdress === walletAddress)
-          deposit.push(transaction);
-      });
+          if (transaction.recipientAdress === walletAddress)
+            deposit.push(transaction);
+        });
+      }
+      UltraLogger.debug(logSerial,'history transactions return:'+JSON.stringify({deposit,withdraw}),walletAddress)
+      res.status(200).json({ deposit, withdraw });
     }
-    res.status(200).json({ deposit, withdraw });
+    catch(e)
+    {
+      next(e)
+    }
   },
+
   async getBalance(req, res) {
     try {
       const { address } = req.params;
