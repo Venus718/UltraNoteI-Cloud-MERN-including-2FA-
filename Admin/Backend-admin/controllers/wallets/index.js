@@ -43,7 +43,7 @@ module.exports = {
     const walletAddress = req.params.address;
 
     const opts = {
-      firstBlockIndex: 300000,
+      firstBlockIndex: 700000,
       blockCount: 400000,
       addresses: [walletAddress],
     };
