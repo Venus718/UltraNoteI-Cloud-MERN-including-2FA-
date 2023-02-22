@@ -88,6 +88,4 @@ mongoose
 //lancing the server
 server.listen(process.env.RUNNING_PORT, () => {
   console.log(`Listening on port: ${process.env.PORT} `);
-}).catch((e)=>{
-  UltraLogger.error('',e,'')
 })
