@@ -23,6 +23,7 @@ const io = new Server(server, {
 const authRoute = require("./routes/auth");
 const userRoute = require("./routes/user");
 const walletRoute = require("./routes/wallet");
+const UltraLogger = require("./helpers/logger");
 
 //Express setting-up
 app.use(cors());
@@ -87,4 +88,6 @@ mongoose
 //lancing the server
 server.listen(process.env.RUNNING_PORT, () => {
   console.log(`Listening on port: ${process.env.PORT} `);
-});
+}).catch((e)=>{
+  UltraLogger.error('',e,'')
+})
