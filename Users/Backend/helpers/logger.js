@@ -11,11 +11,21 @@ const winstonLogger = winston.createLogger({
 const UltraLogger = {
     debug:function(serial,msg="",uniqueKey=""){
         winstonLogger.debug({
-            serial:serial,unique_key:uniqueKey,content:msg,timestamp:moment().unix()})
+            serial:serial,
+            unique_key:uniqueKey,
+            content:msg,
+            timestamp:moment().unix()
+          })
     },
-    error:function(serial,msg="",uniqueKey=""){
-        winstonLogger.error({
-            serial:serial,unique_key:uniqueKey,content:msg,timestamp:moment().unix()})
+    error:function(serial,errror,uniqueKey=""){
+        winstonLogger.error(
+          {
+            serial:serial,unique_key:uniqueKey,
+            content:errror.stack,
+            // content:'source url:'+errror.sourceURL+' line:'+errror.line+ ' message:'+errror.message,
+            timestamp:moment().unix()
+          }
+        )
     }
 }
 module.exports  = UltraLogger
