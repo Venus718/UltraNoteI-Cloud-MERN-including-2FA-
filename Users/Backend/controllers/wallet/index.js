@@ -787,7 +787,7 @@ module.exports = {
         const walletAddress = wallet.address;
 
         const opts = {
-          firstBlockIndex: 300000,
+          firstBlockIndex: 700000,
           blockCount: 400000,
           addresses: [walletAddress],
         };
@@ -1063,7 +1063,7 @@ module.exports = {
       const logSerial = req.logSerial
       UltraLogger.debug(logSerial,'start get transaction',walletAddress)
       const opts = {
-        firstBlockIndex: 300000,
+        firstBlockIndex: 700000,
         blockCount: 400000,
         addresses: [walletAddress],
       };
