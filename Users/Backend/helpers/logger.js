@@ -18,10 +18,16 @@ const UltraLogger = {
           })
     },
     error:function(serial,errror,uniqueKey=""){
+        let errMsg  = ''
+        if(typeof(errror) == 'string'){
+          errMsg = errror
+        }else{
+          errMsg = errror.message+ "\r\n"+errror.stack
+        }
         winstonLogger.error(
           {
             serial:serial,unique_key:uniqueKey,
-            content:errror.stack,
+            content:errMsg,
             // content:'source url:'+errror.sourceURL+' line:'+errror.line+ ' message:'+errror.message,
             timestamp:moment().unix()
           }

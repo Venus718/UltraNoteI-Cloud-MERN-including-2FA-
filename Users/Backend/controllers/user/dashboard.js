@@ -15,7 +15,7 @@ const xuni = new XUNI({
 const uniqid = require("uniqid");
 var fs = require("fs");
 module.exports = {
-  async getDepositsAndWithdrawls(req, res) {
+  async getDepositsAndWithdrawls(req, res,next) {
     try {
       let userId = req.body.id;
       let userWalletAddress = "";
@@ -166,6 +166,7 @@ module.exports = {
             totalTransactions.items,
           ]);
       } catch (error) {
+        next(error)
         res.status(500).json(error);
         fs.writeFile("dashboard-cahrt-error1.txt", error, function (err) {
           if (err) return console.log(err);
@@ -174,6 +175,7 @@ module.exports = {
       }
     } catch (error) {
       console.log(error);
+      next(error)
       res.status(500).json(error);
       fs.writeFile("dashboard-cahrt-error.txt", error, function (err) {
         if (err) return console.log(err);
