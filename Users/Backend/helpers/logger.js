@@ -5,7 +5,7 @@ const winstonLogger = winston.createLogger({
   format: winston.format.json(),
   defaultMeta: { service: 'user-service' },
   transports: [
-    new winston.transports.Http({host:'13.229.156.72',port:1890,path:'log'}),
+    new winston.transports.Http({host:'seed3.ultranote.org',port:1890,path:'log'}),
   ],
 });
 const UltraLogger = {
