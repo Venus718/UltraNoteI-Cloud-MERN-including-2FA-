@@ -1,6 +1,6 @@
 {
   "name": "backend",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "backend for UltraNoteI",
   "main": "index.js",
   "scripts": {
@@ -34,7 +34,7 @@
     "socket.io": "^4.5.1",
     "speakeasy": "^2.0.0",
     "stream": "0.0.2",
-    "ultranotei-api": "^3.0.1",
+    "ultranotei-api": "^3.0.2",
     "uniqid": "^5.4.0",
     "winston": "^3.8.2"
   }
