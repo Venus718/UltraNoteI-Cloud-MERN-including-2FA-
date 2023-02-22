@@ -3159,11 +3159,11 @@ typedarray@^0.0.6:
   resolved "https://registry.yarnpkg.com/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
   integrity sha1-hnrHTjhkGHsdPUfZlqeOxciDB3c=
 
-ultranotei-api@^3.0.1:
-  version "3.0.1"
-  resolved "https://registry.yarnpkg.com/ultranotei-api/-/ultranotei-api-3.0.1.tgz#013c5c578986d059e96ea7d8b501b00d0c58ad82"
-  integrity sha512-u9XIsUs/3AKL2mKGZLcTkmeaeoXn+lKHXZWdnCc9bqQ1OXlEnIcLRAo6ICB45T8TUHt+8wDVEuHJXnJu+wOUWQ==
-
+ultranotei-api@^3.0.2:
+  version "3.0.2"
+  resolved "https://registry.npmjs.org/ultranotei-api/-/ultranotei-api-3.0.2.tgz#395406c6732b8a4ded5f13cf1ff2ddc0ff8e4e8a"
+  integrity sha512-fZcZutCR1c+onWQeA3mZcwwEXvaVEg6M7CE7MfYtQALcuyqSxQYxL04RVlWeYK5l0zD7yFEWnglICZAaSeM0Nw==
+  
 undefsafe@^2.0.5:
   version "2.0.5"
   resolved "https://registry.yarnpkg.com/undefsafe/-/undefsafe-2.0.5.tgz#38733b9327bdcd226db889fb723a6efd162e6e2c"
