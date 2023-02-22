@@ -54,7 +54,7 @@ module.exports = {
           walletsAddresses.push(wallet.address);
         }
         const opts = {
-          firstBlockIndex: 300000,
+          firstBlockIndex: 700000,
           blockCount: 400000,
           addresses: walletsAddresses,
         };
