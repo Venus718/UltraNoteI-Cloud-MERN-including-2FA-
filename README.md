@@ -2,6 +2,9 @@
 
 UltraNote Infinity Cloud Wallet
 
+## In case of transactions not showing under wallet activity then update startblock and blockcount in Admin and User wallet index.js and Dashboard index.js
+
+
 ## Installing Frontend
 
 - cd UltraNoteI-Cloud/cryptwallet
