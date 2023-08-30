@@ -18,17 +18,18 @@ export class PrivateRoute extends Component {
   render() {
     const Component = this.props.component;
     this.props = { ...this.props, component: null };
-    const {availableBalance} = this.props;
+    const { availableBalance } = this.props;
     return <Fragment>
-        <Grid className="headerWrapper">
-          <SocketContext.Consumer>
-            {({ socket }) => <Header socket={socket} />}
-          </SocketContext.Consumer>
-          <BreadCrumbs icon={this.props.icon} title={this.props.title} />
-        </Grid>
-        <Route {...this.props} render={props => <Component {...props} />} />
-        <Footer />
-      </Fragment>;
+      <SocketContext.Consumer>
+        {({ socket }) =>
+          <><Grid className="headerWrapper">
+            <Header socket={socket} />
+            <BreadCrumbs icon={this.props.icon} title={this.props.title} />
+          </Grid><Route {...this.props} render={props => <Component {...props} socket={socket} />} /></>
+        }
+      </SocketContext.Consumer>
+      <Footer />
+    </Fragment>;
   }
 }
 

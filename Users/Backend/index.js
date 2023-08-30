@@ -3,6 +3,9 @@ const BodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const jwt = require("jsonwebtoken");
+const uniqid = require('uniqid');
+const fs = require('file-system')
+const User = require('./models/user')
 const moment = require("moment")
 require("dotenv").config();
 
@@ -16,7 +19,7 @@ const io = new Server(server, {
     origin: "*",
     methods: ["GET", "POST"]
   },
-  path:"/api/socket"
+  path: "/api/socket"
 });
 
 //logger 
@@ -40,8 +43,8 @@ app.use(function (req, res, next) {
 });
 
 //Generate a unique stream number to record the visit
-app.use(function(req,res,next){
-  req.logSerial = 'UltraNote-' + moment().format('YYYMMDD-hhmmss') + '-' +Math.floor(
+app.use(function (req, res, next) {
+  req.logSerial = 'UltraNote-' + moment().format('YYYMMDD-hhmmss') + '-' + Math.floor(
     Math.random() * (Math.pow(10, 5) - Math.pow(10, 4) - 1) + Math.pow(10, 4)
   )
   next()
@@ -57,7 +60,7 @@ app.use((err, req, res, next) => {
   // logic
   console.log('error handle')
   console.log(err)
-  UltraLogger.error(req.logSerial,err,'')
+  UltraLogger.error(req.logSerial, err, '')
   next()
 })
 // app.use(function(error, req, res, next) {
@@ -68,6 +71,7 @@ app.use((err, req, res, next) => {
 // })
 // Socket connection
 
+const ChatRoomMessage = require('./models/chat_room_msgs');
 io.on("connection", (socket) => {
   try {
     const authorization = socket.handshake.headers.authorization;
@@ -82,6 +86,42 @@ io.on("connection", (socket) => {
     socket.on("disconnect", () => {
       console.log("user disconnected", socket?.id);
     });
+
+    socket.on("SendChatRoomMessage", async (data) => {
+      data = JSON.parse(data);
+      if (data != null) {
+
+        let message;
+        if (data.type == "image") {
+          message = "chat_" + uniqid() + '.png';
+          if (data.message != undefined && data.message.length > 0) {
+            // data.message = 'data:image/png;base64,' + data.message;
+            fs.writeFile(process.env.DATA_DIR + message, data.message)
+          }
+        }
+        else {
+          message = data.message;
+        }
+        const newMessage = new ChatRoomMessage({
+          senderUser: decodedToken?.data?._id,
+          msgType: data.type,
+          message: message,
+          createdAt: data.time,
+        });
+        const savedMessage = await newMessage.save();
+        let cuser = await User.findOne({ _id: decodedToken?.data?._id });
+        let msg = {
+          userId: decodedToken?.data?._id,
+          name: (cuser.firstName + " " + cuser.lastName).trim(),
+          msgType: data.type,
+          message: data.message,
+          time: savedMessage.createdAt,
+        };
+        socket.broadcast.emit('ReceiveChatRoomMessage', msg);
+      }
+
+    });
+
   } catch (err) {
     console.log("Error::", err);
     socket.disconnect();

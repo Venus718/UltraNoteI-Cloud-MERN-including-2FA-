@@ -47,7 +47,7 @@ if (token && auth) {
         },
       },
     },
-    path:"/api/socket"
+    path: "/api/socket"
   };
   socketConnection = io('https://cloud.ultranote.org', socketConnectionOptions);
 }
@@ -62,8 +62,8 @@ export class App extends Component {
     const token = localStorage.getItem('token');
     const user = JSON.parse(localStorage.getItem('user'));
     if (token && user) {
-      const {autoLogin} = this.props;
-      autoLogin({token, user});
+      const { autoLogin } = this.props;
+      autoLogin({ token, user });
     }
   }
 
@@ -72,23 +72,25 @@ export class App extends Component {
   }
   render() {
     return (
-    <SocketContext.Provider value={{ socket: this.state.socket, setSocket: connection => {
-            if (connection) this.setState({ socket: connection });
-          } }}>
+      <SocketContext.Provider value={{
+        socket: this.state.socket, setSocket: connection => {
+          if (connection) this.setState({ socket: connection });
+        }
+      }}>
         <MuiThemeProvider theme={theme}>
-        <CssBaseline />
-        <GlobalStyle />
-        <Helmet
-          titleTemplate={`%s - ${this.props.intl.formatMessage({
-            ...messages.appTitle,
-          })}`}
-          defaultTitle={this.props.intl.formatMessage({ ...messages.appTitle })}
-        />
-        <Routes />
-        <ToastContainer position="top-right" />
-      </MuiThemeProvider>
-       </SocketContext.Provider>
-      )
+          <CssBaseline />
+          <GlobalStyle />
+          <Helmet
+            titleTemplate={`%s - ${this.props.intl.formatMessage({
+              ...messages.appTitle,
+            })}`}
+            defaultTitle={this.props.intl.formatMessage({ ...messages.appTitle })}
+          />
+          <Routes />
+          <ToastContainer position="top-right" />
+        </MuiThemeProvider>
+      </SocketContext.Provider>
+    )
   }
 }
 
