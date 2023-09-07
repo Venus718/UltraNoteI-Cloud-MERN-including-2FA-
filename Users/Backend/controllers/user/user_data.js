@@ -19,6 +19,8 @@ module.exports = function user_data(user) {
     createdAt: user.creationDate,
     two_fact_auth: user.two_fact_auth,
     isActive: user.isActive,
+    IsAdmin: user.IsAdmin ? user.IsAdmin : false,
+    IsMuted: user.IsMuted ? user.IsMuted : false,
     contacts: user.contacts,
     isWalletCreated: user.isWalletCreated,
     currency: user.currency,

@@ -11,10 +11,9 @@ import { Helmet } from 'react-helmet';
 import { FormattedMessage } from 'react-intl';
 import { createStructuredSelector } from 'reselect';
 import { compose } from 'redux';
-
 import injectSaga from 'utils/injectSaga';
 import injectReducer from 'utils/injectReducer';
-import { Button, List, ListItem } from '@material-ui/core';
+import { Button, IconButton, List, ListItem } from '@material-ui/core';
 import AppBar from '@material-ui/core/AppBar';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
@@ -25,6 +24,7 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import TableCell from '@material-ui/core/TableCell';
 import TableBody from '@material-ui/core/TableBody';
+import Drawer from '@material-ui/core/Drawer';
 import Image from '../../components/uiStyle/Images';
 import messages from './messages';
 import saga from './saga';
@@ -50,8 +50,25 @@ import { selectUser, selectAllUsers } from '../../store/auth/auth.selectors';
 import { addContact, getContactList, getUsers } from '../../store/auth/auth.actions';
 import { withStyles } from '@material-ui/core/styles';
 import PhotoLibraryIcon from '@material-ui/icons/PhotoLibrary';
+import CloseIcon from '@material-ui/icons/Close';
 import { clientHttp } from './../../utils/services/httpClient'
 import ImgsViewer from "react-images-viewer";
+
+
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import Slide from '@material-ui/core/Slide';
+
+
+import Avatar from '@material-ui/core/Avatar';
+import ListItemAvatar from '@material-ui/core/ListItemAvatar';
+
+import VolumeOffIcon from '@material-ui/icons/VolumeOff';
+import DeleteIcon from '@material-ui/icons/Delete';
+import EditIcon from '@material-ui/icons/Edit';
 
 const styles = {
   message: {
@@ -76,12 +93,17 @@ const styles = {
   },
 };
 
+const Transition = React.forwardRef(function Transition(props, ref) {
+  return <Slide direction="up" ref={ref} {...props} />;
+});
+
 /* eslint-disable react/prefer-stateless-function */
 export class Billing extends React.Component {
 
 
-  async componentDidMount() {
 
+  async componentDidMount() {
+    const { connectedUser } = this.props;
     const { socket } = this.props;
     this.setState({ socket: socket });
     if (socket != null) {
@@ -90,15 +112,44 @@ export class Billing extends React.Component {
           messages: [...prevState.messages, msg],
         }));
       })
+      socket.on("ReceiveOnlineUser", (user, clear) => {
+
+        this.setState((prevState) => ({
+          userList: [...prevState.userList.filter(o => o.userId !== user.userId), user],
+        }));
+      })
+      socket.on("ReceiveRemoveUser", (userId) => {
+        this.setState((prevState) => ({
+          userList: [...prevState.userList.filter(user => user.userId !== userId)],
+        }));
+      })
+      socket.on("ReceiveDeleteMessage", (msgId) => {
+        this.setState((prevState) => ({
+          messages: [...prevState.messages.filter(msg => msg.msgId !== msgId)]
+        }));
+      })
+      socket.on("ReceiveUpdateMessage", (msg) => {
+        this.setState((prevState) => ({
+          messages: prevState.messages.map((m) =>
+            m.msgId === msg.msgId ? { ...m, isEdited: true, message: msg.msg } : m
+          ),
+        }));
+      })
+      socket.on("ReceiveMuteStatus", (obj) => {
+        this.setState({ IsMuted: obj.ismute });
+      })
     }
     try {
+      socket.emit("GetAllUser", {})
       const result = await clientHttp.get("/wallets/getmessages");
       if (result) {
         this.setState((prevState) => ({
-          messages: [...prevState.messages, ...result.data],
+          messages: [...prevState.messages, ...result.data.messages],
+          IsMuted: result.data.IsMuted,
+          IsAdmin: result.data.IsAdmin,
         }));
-        this.scrollToBottom();
       }
+      this.scrollToBottom();
     }
     catch (error) {
 
@@ -114,7 +165,16 @@ export class Billing extends React.Component {
     viewerIsOpen: false,
     socket: null,
     currentImage: "",
+    userModel: false,
+    IsMuted: true,
+    IsAdmin: false,
+    DeleteModel: false,
+    UpdateModel: false,
+    deleteMessageId: null,
+    updateMessageId: null,
+    UpdateMsg: "",
     messages: [],
+    userList: [],
   };
 
   scrollToBottom = () => {
@@ -157,20 +217,23 @@ export class Billing extends React.Component {
     const socket = this.state.socket
     if (socket != null) {
       let time = Date.now()
-      let data = { type: type, message: msg, time: time };
+      let msgId = this.create_UUID();
+      let data = { msgId: msgId, type: type, message: msg, time: time };
       const { connectedUser } = this.props;
       let nmsg = {
-        userId: connectedUser?._id,
+        msgId: msgId,
+        userId: connectedUser?.id,
         name: (connectedUser.firstName + " " + connectedUser.lastName).trim(),
         msgType: type,
         message: msg,
         time: time,
+        isEdited: false,
       };
       this.setState((prevState) => ({
         messages: [...prevState.messages, nmsg],
       }));
-      this.scrollToBottom();
       socket.emit('SendChatRoomMessage', JSON.stringify(data));
+      this.scrollToBottom();
     }
   }
 
@@ -217,39 +280,193 @@ export class Billing extends React.Component {
     this.setState({ viewerIsOpen: true, currentImage: value })
   }
 
+  handleMute = (userId, muteStatus) => {
+    const socket = this.state.socket;
+    let mute = muteStatus === 'mute' ? true : false;
+    this.setState((prevState) => ({
+      userList: prevState.userList.map((user) =>
+        user.userId === userId ? { ...user, IsMuted: mute } : user
+      ),
+    }));
+    socket.emit("ChangeMuteStatus", { userId: userId, muteStatus: muteStatus })
+  }
+  DeleteMessage = () => {
+    const socket = this.state.socket
+    this.setState({ DeleteModel: false });
+    let messageId = this.state.deleteMessageId;
+    if (messageId != null) {
+      this.setState((prevState) => ({
+        messages: [...prevState.messages.filter(msg => msg.msgId !== messageId)]
+      }));
+    }
+    socket.emit("DeleteMessage", messageId)
+  }
+
+  DeleteMessageModel = (messageId) => {
+    this.setState({ deleteMessageId: messageId, DeleteModel: true })
+  }
+
+  create_UUID = () => {
+    var dt = new Date().getTime();
+    var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+      var r = (dt + Math.random() * 16) % 16 | 0;
+      dt = Math.floor(dt / 16);
+      return (c == 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+    });
+    return uuid;
+  }
+
+  EditMessageModel = (messageId, msg) => {
+    this.setState({ updateMessageId: messageId, UpdateMsg: msg, UpdateModel: true })
+  }
+
+  EditMessage = () => {
+    const socket = this.state.socket
+    this.setState({ UpdateModel: false });
+    let messageId = this.state.updateMessageId;
+    let msg = this.state.UpdateMsg;
+    if (messageId != null && this.isNotEmptyOrSpaces(this.state.UpdateMsg)) {
+      this.setState((prevState) => ({
+        messages: prevState.messages.map((m) =>
+          m.msgId === messageId ? { ...m, isEdited: true, message: msg } : m
+        ),
+      }));
+      let newmsg = { msg: msg, msgId: messageId };
+      socket.emit("UpdateMessage", newmsg)
+    }
+  }
+
   render() {
     const { classes, connectedUser } = this.props;
     return (
       <>
+        <Dialog
+          open={this.state.DeleteModel}
+          TransitionComponent={Transition}
+          keepMounted
+          aria-describedby="alert-dialog-slide-description"
+        >
+          <DialogTitle>{"Are you sure you want to delete this message?"}</DialogTitle>
+          <DialogContent>
+            <DialogContentText id="alert-dialog-slide-description">
+              Click "Delete" to permanently remove this message. This message cannot be recovered.
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => this.setState({ DeleteModel: false })}>Cancel</Button>
+            <Button onClick={this.DeleteMessage}>Delete</Button>
+          </DialogActions>
+        </Dialog>
+        <Dialog
+          open={this.state.UpdateModel}
+          TransitionComponent={Transition}
+          keepMounted
+          aria-describedby="alert-dialog-slide-description"
+        >
+          <DialogTitle>{"Update Message"}</DialogTitle>
+          <DialogContent>
+            <Grid item xs={12} style={{ margin: "5px" }}>
+              <TextField id="outlined-basic-basic-msg" label="Type Something" fullWidth onChange={(e) => this.setState({ UpdateMsg: e.target.value })}
+                value={this.state.UpdateMsg} />
+            </Grid>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => this.setState({ UpdateModel: false })}>Cancel</Button>
+            <Button onClick={this.EditMessage}>Update</Button>
+          </DialogActions>
+        </Dialog>
         <Grid className="billingWrapper">
           <Grid className="container">
+
             <AppBar className="billingTabsBar" position="static" color="default">
-              <Typography className="billingTitle" variant="h3" component="p">
-                Chat Room
-              </Typography>
+              <div className="billingTitle">
+                <span style={{ fontSize: "18px" }}>Chat Room</span>
+              </div>
             </AppBar>
-            <Grid className="billingBody">
-              <Grid container alignItems="center" className="billingHeader">
+            <Grid container className="billingBody">
+              <Grid xs={9} container alignItems="center" className="billingHeader">
                 <Grid item xs={12}>
                   <List className={'messageArea'}>
                     {this.state.messages.map((item, index) => (
-                      item.userId == connectedUser._id ?
+                      item.userId === connectedUser.id ?
                         <ListItem key={index} className='singlemsg rightmsg' id={"msgnb-" + index}>
                           <Grid container className={classes.message + " " + classes.messageright}>
+                            <Grid item xs={12} style={{ marginBottom: '7px' }}>
+                              <img src={connectedUser.image} onClick={() => this.OpenViewer(connectedUser.image)} alt='User Image' style={{ borderRadius: '50%', cursor: 'pointer', width: '30px' }} />
+                              <span style={{ color: "white" }} > {(connectedUser.firstName + " " + connectedUser.lastName).trim()}</span>
+                              <IconButton
+                                style={{
+                                  color: "white",
+                                  padding: "0px",
+                                  float: "right",
+                                }}
+                                edge="end"
+                                aria-label="mute"
+                                onClick={() => this.DeleteMessageModel(item.msgId)}
+                              >
+                                <DeleteIcon />
+                              </IconButton>
+                              {
+                                item.msgType == "text" ?
+                                  <IconButton
+                                    style={{
+                                      color: "white",
+                                      padding: "0px",
+                                      float: "right",
+                                    }}
+                                    edge="end"
+                                    aria-label="mute"
+                                    onClick={() => this.EditMessageModel(item.msgId, item.message)}
+                                  >
+                                    <EditIcon />
+                                  </IconButton> : null
+                              }
+                            </Grid>
                             <Grid item xs={12}>
                               {item.msgType == "text" ?
                                 <ListItemText disableTypography style={{ color: "white" }} align="left" primary={item.message}></ListItemText>
                                 : <img src={item.message} onClick={() => this.OpenViewer(item.message)} alt="Image" style={{ borderRadius: '10px', cursor: 'pointer' }} />}
                             </Grid>
                             <Grid item xs={12}>
-                              <ListItemText disableTypography style={{ color: "white" }} align="right" secondary={this.formatDate(item.time)}></ListItemText>
+                              <ListItemText disableTypography style={{ color: "white", fontSize: '12px' }} align="right" secondary={this.formatDate(item.time)}></ListItemText>
                             </Grid>
                           </Grid>
                         </ListItem>
                         : <ListItem key={index} className='singlemsg leftmsg'>
                           <Grid container className={classes.message + " " + classes.messageleft}>
-                            <Grid item xs={12}>
-                              <ListItemText disableTypography style={{ color: "white" }} align="left" primary={item.name}></ListItemText>
+                            <Grid item xs={12} style={{ marginBottom: '7px' }}>
+                              <img src={item.picture} onClick={() => this.OpenViewer(item.picture)} alt='User Image' style={{ borderRadius: '50%', cursor: 'pointer', width: '30px' }} />
+                              <span style={{ color: "white" }} > {item.name}</span>
+                              {
+                                this.state.IsAdmin ?
+                                  <>
+                                    <IconButton
+                                      style={{
+                                        color: "white",
+                                        padding: "0px",
+                                        float: "right",
+                                      }}
+                                      edge="end"
+                                      aria-label="mute"
+                                      onClick={() => this.DeleteMessageModel(item.msgId)}
+                                    >
+                                      <DeleteIcon />
+                                    </IconButton>
+                                    {
+                                      item.msgType == "text" ?
+                                        <IconButton
+                                          style={{
+                                            color: "white",
+                                            padding: "0px",
+                                            float: "right",
+                                          }}
+                                          edge="end"
+                                          aria-label="mute"
+                                          onClick={() => this.EditMessageModel(item.msgId, item.message)}
+                                        >
+                                          <EditIcon />
+                                        </IconButton> : null}</> : null
+                              }
                             </Grid>
                             <Grid item xs={12} style={{ width: "auto" }}>
                               {item.msgType == "text" ?
@@ -257,47 +474,62 @@ export class Billing extends React.Component {
                                 : <img src={item.message} onClick={() => this.OpenViewer(item.message)} alt='Image' style={{ borderRadius: '10px', cursor: 'pointer' }} />}
                             </Grid>
                             <Grid item xs={12}>
-                              <ListItemText disableTypography style={{ color: "white" }} align="right" secondary={this.formatDate(item.time)}></ListItemText>
+                              <ListItemText disableTypography style={{ color: "white", fontSize: '12px' }} align="right" secondary={this.formatDate(item.time)}></ListItemText>
                             </Grid>
                           </Grid>
                         </ListItem>
                     ))}
                   </List>
-                  <Divider />
-                  <Grid container style={{ marginTop: '15px' }}>
-                    <Grid xs={1} style={{ marginTop: '10px' }} item>
-                      <Fab color="primary" aria-label="add"><PhotoLibraryIcon /> <input
-                        accept=".jpeg,.jpg,.png,.svg,.gif"
-                        type="file"
-                        className="msg-input-image"
-                        onChange={this.handleImageChange} /></Fab>
-                    </Grid>
-                    <Grid item xs={10}>
-                      <TextField id="outlined-basic-email" label="Type Something" fullWidth onChange={this.handleInputChange}
-                        value={this.state.inputValue}
-                        onKeyDown={this.handleKeyDown} />
-                    </Grid>
-                    <Grid xs={1} align="right" style={{ marginTop: '10px' }} item>
-                      <Fab color="primary" aria-label="add" onClick={this.submitButton}><SendIcon /></Fab>
-                    </Grid>
-                  </Grid>
+                  {
+                    !(this.state.IsMuted) ?
+
+                      <><Divider /><Grid container style={{ marginTop: '15px' }}>
+                        <Grid xs={1} style={{ marginTop: '10px' }} item>
+                          <Fab color="primary" aria-label="add"><PhotoLibraryIcon /> <input
+                            accept=".jpeg,.jpg,.png,.svg,.gif"
+                            type="file"
+                            className="msg-input-image"
+                            onChange={this.handleImageChange} /></Fab>
+                        </Grid>
+                        <Grid item xs={10}>
+                          <TextField id="outlined-basic-email" label="Type Something" fullWidth onChange={this.handleInputChange}
+                            value={this.state.inputValue}
+                            onKeyDown={this.handleKeyDown} />
+                        </Grid>
+                        <Grid xs={1} align="right" style={{ marginTop: '10px' }} item>
+                          <Fab color="primary" aria-label="add" onClick={this.submitButton}><SendIcon /></Fab>
+                        </Grid>
+                      </Grid></> : null
+                  }
                 </Grid>
+              </Grid>
+              <Grid xs={3} className='onlineUserList'>
+                <><h3 style={{ textAlign: 'center' }}>Online Users</h3><List>
+                  {this.state.userList.filter(a => a.userId !== connectedUser.id).sort((a, b) => a.name.localeCompare(b.name)).map((user) => (
+                    <ListItem key={user.userId}>
+                      <ListItemAvatar>
+                        <Avatar alt={user.name} src={user.picture} />
+                      </ListItemAvatar>
+                      <ListItemText primary={user.name} />
+                      {
+                        this.state.IsAdmin ?
+                          <IconButton
+                            edge="end"
+                            aria-label="mute"
+                            color={user.IsMuted ? 'primary' : 'default'}
+                            onClick={() => this.handleMute(user.userId, (user.IsMuted === true ? 'unmute' : 'mute'))}
+                          >
+                            <VolumeOffIcon />
+                          </IconButton> : <></>
+                      }
+                    </ListItem>
+                  ))}
+                </List></>
               </Grid>
             </Grid>
           </Grid>
 
         </Grid>
-        {/* <ModalGateway>
-          {this.state.viewerIsOpen ? (
-            <Modal>
-              <Carousel
-                currentIndex={this.state.currentImage}
-                views={this.state.messages.filter(o => o.msgType == 'image').map(x => ({
-                  src: x.message,
-                }))} />
-            </Modal>
-          ) : null}
-        </ModalGateway> */}
         <ImgsViewer
           imgs={[
             {
