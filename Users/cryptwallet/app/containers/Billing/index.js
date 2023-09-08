@@ -107,37 +107,12 @@ export class Billing extends React.Component {
     const { socket } = this.props;
     this.setState({ socket: socket });
     if (socket != null) {
-      socket.on("ReceiveChatRoomMessage", (msg) => {
-        this.setState((prevState) => ({
-          messages: [...prevState.messages, msg],
-        }));
-      })
-      socket.on("ReceiveOnlineUser", (user, clear) => {
-
-        this.setState((prevState) => ({
-          userList: [...prevState.userList.filter(o => o.userId !== user.userId), user],
-        }));
-      })
-      socket.on("ReceiveRemoveUser", (userId) => {
-        this.setState((prevState) => ({
-          userList: [...prevState.userList.filter(user => user.userId !== userId)],
-        }));
-      })
-      socket.on("ReceiveDeleteMessage", (msgId) => {
-        this.setState((prevState) => ({
-          messages: [...prevState.messages.filter(msg => msg.msgId !== msgId)]
-        }));
-      })
-      socket.on("ReceiveUpdateMessage", (msg) => {
-        this.setState((prevState) => ({
-          messages: prevState.messages.map((m) =>
-            m.msgId === msg.msgId ? { ...m, isEdited: true, message: msg.msg } : m
-          ),
-        }));
-      })
-      socket.on("ReceiveMuteStatus", (obj) => {
-        this.setState({ IsMuted: obj.ismute });
-      })
+      socket.on("ReceiveChatRoomMessage", this.handleReceiveChatRoomMessage);
+      socket.on("ReceiveOnlineUser", this.handleReceiveOnlineUser);
+      socket.on("ReceiveRemoveUser", this.handleReceiveRemoveUser);
+      socket.on("ReceiveDeleteMessage", this.handleReceiveDeleteMessage);
+      socket.on("ReceiveUpdateMessage", this.handleReceiveUpdateMessage);
+      socket.on("ReceiveMuteStatus", this.handleReceiveMuteStatus);
     }
     try {
       socket.emit("GetAllUser", {})
@@ -157,7 +132,13 @@ export class Billing extends React.Component {
   }
 
   componentWillUnmount() {
-    this.props.socket?.off('ReceiveChatRoomMessage', () => { });
+    const { socket } = this.props;
+    socket?.off("ReceiveChatRoomMessage", this.handleReceiveChatRoomMessage);
+    socket?.off("ReceiveOnlineUser", this.handleReceiveOnlineUser);
+    socket?.off("ReceiveRemoveUser", this.handleReceiveRemoveUser);
+    socket?.off("ReceiveDeleteMessage", this.handleReceiveDeleteMessage);
+    socket?.off("ReceiveUpdateMessage", this.handleReceiveUpdateMessage);
+    socket?.off("ReceiveMuteStatus", this.handleReceiveMuteStatus);
   }
 
   state = {
@@ -175,6 +156,43 @@ export class Billing extends React.Component {
     UpdateMsg: "",
     messages: [],
     userList: [],
+  };
+
+
+  handleReceiveChatRoomMessage = (msg) => {
+    this.setState((prevState) => ({
+      messages: [...prevState.messages, msg],
+    }));
+  };
+
+  handleReceiveOnlineUser = (user, clear) => {
+    this.setState((prevState) => ({
+      userList: [...prevState.userList.filter(o => o.userId !== user.userId), user],
+    }));
+  };
+
+  handleReceiveRemoveUser = (userId) => {
+    this.setState((prevState) => ({
+      userList: [...prevState.userList.filter(user => user.userId !== userId)],
+    }));
+  };
+
+  handleReceiveDeleteMessage = (msgId) => {
+    this.setState((prevState) => ({
+      messages: [...prevState.messages.filter(msg => msg.msgId !== msgId)]
+    }));
+  };
+
+  handleReceiveUpdateMessage = (msg) => {
+    this.setState((prevState) => ({
+      messages: prevState.messages.map((m) =>
+        m.msgId === msg.msgId ? { ...m, isEdited: true, message: msg.msg } : m
+      ),
+    }));
+  };
+
+  handleReceiveMuteStatus = (obj) => {
+    this.setState({ IsMuted: obj.ismute });
   };
 
   scrollToBottom = () => {
@@ -384,7 +402,7 @@ export class Billing extends React.Component {
               </div>
             </AppBar>
             <Grid container className="billingBody">
-              <Grid xs={9} container alignItems="center" className="billingHeader">
+              <Grid item xs={9} container alignItems="center" className="billingHeader">
                 <Grid item xs={12}>
                   <List className={'messageArea'}>
                     {this.state.messages.map((item, index) => (
@@ -503,7 +521,7 @@ export class Billing extends React.Component {
                   }
                 </Grid>
               </Grid>
-              <Grid xs={3} className='onlineUserList'>
+              <Grid item xs={3} className='onlineUserList'>
                 <><h3 style={{ textAlign: 'center' }}>Online Users</h3><List>
                   {this.state.userList.filter(a => a.userId !== connectedUser.id).sort((a, b) => a.name.localeCompare(b.name)).map((user) => (
                     <ListItem key={user.userId}>

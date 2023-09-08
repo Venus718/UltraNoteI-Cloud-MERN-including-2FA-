@@ -6,6 +6,7 @@
 
 .victoryPieArea {
   position: relative;
+
   .victoryPieCenterLabel {
     font-style: normal;
     font-weight: 600;
@@ -18,11 +19,13 @@
     transform: translate(-50%, -50%);
   }
 }
+
 .VictoryContainer {
   tspan {
-    font-size: 8px !important;
+    font-size: 6px !important;
   }
 }
+
 .victoryPieTitle {
   text-align: center;
   font-style: normal;
@@ -30,15 +33,19 @@
   font-size: 18px;
   line-height: 27px;
   color: #666666;
+
   span {
     color: #1ca9ee;
   }
 }
+
 .barController {
   text-align: right;
+
   @media (max-width: 767px) {
-      text-align: center;
+    text-align: center;
   }
+
   button {
     display: inline-block;
     background: transparent;
@@ -50,9 +57,11 @@
     line-height: 24px;
     color: #666666;
     letter-spacing: 0;
+
     &:hover {
       background: transparent;
     }
+
     p {
       display: inline-block;
       width: 15px;
@@ -61,6 +70,7 @@
       margin-right: 5px;
       transform: translateY(2px);
     }
+
     &.withDraw {
       p {
         background: #5e55e6;
@@ -74,6 +84,7 @@
     p {
       background: #1CA8EE;
     }
+
     &.withDraw {
       p {
         background: #F8A2C1;
