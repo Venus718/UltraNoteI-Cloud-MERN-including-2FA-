@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const walletCtr = require('../controllers/wallet');
+const chatroom = require('../controllers/chatroom');
 
 router
     .post('/', walletCtr.createNewWallet)
@@ -18,6 +19,7 @@ router
     .post('/attachment', walletCtr.downloadAttachment)
     .post('/sendmsg', walletCtr.sendMsg)
     .put('/optimize', walletCtr.optimizeWallet)
+    .get('/getmessages', chatroom.get_chat_messages)
 
 
 module.exports = router;

@@ -14,6 +14,7 @@ const UserSchema = mongoose.Schema(
       default: 'new_user',
     },
     role: { type: String, required: true, default: 'user' },
+    IsAdmin: { type: Boolean, default: false },
     image: { type: String, require: false },
     isActive: { type: Boolean, default: false, required: true },
     two_fact_auth: { type: Boolean, default: false, required: true },

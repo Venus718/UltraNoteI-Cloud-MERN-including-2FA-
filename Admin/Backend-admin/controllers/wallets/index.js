@@ -3,20 +3,21 @@ const { Types } = require("mongoose");
 const { ObjectId } = Types;
 const Wallet = require("../../models/wallet");
 const Settings = require("../../models/settings");
+const User = require("../../models/user");
 
 const DB_RPCSETTINGS_STR = 'RPCSettings';
 var xuni;
 reconnectXUNI();
 
 function reconnectXUNI() {
-  loadRPCSettings({}).then(settings=>{
-  xuni = new XUNI({
-    daemonHost: settings.rpcHost || process.env.XUNI_HOST || "http://127.0.0.1", 
-    walletHost: settings.rpcHost || process.env.XUNI_HOST || "http://127.0.0.1", 
-    daemonRpcPort: settings.daemonRpcPort || process.env.DAEMONRPC_PORT || "43000",
-    walletRpcPort: settings.walletRpcPort || process.env.XUNI_PORT || "9090",
-    rpcUser: settings.rpcUser || process.env.RPC_USER,
-    rpcPassword: settings.rpcPassword || process.env.RPC_PASSWORD
+  loadRPCSettings({}).then(settings => {
+    xuni = new XUNI({
+      daemonHost: settings.rpcHost || process.env.XUNI_HOST || "http://127.0.0.1",
+      walletHost: settings.rpcHost || process.env.XUNI_HOST || "http://127.0.0.1",
+      daemonRpcPort: settings.daemonRpcPort || process.env.DAEMONRPC_PORT || "43000",
+      walletRpcPort: settings.walletRpcPort || process.env.XUNI_PORT || "9090",
+      rpcUser: settings.rpcUser || process.env.RPC_USER,
+      rpcPassword: settings.rpcPassword || process.env.RPC_PASSWORD
     });
   })
 }
@@ -139,72 +140,80 @@ module.exports = {
     }
   },
   async getBalance(req, res) {
-    try{
-    if(!req.params.address) throw(new Error('Address parameter missing'));
-    let balance = await xuni.getBalance(req.params.address);
-    
-    return res.status(200).json({ ...balance });
+    try {
+      if (!req.params.address) throw (new Error('Address parameter missing'));
+      let balance = await xuni.getBalance(req.params.address);
+
+      return res.status(200).json({ ...balance });
     }
-    catch(err){
+    catch (err) {
       console.log('wallets/getBalance.catch:', err);
-    return res
-      .status(400)
-      .json({ message: "Error while getting balance:", err });
+      return res
+        .status(400)
+        .json({ message: "Error while getting balance:", err });
     }
   },
- async getWalletData(req, res) {
-  try{
-    if(!req.params.id) throw(new Error('User id missing'));
-    let wallets = await Wallet.find({walletHolder: req.params.id});
-    if (!wallets || !wallets.length) {
-      return res.status(400).json({ message: "wallets not found" });
+  async getWalletData(req, res) {
+    try {
+      if (!req.params.id) throw (new Error('User id missing'));
+      let wallets = await Wallet.find({ walletHolder: req.params.id });
+      if (!wallets || !wallets.length) {
+        return res.status(400).json({ message: "wallets not found" });
+      }
+      let walletAddress = wallets[0].address;
+      let balance = await xuni.getBalance(walletAddress);
+      let wallet = { address: walletAddress, balance: balance };
+      return res.status(200).json(wallet);
     }
-    let walletAddress = wallets[0].address;
-    let balance = await xuni.getBalance(walletAddress);
-    let wallet = { address: walletAddress, balance: balance };
-    return res.status(200).json(wallet);
-  }
-  catch(err) {
-    console.log('wallets/getWalletData.catch:', err);
-    return res
-      .status(400)
-      .json({ message: "ERROR WHILE GETTING WALLET DATA:", err });
-  };
- },
- async getRPCSettings(req, res) {
-  let settingsObj = {
-    rpcHost: '',
-    rpcUser: '',
-    rpcPassword: ''
-  };
-  try {
-    settingsObj = await loadRPCSettings(settingsObj);
-    res.status(200).json(settingsObj);
+    catch (err) {
+      console.log('wallets/getWalletData.catch:', err);
+      return res
+        .status(400)
+        .json({ message: "ERROR WHILE GETTING WALLET DATA:", err });
+    };
+  },
+  async getRPCSettings(req, res) {
+    let settingsObj = {
+      rpcHost: '',
+      rpcUser: '',
+      rpcPassword: '',
+      adminEmail: '',
+    };
+    try {
+      settingsObj = await loadRPCSettings(settingsObj);
+      res.status(200).json(settingsObj);
 
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({message:'Error occurred:'+error});
-  }
-},
-
- async setRPCSettings(req, res) {
-  try {
-    for(let skey in req.body.rpcSettings)
-    {
-      await Settings.updateOne({type: DB_RPCSETTINGS_STR, key: skey}, {key: skey, value: req.body.rpcSettings[skey]}, {upsert: true});
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({ message: 'Error occurred:' + error });
     }
-    res.status(200).json({message:'OK'});
-   reconnectXUNI();
-   
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({message: 'Errror:'+error});
+  },
+
+  async setRPCSettings(req, res) {
+    try {
+      let adminEmail = req.body.rpcSettings["adminEmail"];
+      await User.findOneAndUpdate({ IsAdmin: true }, { IsAdmin: false });
+      await User.findOneAndUpdate({ mail: adminEmail }, { IsAdmin: true });
+      console.log(adminEmail, " Admin Email");
+      delete req.body.rpcSettings["adminEmail"];
+      console.log("All Settings ", req.body.rpcSettings);
+      for (let skey in req.body.rpcSettings) {
+        await Settings.updateOne({ type: DB_RPCSETTINGS_STR, key: skey }, { key: skey, value: req.body.rpcSettings[skey] }, { upsert: true });
+      }
+      res.status(200).json({ message: 'OK' });
+      reconnectXUNI();
+
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({ message: 'Errror:' + error });
+    }
   }
- }
 };
 
 async function loadRPCSettings(settings) {
-  let settingsRead = await Settings.find({type: DB_RPCSETTINGS_STR});
-  for(let s of settingsRead) settings[s.key] = s.value;
+  let settingsRead = await Settings.find({ type: DB_RPCSETTINGS_STR });
+  for (let s of settingsRead) settings[s.key] = s.value;
+  let user = await User.findOne({ IsAdmin: true });
+  settings["adminEmail"] = user?.mail || '';
   return settings;
 }

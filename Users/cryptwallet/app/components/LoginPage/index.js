@@ -132,7 +132,7 @@ class LoginPage extends Component {
     const { login } = this.props;
     if (!error) {
       this.state.history = this.props.history;
-      login({...this.state, setSocket});
+      login({ ...this.state, setSocket });
     }
   };
 

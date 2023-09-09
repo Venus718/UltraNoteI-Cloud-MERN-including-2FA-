@@ -108,14 +108,14 @@ class Header extends React.Component {
       updateUnReadMsgCount(unreadMsgCount + 1);
 
       if (window.location.pathname === '/messages') updateMessages({
-          msgList: [this.state.newMessageArrived, ...messages],
-        });
+        msgList: [this.state.newMessageArrived, ...messages],
+      });
       this.setState({ newMessageArrived: null });
     }
   }
 
   componentWillUnmount() {
-    this.props.socket?.off('New Message Recieved', () => {});
+    this.props.socket?.off('New Message Recieved', () => { });
   }
 
   componentDidMount() {
@@ -182,7 +182,7 @@ class Header extends React.Component {
                   </NavLink>
                 </ListItem>
                 <ListItem className="menuItem">
-                  <NavLink to="/billing">Billing</NavLink>
+                  <NavLink to="/chat">Chat</NavLink>
                 </ListItem>
               </List>
             </Grid>
@@ -287,7 +287,7 @@ class Header extends React.Component {
                 <NavLink to="/messages">Messages</NavLink>
               </MenuItem>
               <MenuItem>
-                <NavLink to="/billing">Billing</NavLink>
+                <NavLink to="/chat">Chat</NavLink>
               </MenuItem>
               {/* <MenuItem>
                 <NavLink to="/referral">Referral</NavLink>

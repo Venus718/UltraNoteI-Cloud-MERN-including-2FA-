@@ -3,6 +3,9 @@ const BodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const jwt = require("jsonwebtoken");
+const uniqid = require('uniqid');
+const fs = require('file-system')
+const User = require('./models/user')
 const moment = require("moment")
 require("dotenv").config();
 
@@ -16,7 +19,7 @@ const io = new Server(server, {
     origin: "*",
     methods: ["GET", "POST"]
   },
-  path:"/api/socket"
+  path: "/api/socket"
 });
 
 //logger 
@@ -40,8 +43,8 @@ app.use(function (req, res, next) {
 });
 
 //Generate a unique stream number to record the visit
-app.use(function(req,res,next){
-  req.logSerial = 'UltraNote-' + moment().format('YYYMMDD-hhmmss') + '-' +Math.floor(
+app.use(function (req, res, next) {
+  req.logSerial = 'UltraNote-' + moment().format('YYYMMDD-hhmmss') + '-' + Math.floor(
     Math.random() * (Math.pow(10, 5) - Math.pow(10, 4) - 1) + Math.pow(10, 4)
   )
   next()
@@ -57,7 +60,7 @@ app.use((err, req, res, next) => {
   // logic
   console.log('error handle')
   console.log(err)
-  UltraLogger.error(req.logSerial,err,'')
+  UltraLogger.error(req.logSerial, err, '')
   next()
 })
 // app.use(function(error, req, res, next) {
@@ -67,8 +70,9 @@ app.use((err, req, res, next) => {
 //   next()
 // })
 // Socket connection
-
-io.on("connection", (socket) => {
+const connectedUsers = {};
+const ChatRoomMessage = require('./models/chat_room_msgs');
+io.on("connection", async (socket) => {
   try {
     const authorization = socket.handshake.headers.authorization;
     const token = authorization.split(" ")[1];
@@ -78,10 +82,128 @@ io.on("connection", (socket) => {
       socket.disconnect();
       console.log("socket Disconnected:::", socket?.id);
     }
+
+    let newUser = await User.findOne({ _id: decodedToken?.data?._id });
+    let msgUser = {
+      userId: decodedToken?.data?._id,
+      name: (newUser.firstName + " " + newUser.lastName).trim(),
+      picture: newUser.image ? fs
+        .readFileSync(process.env.DATA_DIR + newUser.image + ".png")
+        .toString() : "https://via.placeholder.com/50",
+      IsMuted: newUser.IsMuted || false,
+    };
+    socket.broadcast.emit('ReceiveOnlineUser', msgUser);
+
+    let userId = decodedToken?.data?._id;
+    if (!connectedUsers[userId]) {
+      connectedUsers[userId] = { sockets: [socket.id] };
+    } else {
+      connectedUsers[userId].sockets.push(socket.id);
+    }
     console.log("socket connected:::", socket?.id);
     socket.on("disconnect", () => {
+      socket.broadcast.emit('ReceiveRemoveUser', decodedToken?.data?._id);
+      for (const item in connectedUsers) {
+        const user = connectedUsers[item];
+        const index = user.sockets.indexOf(socket.id);
+        if (index !== -1) {
+          user.sockets.splice(index, 1);
+          if (user.sockets.length === 0) {
+
+            delete connectedUsers[item];
+          }
+          break;
+        }
+      }
       console.log("user disconnected", socket?.id);
     });
+
+    socket.on("SendChatRoomMessage", async (data) => {
+      data = JSON.parse(data);
+      if (data != null) {
+
+        let message;
+        if (data.type == "image") {
+          message = "chat_" + uniqid() + '.png';
+          if (data.message != undefined && data.message.length > 0) {
+            // data.message = 'data:image/png;base64,' + data.message;
+            fs.writeFile(process.env.DATA_DIR + message, data.message)
+          }
+        }
+        else {
+          message = data.message;
+        }
+        const newMessage = new ChatRoomMessage({
+          messageId: data.msgId,
+          senderUser: decodedToken?.data?._id,
+          msgType: data.type,
+          message: message,
+          createdAt: data.time,
+        });
+        const savedMessage = await newMessage.save();
+        let cuser = await User.findOne({ _id: decodedToken?.data?._id });
+        let msg = {
+          msgId: data.msgId,
+          userId: decodedToken?.data?._id,
+          name: (cuser.firstName + " " + cuser.lastName).trim(),
+          msgType: data.type,
+          message: data.message,
+          picture: cuser.image ? fs
+            .readFileSync(process.env.DATA_DIR + cuser.image + ".png")
+            .toString() : "https://via.placeholder.com/50",
+          time: savedMessage.createdAt,
+          isEdited: savedMessage.isEdited
+        };
+        socket.broadcast.emit('ReceiveChatRoomMessage', msg);
+      }
+
+    });
+
+    socket.on("GetAllUser", async () => {
+      for (const item in connectedUsers) {
+        if (item !== decodedToken?.data?._id) {
+          console.log(" user ", decodedToken.data._id)
+          let cuser = await User.findOne({ _id: item });
+          let user = {
+            userId: item,
+            name: (cuser.firstName + " " + cuser.lastName).trim(),
+            picture: cuser.image ? fs
+              .readFileSync(process.env.DATA_DIR + cuser.image + ".png")
+              .toString() : "https://via.placeholder.com/50",
+            IsMuted: cuser.IsMuted || false,
+          };
+          socket.emit('ReceiveOnlineUser', user, true);
+        }
+      }
+    });
+
+    socket.on("ChangeMuteStatus", async (data) => {
+      let mute = data.muteStatus === 'mute' ? true : false;
+      console.log("data ", data)
+
+      await User.findOneAndUpdate({ _id: data.userId }, { IsMuted: mute });
+      let connectionIds = connectedUsers[data.userId]?.sockets;
+      if (connectionIds != null) {
+        connectionIds.forEach(id => {
+          socket.to(id).emit("ReceiveMuteStatus", { ismute: mute })
+        });
+      }
+    });
+
+    socket.on("DeleteMessage", async (msgId) => {
+      console.log("deletemsg ", msgId)
+
+      await ChatRoomMessage.findOneAndUpdate({ messageId: msgId }, { isDeleted: true });
+      socket.broadcast.emit('ReceiveDeleteMessage', msgId);
+    });
+
+    socket.on("UpdateMessage", async (newmsg) => {
+      console.log("update ", newmsg)
+
+      await ChatRoomMessage.findOneAndUpdate({ messageId: newmsg.msgId }, { message: newmsg.msg, isEdited: true });
+      socket.broadcast.emit('ReceiveUpdateMessage', newmsg);
+    });
+
   } catch (err) {
     console.log("Error::", err);
     socket.disconnect();

@@ -84,9 +84,9 @@ export default function Routes() {
                 component={Messages}
             />
             <PrivateRoute
-                path="/billing"
+                path="/chat"
                 icon={BillingIcon}
-                title="Billing"
+                title="Chat"
                 component={Billing}
             />
             <PrivateRoute
