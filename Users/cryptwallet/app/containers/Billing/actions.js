@@ -1,6 +1,6 @@
 /*
  *
- * Chat actions
+ * Billing actions
  *
  */
 

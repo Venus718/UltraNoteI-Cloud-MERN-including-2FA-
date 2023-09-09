@@ -25,6 +25,7 @@ import MyWalletIcon from 'images/icon/breadcrumb/my-wallet.svg';
 import SettingsIcon from 'images/icon/breadcrumb/settings.svg';
 import AddressBookIcon from 'images/icon/breadcrumb/address-book.png';
 import MessageIcon from 'images/icon/breadcrumb/message.png';
+import BillingIcon from 'images/icon/breadcrumb/invoice.png';
 import ReferralIcon from 'images/icon/breadcrumb/referral.svg';
 
 import MyProfile from '../MyProfile';
@@ -34,7 +35,7 @@ import MyWallet from '../MyWallet';
 import Settings from '../Settings';
 import AddressBook from '../AddressBook';
 import Messages from '../Messages';
-import Chat from '../Chat';
+import Billing from '../Billing';
 import { Referral } from '../Referral';
 
 export default function Routes() {
@@ -84,9 +85,9 @@ export default function Routes() {
             />
             <PrivateRoute
                 path="/chat"
-                icon={MessageIcon}
+                icon={BillingIcon}
                 title="Chat"
-                component={Chat}
+                component={Billing}
             />
             <PrivateRoute
                 path="/referral"

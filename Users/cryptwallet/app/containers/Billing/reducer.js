@@ -1,6 +1,6 @@
 /*
  *
- * chat reducer
+ * Billing reducer
  *
  */
 
@@ -9,7 +9,7 @@ import { DEFAULT_ACTION } from './constants';
 
 export const initialState = fromJS({});
 
-function chatReducer(state = initialState, action) {
+function billingReducer(state = initialState, action) {
   switch (action.type) {
     case DEFAULT_ACTION:
       return state;
@@ -18,4 +18,4 @@ function chatReducer(state = initialState, action) {
   }
 }
 
-export default chatReducer;
+export default billingReducer;
