@@ -1,4 +1,4 @@
-.chatWrapper {
+.billingWrapper {
   margin-top: -230px;
   margin-bottom: 100px;
 
@@ -14,7 +14,7 @@
     margin-bottom: 80px;
   }
 
-  .chatTabsBar {
+  .billingTabsBar {
     -webkit-box-shadow: none !important;
     -moz-box-shadow: none !important;
     box-shadow: none !important;
@@ -29,7 +29,7 @@
       padding-bottom: 15px;
     }
 
-    .chatTitle {
+    .billingTitle {
       flex-basis: 20%;
       font-family: Hind Vadodara;
       font-style: normal;
@@ -65,7 +65,7 @@
     }
   }
 
-  .chatBody {
+  .billingBody {
     background: #fff;
     padding: 10px;
     box-shadow: 0 0 35px rgba(0, 0, 0, 0.04);
@@ -78,7 +78,7 @@
       padding: 30px 15px;
     }
 
-    .chatHeader {
+    .billingHeader {
       width: 85% !important;
       margin-bottom: 40px;
     }
