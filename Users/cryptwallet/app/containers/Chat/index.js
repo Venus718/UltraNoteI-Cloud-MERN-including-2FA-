@@ -406,7 +406,7 @@ export class Chat extends React.Component {
                                 <Grid item xs={12}>
                                     <List className={'messageArea'}>
                                         {this.state.messages.map((item, index) => (
-                                            item.userId === connectedUser.id ?
+                                            item.userId === connectedUser?.id ?
                                                 <ListItem key={index} className='singlemsg rightmsg' id={"msgnb-" + index}>
                                                     <Grid container className={classes.message + " " + classes.messageright}>
                                                         <Grid item xs={12} style={{ marginBottom: '7px' }}>
@@ -523,7 +523,7 @@ export class Chat extends React.Component {
                             </Grid>
                             <Grid item xs={3} className='onlineUserList'>
                                 <><h3 style={{ textAlign: 'center' }}>Online Users</h3><List>
-                                    {this.state.userList.filter(a => a.userId !== connectedUser.id).sort((a, b) => a.name.localeCompare(b.name)).map((user) => (
+                                    {this.state.userList.filter(a => a.userId !== connectedUser?.id).sort((a, b) => a.name.localeCompare(b.name)).map((user) => (
                                         <ListItem key={user.userId}>
                                             <ListItemAvatar>
                                                 <Avatar alt={user.name} src={user.picture} />
