@@ -54,6 +54,7 @@ class UserList extends Component {
           deletedUsers: users.filter((user) => user.deleted === true),
           totalUsers: users.length,
           walletUsers: users.filter((user) => user.isWalletCreated === true),
+          tfaUsers: users.filter((user) => user.two_fact_auth === true),
         });
       })
       .catch(function (error) {
@@ -157,6 +158,11 @@ class UserList extends Component {
           data: this.state.deletedUsers,
         });
         break;
+      case "tfa":
+        this.setState({
+          data: this.state.tfaUsers,
+        });
+        break;
       default:
         break;
     }
@@ -201,6 +207,7 @@ class UserList extends Component {
                 <option value="suspended">Suspended</option>
                 <option value="deleted">Deleted</option>
                 <option value="wallet">Has Wallet</option>
+                <option value="tfa">2FA enabled</option>
               </select>
             </div>
           </div>
