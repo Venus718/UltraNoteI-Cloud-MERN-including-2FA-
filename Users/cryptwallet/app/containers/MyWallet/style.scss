@@ -53,11 +53,17 @@
 }
 .actionBtns {
     display: flex;
+    @media (max-width: 767px) {
+      width: 60px;
+    }
   li {
     padding: 0;
     margin-right: 20px;
     width: auto;
     cursor: pointer;
     display: inline-block;
+    @media (max-width: 767px) {
+      margin-right: 5px !important;
+    }
   }
 }
