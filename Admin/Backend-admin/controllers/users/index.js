@@ -229,7 +229,7 @@ module.exports = {
             mail: mail,
             currency: currency,
             isActive: isActive,
-            two_factor_auth: two_factor_auth,
+            two_fact_auth: two_factor_auth,
           },
         }
       );
