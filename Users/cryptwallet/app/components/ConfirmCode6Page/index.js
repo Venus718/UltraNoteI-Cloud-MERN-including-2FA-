@@ -73,8 +73,8 @@ class ConfirmCodePage extends Component {
               <Grid className="accountContent">
                 <Typography variant="h3">2FA Code Verification</Typography>
                 <Typography className="text" paragraph>
-                  Enter the 2FA verification code which was{' '}
-                  <Typography component="span">sent to your email.</Typography>
+                  Enter the 2FA verification code {' '}
+                  <Typography component="span">from your authentication app.</Typography>
                 </Typography>
                 <Form onSubmit={this.submitHandler}>
                   <ReactCodeInput
