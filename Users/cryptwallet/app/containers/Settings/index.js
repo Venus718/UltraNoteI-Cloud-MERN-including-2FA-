@@ -219,7 +219,7 @@ export class Settings extends React.Component {
                       OTP Setting
                     </Typography>
                     <Typography component="p">
-                      Use the Authenticator app to get free verification codes,
+                      Enable your OTP one time password.
                       You will receive codes to your email address.
                     </Typography>
                     <Button type="submit" className="formSubmitBtn" disabled={this.props.connectedUser.otp_auth === this.state.otpchecked}>
@@ -229,8 +229,8 @@ export class Settings extends React.Component {
                   <Grid item xs={12} md={6}>
                     <Typography className="subTitle">Security</Typography>
                     <Typography component="p">
-                      Please make sure to enable two factor authentication
-                      at login.
+                      Please make sure to enable OTP
+                      at login for a better account security.
                     </Typography>
                     <Grid className="swtichCheck">
                       <FormControlLabel
@@ -270,8 +270,8 @@ export class Settings extends React.Component {
                           Authenticator app
                         </Typography>
                         <Typography component="p">
-                          Use the Authenticator app to get free verification codes,
-                          You will receive codes to your email address.
+                          Use the Authenticator app to get verification codes,
+                          You can use Google Authenticator or any similar apps.
                         </Typography>
                         <Button type="submit" className="formSubmitBtn">
                           {!this.state.checked ? 'Enable' : 'Disable'}
