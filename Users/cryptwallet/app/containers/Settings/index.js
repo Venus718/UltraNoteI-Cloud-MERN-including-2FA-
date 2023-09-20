@@ -227,11 +227,6 @@ export class Settings extends React.Component {
                     </Button>
                   </Grid>
                   <Grid item xs={12} md={6}>
-                    <Typography className="subTitle">Security</Typography>
-                    <Typography component="p">
-                      Please make sure to enable two factor authentication
-                      at login.
-                    </Typography>
                     <Grid className="swtichCheck">
                       <FormControlLabel
                         control={
