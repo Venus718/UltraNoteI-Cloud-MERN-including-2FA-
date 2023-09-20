@@ -39,35 +39,68 @@ module.exports = {
               if (user.deleted === true) {
                 return res.status(403).json({ message: "Account is deleted" });
               }
-              if (user.two_fact_auth === true) {
-                twoFactAuth.two_fact_auth(user).then(() => {
-                  const userData = user_data(user);
 
-                  const tokenData = {
-                    firstName: user.firstName,
-                    lastName: user.lastName,
-                    email: user.mail,
-                    // phone: user.phone,
-                    creationDate: user.creationDate,
-                    two_fact_auth: user.two_fact_auth,
-                    isActive: user.isActive,
-                    contacts: user.contacts,
-                    _id: user._id,
-                  };
+              if((user.otp_auth == true && user.two_fact_auth == true) || user.otp_auth == true ){
+                twoFactAuth.otp_fact_auth(user).then(() => {
+                  // if(user.two_fact_auth != true){
+                    const userData = user_data(user);
 
-                  const token = jwt.sign(
-                    { data: tokenData },
-                    process.env.TOKENCODE,
-                    { expiresIn: "72h" }
-                  );
-                  return res.status(200).json({
-                    message: "2FA steps",
-                    twoFA: user.two_fact_auth,
-                    user: userData,
-                    token,
-                  });
+                    const tokenData = {
+                      firstName: user.firstName,
+                      lastName: user.lastName,
+                      email: user.mail,
+                      // phone: user.phone,
+                      creationDate: user.creationDate,
+                      otp_auth: user.otp_auth,
+                      two_fact_auth: user.two_fact_auth,
+                      isActive: user.isActive,
+                      contacts: user.contacts,
+                      _id: user._id,
+                    };
+
+                    const token = jwt.sign(
+                      { data: tokenData },
+                      process.env.TOKENCODE,
+                      { expiresIn: "72h" }
+                    );
+                    return res.status(200).json({
+                      message: "OTP steps",
+                      otp_auth: user.otp_auth,
+                      user: userData,
+                      token,
+                    });
+                  // }else{
+                    
+                  // }
                 });
-              } else {
+              }else if(user.two_fact_auth == true) {
+                const userData = user_data(user);
+
+                const tokenData = {
+                  firstName: user.firstName,
+                  lastName: user.lastName,
+                  email: user.mail,
+                  // phone: user.phone,
+                  creationDate: user.creationDate,
+                  two_fact_auth: user.two_fact_auth,
+                  otp_auth: user.otp_auth,
+                  isActive: user.isActive,
+                  contacts: user.contacts,
+                  _id: user._id,
+                };
+
+                const token = jwt.sign(
+                  { data: tokenData },
+                  process.env.TOKENCODE,
+                  { expiresIn: "72h" }
+                );
+                return res.status(200).json({
+                  message: "2FA steps",
+                  twoFA: user.two_fact_auth,
+                  user: userData,
+                  token,
+                });
+              }else {
                 const userData = user_data(user);
                 const tokenData = {
                   firstName: user.firstName,
@@ -76,6 +109,7 @@ module.exports = {
                   // phone: user.phone,
                   creationDate: user.creationDate,
                   two_fact_auth: user.two_fact_auth,
+                  otp_auth: user.otp_auth,
                   isActive: user.isActive,
                   contacts: user.contacts,
                   _id: user._id,
@@ -101,6 +135,72 @@ module.exports = {
                   .status(200)
                   .json({ message: "login successful", user: userData, token });
               }
+
+
+
+
+              // if (user.two_fact_auth === true) {
+              //   twoFactAuth.two_fact_auth(user).then(() => {
+              //     const userData = user_data(user);
+
+              //     const tokenData = {
+              //       firstName: user.firstName,
+              //       lastName: user.lastName,
+              //       email: user.mail,
+              //       // phone: user.phone,
+              //       creationDate: user.creationDate,
+              //       two_fact_auth: user.two_fact_auth,
+              //       isActive: user.isActive,
+              //       contacts: user.contacts,
+              //       _id: user._id,
+              //     };
+
+              //     const token = jwt.sign(
+              //       { data: tokenData },
+              //       process.env.TOKENCODE,
+              //       { expiresIn: "72h" }
+              //     );
+              //     return res.status(200).json({
+              //       message: "2FA steps",
+              //       twoFA: user.two_fact_auth,
+              //       user: userData,
+              //       token,
+              //     });
+              //   });
+              // } else {
+              //   const userData = user_data(user);
+              //   const tokenData = {
+              //     firstName: user.firstName,
+              //     lastName: user.lastName,
+              //     email: user.mail,
+              //     // phone: user.phone,
+              //     creationDate: user.creationDate,
+              //     two_fact_auth: user.two_fact_auth,
+              //     isActive: user.isActive,
+              //     contacts: user.contacts,
+              //     _id: user._id,
+              //   };
+
+              //   const newUserActivity = {
+              //     userId: user._id,
+              //     action: "Login",
+              //     source: "Web",
+              //     ip: ip,
+              //     location: geo.city + " " + geo.country,
+              //     date: Date.now(),
+              //   };
+
+              //   UserActivity.create(newUserActivity);
+
+              //   const token = jwt.sign(
+              //     { data: tokenData },
+              //     process.env.TOKENCODE,
+              //     { expiresIn: "72h" }
+              //   );
+              //   return res
+              //     .status(200)
+              //     .json({ message: "login successful", user: userData, token });
+              // }
             });
         })
         .catch((err) => {

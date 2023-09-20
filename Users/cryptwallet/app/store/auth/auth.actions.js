@@ -91,6 +91,10 @@ export const autoLogin = (payload) => ({
 });
 
 
+export const sendOTPCodeStart = (payload) => ({
+    type: AuthTypes.SEND_CODE_OTP_AUTH,
+    payload
+});
 export const sendTwoCodeStart = (payload) => ({
     type: AuthTypes.SEND_CODE_TWO_AUTH,
     payload
@@ -98,6 +102,10 @@ export const sendTwoCodeStart = (payload) => ({
 
 export const sendTwoCodeSuccess = (payload) => ({
     type: AuthTypes.SEND_CODE_TWO_AUTH_SUCCESS,
+    payload
+});
+export const sendOtpCodeSuccess = (payload) => ({
+    type: AuthTypes.SEND_CODE_OTP_AUTH_SUCCESS,
     payload
 });
 
@@ -175,6 +183,24 @@ export const userActivity = (payload) => ({
 
 export const userActivitySuccess = (payload) => ({
     type: AuthTypes.USER_ACTIVITY_SUCCESS,
+    payload
+});
+
+export const auth2FATMPSuccess = (payload) => ({
+    type: AuthTypes.AUTH_2FA_TMP_SUCCESS,
+    payload
+});
+
+export const auth2FATMP = (payload) => ({
+    type: AuthTypes.AUTH_2FA_TMP,
+    payload
+})
+export const auth2FAConfirm = (payload) => ({
+    type: AuthTypes.AUTH_2FA_CONFIRM,
+    payload
+})
+export const auth2FAConfirmSuccess = (payload) => ({
+    type: AuthTypes.AUTH_2FA_CONFIRM_SUCCESS,
     payload
 });
 

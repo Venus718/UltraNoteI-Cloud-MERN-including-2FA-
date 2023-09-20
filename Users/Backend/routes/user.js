@@ -12,4 +12,7 @@ router.post('/add_contact', contact.addContact);
 router.post('/delete_contact', contact.deleteContact);
 router.post('/user_activity', userActivity.getUserActivity);
 
+router.post('/auth2FATMP', settings.auth_2FA_TMP);
+router.post('/auth2FAConfirm', settings.auth_2FA_Confirm);
+
 module.exports = router;

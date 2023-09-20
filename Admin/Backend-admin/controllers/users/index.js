@@ -217,8 +217,10 @@ module.exports = {
         currency,
         isActive,
         two_factor_auth,
+        otp_auth,
+        two_fact_auth_code
       } = req.body;
-
+console.log("###########",otp_auth);
       const profileUpdated = await User.findOneAndUpdate(
         { _id: ObjectId(_id) },
         {
@@ -230,6 +232,8 @@ module.exports = {
             currency: currency,
             isActive: isActive,
             two_fact_auth: two_factor_auth,
+            otp_auth: otp_auth,
+            two_fact_auth_code: two_fact_auth_code
           },
         }
       );

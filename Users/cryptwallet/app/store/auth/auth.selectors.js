@@ -45,3 +45,8 @@ export const selectUserActivity = createSelector(
   [authSelector],
   (auth) => auth.userActivity
 );
+
+export const auth2FAActivity = createSelector(
+  [authSelector],
+  (auth) => auth.auth2FATMP
+);

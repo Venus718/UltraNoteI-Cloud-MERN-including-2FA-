@@ -18,7 +18,7 @@ import ReactCodeInput from 'react-code-input';
 import '../SignupPage/account.scss';
 import { toast } from 'react-toastify';
 import messages from './messages';
-import { sendTwoCodeStart,sendOTPCodeStart } from '../../store/auth/auth.actions';
+import { sendTwoCodeStart } from '../../store/auth/auth.actions';
 import { connect } from 'react-redux';
 
 class ConfirmCodePage extends Component {
@@ -29,13 +29,13 @@ class ConfirmCodePage extends Component {
 
   submitHandler = event => {
     event.preventDefault();
-    const {sendCodeOtpAuth} = this.props;
+    const {sendCodeTwoAuth} = this.props;
     const payload = {
       code: this.state.code,
       token: this.state.token,
       history: this.props.history
     };
-    sendCodeOtpAuth(payload);
+    sendCodeTwoAuth(payload);
   };
 
   t(msg, values) {
@@ -71,9 +71,9 @@ class ConfirmCodePage extends Component {
             </Grid>
             <Grid item lg={6} xs={12}>
               <Grid className="accountContent">
-                <Typography variant="h3">OTP Code Verification</Typography>
+                <Typography variant="h3">2FA Code Verification</Typography>
                 <Typography className="text" paragraph>
-                  Enter the OTP verification code which was{' '}
+                  Enter the 2FA verification code which was{' '}
                   <Typography component="span">sent to your email.</Typography>
                 </Typography>
                 <Form onSubmit={this.submitHandler}>
@@ -101,7 +101,7 @@ class ConfirmCodePage extends Component {
 }
 
 const mapDispatchToProps = dispatch => ({
-  sendCodeOtpAuth: payload => dispatch(sendOTPCodeStart(payload))
+  sendCodeTwoAuth: payload => dispatch(sendTwoCodeStart(payload))
 });
 
 export default injectIntl(withRouter(connect(null, mapDispatchToProps)(ConfirmCodePage)));

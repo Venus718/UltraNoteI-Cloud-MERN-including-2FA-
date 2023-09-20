@@ -11,6 +11,7 @@ import { Helmet } from 'react-helmet';
 import { FormattedMessage } from 'react-intl';
 import { createStructuredSelector } from 'reselect';
 import { compose } from 'redux';
+import _ from 'lodash';
 
 import injectSaga from 'utils/injectSaga';
 import injectReducer from 'utils/injectReducer';
@@ -26,6 +27,7 @@ import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import InputLabel from '@material-ui/core/InputLabel';
 import Input from '@material-ui/core/Input';
+import TextField from '@material-ui/core/TextField'
 
 import makeSelectSettings from './selectors';
 import reducer from './reducer';
@@ -40,8 +42,8 @@ import AuthLock from '../../images/auth-lock-icon.png';
 
 import './style.scss';
 import { toast } from 'react-toastify';
-import { selectUser } from '../../store/auth/auth.selectors';
-import { enableTwoAuthStart, changeCurrencyStart } from '../../store/auth/auth.actions';
+import { selectUser, auth2FAActivity } from '../../store/auth/auth.selectors';
+import { enableTwoAuthStart, changeCurrencyStart, auth2FATMP, auth2FAConfirm } from '../../store/auth/auth.actions';
 import Redirect from 'react-router-dom/es/Redirect';
 import {getWalletStart} from '../../store/wallet/wallet.actions';
 
@@ -94,15 +96,33 @@ export class Settings extends React.Component {
 
     const {connectedUser} = this.props;
 
-  this.state = {
-    checked: connectedUser.two_fact_auth,
-    language: 'english',
-    currency: connectedUser.currency,
-  };
-}
+    this.state = {
+      code: '',
+      checked: connectedUser.two_fact_auth,
+      otpchecked: connectedUser.otp_auth,
+      language: 'english',
+      currency: connectedUser.currency,
+      auth2FA: null
+    };
+  }
+
+  static getDerivedStateFromProps(props, state) {
+    if(!_.isEqual(props.auth2FATMPValue, state.auth2FA)){
+      return{
+          auth2FA: props.auth2FATMPValue == '' ? null : props.auth2FATMPValue,
+      };
+    }
+    if(props.connectedUser.two_fact_auth != state.checked){
+      return {
+        checked: props.connectedUser.two_fact_auth
+      }
+    }
+    
+    return null; // No change to state
+  }
 
   handleChange = event => {
-    this.setState({ checked: event.target.checked });
+    this.setState({ otpchecked: event.target.checked });
   };
 
   authSubmitHandler = e => {
@@ -111,10 +131,29 @@ export class Settings extends React.Component {
 
     const {changeTwoAuthStatus, connectedUser} = this.props;
     const payload = {
-      isActive: this.state.checked,
-      _id: connectedUser.id
+      isActive: this.state.otpchecked,
+      _id: connectedUser.id == undefined ? connectedUser._id : connectedUser.id
     };
     changeTwoAuthStatus(payload);
+  };
+
+  TwoFAHandler = e => {
+    this.setState({code: ''}) 
+    if(!this.state.checked){
+      this.setState({checked: true})
+      this.props.auth2FATMP({
+        state: true,
+        _id: this.props.connectedUser.id == undefined ? this.props.connectedUser._id : this.props.connectedUser.id
+      })
+    }
+    else {
+      this.setState({checked: false})
+      this.props.auth2FATMP({
+        state: false,
+        _id: this.props.connectedUser.id == undefined ? this.props.connectedUser._id : this.props.connectedUser.id
+      })
+    }   
+    e.preventDefault();
   };
 
   ChangeHandler = e => {
@@ -122,6 +161,25 @@ export class Settings extends React.Component {
       [e.target.name]: e.target.value,
     });
   };
+  onChangeCode = e => {
+    this.setState({
+      [e.target.name]: e.target.value
+    })
+  }
+  onCodeSave = e => {
+    e.preventDefault();
+    this.props.auth2FAConfirm({
+      token: this.state.code,
+      _id: this.props.connectedUser.id == undefined ? this.props.connectedUser._id : this.props.connectedUser.id
+    })
+  }
+  onCodeCancel = e => {
+    e.preventDefault()
+    this.props.auth2FATMP({
+      state: false,
+      _id: this.props.connectedUser.id == undefined ? this.props.connectedUser._id : this.props.connectedUser.id
+    })
+  }
 
   preferenceSubmitHandler = e => {
     e.preventDefault();
@@ -158,13 +216,13 @@ export class Settings extends React.Component {
                 <Grid container>
                   <Grid item xs={12} md={6}>
                     <Typography className="subTitle">
-                      Authenticator app
+                      OTP Setting
                     </Typography>
                     <Typography component="p">
                       Use the Authenticator app to get free verification codes,
                       You will receive codes to your email address.
                     </Typography>
-                    <Button type="submit" className="formSubmitBtn" disabled={this.props.connectedUser.two_fact_auth === this.state.checked}>
+                    <Button type="submit" className="formSubmitBtn" disabled={this.props.connectedUser.otp_auth === this.state.otpchecked}>
                       Set up
                     </Button>
                   </Grid>
@@ -186,7 +244,7 @@ export class Settings extends React.Component {
                               checked: classes.iOSChecked,
                             }}
                             disableRipple
-                            checked={this.state.checked}
+                            checked={this.state.otpchecked}
                             onChange={this.handleChange}
                             value="checked"
                           />
@@ -198,6 +256,67 @@ export class Settings extends React.Component {
               </Form>
             </Grid>
           </Grid>
+          {
+            this.state.auth2FA == null  ? (
+              <Grid className="settingsBody mt8">
+                <Typography component="h4" className="section-title">
+                  2FA Authentication Settings
+                </Typography>
+                <Grid className="setAuthentication">
+                  <Form onSubmit={this.TwoFAHandler}>
+                    <Grid container>
+                      <Grid item xs={12} md={12}>
+                        <Typography className="subTitle">
+                          Authenticator app
+                        </Typography>
+                        <Typography component="p">
+                          Use the Authenticator app to get free verification codes,
+                          You will receive codes to your email address.
+                        </Typography>
+                        <Button type="submit" className="formSubmitBtn">
+                          {!this.state.checked ? 'Enable' : 'Disable'}
+                        </Button>
+                      </Grid>
+                    </Grid>
+                  </Form>
+                </Grid>
+              </Grid>
+            ) : (
+              <Grid className="settingsBody mt8">
+                <Typography component="h4" className="section-title">
+                  2FA Authentication Settings
+                </Typography>
+                <Grid className="setAuthentication">
+                  <Form onSubmit={this.TwoFAHandler}>
+                    <Grid container>
+                      <Grid item xs={12} md={12}>
+                        <Grid container>
+                          <Grid item xs={6} md={3}>
+                            <img src={this.state.auth2FA.qrCode} />
+                          </Grid>
+                          <Grid item xs={6} md={9}>
+                            <TextField id="code" label="CODE" variant="outlined" name='code' value={this.state.code} onChange={this.onChangeCode} margin="normal" fullWidth />
+                            <Grid container>
+                              <Grid item xs={6} md={6}>
+                                <Button variant="contained" color="primary" onClick={this.onCodeSave}>
+                                  Confirm
+                                </Button>
+                              </Grid>
+                              <Grid item xs={6} md={6}>
+                                <Button variant="outlined" color="default" onClick={this.onCodeCancel}>
+                                  Cancel
+                                </Button>
+                              </Grid>
+                            </Grid>
+                          </Grid>
+                        </Grid>
+                      </Grid>
+                    </Grid>
+                  </Form>
+                </Grid>
+              </Grid>
+            )
+          }
           <Grid className="settingsBody mt8">
             <Typography component="h4" className="section-title">
               Preference Settings
@@ -262,13 +381,16 @@ Settings.propTypes = {
 
 const mapStateToProps = state => ({
   settings: makeSelectSettings(),
-  connectedUser: selectUser(state)
+  connectedUser: selectUser(state),
+  auth2FATMPValue: auth2FAActivity(state)
 });
 
 const mapDispatchToProps = (dispatch) => ({
   changeTwoAuthStatus: (payload) => dispatch(enableTwoAuthStart(payload)),
   changeCurrency: (payload) => dispatch(changeCurrencyStart(payload)),
-  getWallets: (payload) => dispatch(getWalletStart(payload))
+  getWallets: (payload) => dispatch(getWalletStart(payload)),
+  auth2FATMP: (payload) => dispatch(auth2FATMP(payload)),
+  auth2FAConfirm: (payload) => dispatch(auth2FAConfirm(payload))
 })
 
 const withConnect = connect(

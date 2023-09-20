@@ -16,6 +16,7 @@ import LoginPage from 'components/LoginPage/Loadable';
 import SignupPage from 'components/SignupPage/Loadable';
 import ForgotPasswordPage from 'components/ForgotPasswordPage/Loadable';
 import ConfirmCodePage from 'components/ConfirmCodePage/Loadable';
+import ConfirmCode6Page from '../../components/ConfirmCode6Page';
 
 // icons
 import DashboardIcon from 'images/icon/breadcrumb/dashboard.svg';
@@ -101,6 +102,7 @@ export default function Routes() {
             <PublicRoute path="/signup" component={SignupPage} />
             <PublicRoute path="/forgot-password/:token" component={ForgotPasswordPage} />
             <PublicRoute path="/confirm-code/:token" component={ConfirmCodePage} />
+            <PublicRoute path="/confirm-2FA-code/:token" component={ConfirmCode6Page} />
 
             <Route path="/landingpage" component={LandingPage} />
             <Route path="/landingpage-two" component={LandingPageTwo} />

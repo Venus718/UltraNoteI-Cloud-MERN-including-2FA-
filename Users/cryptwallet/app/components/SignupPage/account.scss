@@ -190,8 +190,8 @@
 
       .codeVarificationInput {
         display: flex !important;
-        flex-wrap: wrap;
-        justify-content: space-between;
+        flex-wrap: nowrap;
+        justify-content: center;
         margin-bottom: 30px;
 
         input {

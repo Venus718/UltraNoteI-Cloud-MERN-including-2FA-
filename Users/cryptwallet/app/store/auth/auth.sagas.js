@@ -20,6 +20,9 @@ import {
     userActivitySuccess,
     throwError,
     changeCurrencySuccess,
+    auth2FATMPSuccess,
+    auth2FAConfirmSuccess,
+    getUserSuccess
 } from './auth.actions';
 
 import AuthTypes from './auth.types';
@@ -59,10 +62,13 @@ export function* loginStartAsync({ payload }) {
 
         const result = yield clientHttp.post('/signin', requestData);
         if (result && result.data) {
-            const { twoFA, token } = result.data;
-            if (twoFA) {
-                toast.info('4-digit verication code is sent to your email');
+            const { otp_auth ,twoFA, token } = result.data;
+            if ((twoFA == true && otp_auth == true) || otp_auth == true) {
+                toast.info('OTP verication code is sent to your email');
                 payload.history.push(`/confirm-code/${token}`);
+            }else if(twoFA == true) {
+                toast.info('2FA verication code');
+                payload.history.push(`/confirm-2FA-code/${token}`);
             }
             else {
                 cookie.set('Auth', true);
@@ -220,6 +226,37 @@ export function* sendTwoAuthVerifAsync({ payload }) {
             toast.success('Successfully login');
             yield put(sendTwoCodeSuccess({ user, token }));
             payload.history.push('/dashboard');
+            
+        }
+    }
+    catch (error) {
+        console.log("error", error);
+        yield put(sendTwoCodeFailure(error));
+    }
+}
+
+export function* sendOtpAuthVerifAsync({ payload }) {
+
+    try {
+        const requestData = {
+            code: payload.code,
+        }
+        const result = yield clientHttp.post(`/otp/${payload.token}`, requestData);
+        if (result && result.data) {
+
+            const { user, token } = result.data;
+            if(user.two_auth == true){
+                toast.info('2FA verication code');
+                payload.history.push(`/confirm-2FA-code/${token}`);
+            }
+            else {
+                cookie.set('Auth', true);
+                localStorage.setItem('user', JSON.stringify(result.data.user));
+                localStorage.setItem('token', result.data.token);
+                toast.success('Successfully login');
+                yield put(sendTwoCodeSuccess({ user, token }));
+                payload.history.push('/dashboard');
+            }
         }
     }
     catch (error) {
@@ -231,6 +268,9 @@ export function* sendTwoAuthVerifAsync({ payload }) {
 
 export function* onSendTwoAuthVerif() {
     yield takeLatest(AuthTypes.SEND_CODE_TWO_AUTH, sendTwoAuthVerifAsync);
+}
+export function* onSendOtpAuthVerif() {
+    yield takeLatest(AuthTypes.SEND_CODE_OTP_AUTH, sendOtpAuthVerifAsync);
 }
 
 export function* DepositAndWithdrawAsync({ payload }) {
@@ -314,10 +354,48 @@ export function* userActivityAsync({ payload }) {
     }
 }
 
+export function* auth2FATMP({ payload }) {
+    try {
+        const result = yield clientHttp.post(`/user/auth2FATMP`, payload);
+        if(result){
+            const msg = payload.state ? 'Input 2FA CODE' : '2FA Authenticator app is disabled';
+            toast.success(msg);
+            if(result.data.user){
+                yield put(getUserSuccess(result.data.user));
+            }
+            yield put(auth2FATMPSuccess(result.data.value));
+        }
+    }
+    catch (error) {
+        yield put(throwError(error));
+    }
+}
+
+export function* auth2FAConfirm({ payload }) {
+    try {
+        const result = yield clientHttp.post(`/user/auth2FAConfirm`, payload);
+        if(result && result.data){
+            const msg = '2FA Authenticator app is enabled';
+            toast.success(msg);
+            yield put(auth2FAConfirmSuccess(result.data))
+            yield put(auth2FATMPSuccess(''))
+        }
+    }
+    catch (error) {
+        yield put(throwError(error));
+    }
+}
+
 export function* onUserActivity() {
     yield takeLatest(AuthTypes.USER_ACTIVITY, userActivityAsync);
 }
 
+export function* onAUTH_2FA_TMP() {
+    yield takeLatest(AuthTypes.AUTH_2FA_TMP, auth2FATMP);
+}
+export function* onAUTH_2FA_CONFIRM() {
+    yield takeLatest(AuthTypes.AUTH_2FA_CONFIRM, auth2FAConfirm);
+}
 
 export function* authSagas() {
     yield all([
@@ -334,5 +412,8 @@ export function* authSagas() {
         call(onAddContact),
         call(onDeleteContact),
         call(onUserActivity),
+        call(onAUTH_2FA_TMP),
+        call(onAUTH_2FA_CONFIRM),
+        call(onSendOtpAuthVerif),
     ]);
 };

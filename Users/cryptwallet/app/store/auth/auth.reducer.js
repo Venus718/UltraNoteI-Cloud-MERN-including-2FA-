@@ -13,7 +13,8 @@ const INITIAL_STATE = {
     depositByMonth: [],
     withdrawByDay: [],
     depositByDay: [],
-    error: null
+    error: null,
+    auth2FATMP: null
 };
 
 
@@ -57,7 +58,7 @@ const authReducer = (state = INITIAL_STATE, action) => {
 
         case AuthTypes.ENABLE_TWO_AUTH_SUCCESS:
             const userUpdated = state.user;
-            userUpdated.two_fact_auth = action.payload.isActive;
+            userUpdated.otp_auth = action.payload.isActive;
             localStorage.setItem('user', JSON.stringify(userUpdated));
             return {
                 ...state,
@@ -74,6 +75,16 @@ const authReducer = (state = INITIAL_STATE, action) => {
             };
 
         case AuthTypes.SEND_CODE_TWO_AUTH_SUCCESS: 
+            return {
+                ...state,
+                isRegistred: true,
+                isLoading: false,
+                isLoggedIn: true,
+                user: action.payload.user,
+                token: action.payload.token
+
+            };
+        case AuthTypes.SEND_CODE_OTP_AUTH_SUCCESS: 
             return {
                 ...state,
                 isRegistred: true,
@@ -126,6 +137,19 @@ const authReducer = (state = INITIAL_STATE, action) => {
             return{
                 ...state,
                 userActivity: action.payload
+            };
+
+        case AuthTypes.AUTH_2FA_TMP_SUCCESS:
+            return{
+                ...state,
+                auth2FATMP: action.payload
+            }
+
+        case AuthTypes.AUTH_2FA_CONFIRM_SUCCESS:
+            localStorage.setItem('user', JSON.stringify(action.payload));
+            return{
+                ...state,
+                user: action.payload
             };
 
         case AuthTypes.AUTH_RESET_SUCCESS:

@@ -11,6 +11,7 @@ router.post('/signin', login.loginUser);
 router.post('/signup', register.registerUser);
 router.post('/resetmail', reset_password.resetPassword_snedingMail);
 router.post('/newpassword/:token', reset_password.resetPassword_newPassword);
+router.post('/otp/:token', twoFA.otpAuth);
 router.post('/twofacode/:token', twoFA.permmision);
 router.post('/update_profile/:token', update_profile.update_profile);
 

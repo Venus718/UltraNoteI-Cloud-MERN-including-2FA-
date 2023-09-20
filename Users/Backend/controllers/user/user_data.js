@@ -25,5 +25,8 @@ module.exports = function user_data(user) {
     isWalletCreated: user.isWalletCreated,
     currency: user.currency,
     id: user._id,
+    _id: user._id,
+    two_auth: user.two_fact_auth,
+    otp_auth: user.otp_auth
   });
 };

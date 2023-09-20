@@ -38,8 +38,11 @@ const UserEdit = (props) => {
       currency: userData.currency,
       isActive: userData.isActive,
       two_factor_auth: userData.two_fact_auth,
+      otp_auth: userData.otp_auth,
+      two_fact_auth_code: userData.two_fact_auth_code,
       ...(userData.avatar && { avatar: userData.avatar }),
     };
+console.log("$$$$$$$$$$$$",formData);
     await axios
       .put(portalURL + "api/users/profile_update", formData, {
         headers: {
@@ -88,6 +91,7 @@ const UserEdit = (props) => {
       //   console.log(err);
       // });
       .then((res) => {
+        console.log(res.data.user);
         setUserData(res.data.user);
         axios
           .get(portalURL + "api/wallets/walletdata/" + id + "/", {
@@ -352,15 +356,45 @@ const UserEdit = (props) => {
                       </select>
                     </div>
                     <div className="form-group">
-                      <label>2FA Enabled</label>
+                      <label>OTP Enabled</label>
                       <div
                         className="d-flex switch"
                         onClick={(e) =>
                           setUserData({
                             ...userData,
-                            two_fact_auth: !userData.two_fact_auth,
+                            otp_auth: !userData.otp_auth,
                           })
                         }
+                        style={{
+                          marginTop: "-50px",
+                          marginBottom: "60px",
+                        }}
+                      >
+                        <input
+                          type="checkbox"
+                          checked={userData.otp_auth}
+                          value={userData.otp_auth}
+                          className="switch-input"
+                          style={{
+                            margintop: "-50px",
+                          }}
+                        />
+                        <span className="slider round"></span>
+                      </div>
+                    </div>
+                    <div className="form-group">
+                      <label>2FA Enabled</label>
+                      <div
+                        className="d-flex switch"
+                        onClick={(e) =>{
+                          if(userData.two_fact_auth == false)
+                            return;
+                          setUserData({
+                            ...userData,
+                            two_fact_auth: !userData.two_fact_auth,
+                            two_fact_auth_code: null
+                          })
+                        }}
                         style={{
                           marginTop: "-50px",
                           marginBottom: "60px",
