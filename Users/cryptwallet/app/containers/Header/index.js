@@ -162,12 +162,12 @@ class Header extends React.Component {
                 <ListItem className="menuItem">
                   <NavLink to="/my-wallet">My Wallet</NavLink>
                 </ListItem>
-                <ListItem className="menuItem">
+                {/* <ListItem className="menuItem">
                   <NavLink to="/my-profile">My Profile</NavLink>
-                </ListItem>
-                <ListItem className="menuItem">
+                </ListItem> */}
+                {/* <ListItem className="menuItem">
                   <NavLink to="/settings">Settings</NavLink>
-                </ListItem>
+                </ListItem> */}
                 <ListItem className="menuItem">
                   <NavLink to="/address-book">Address Book</NavLink>
                 </ListItem>
@@ -224,6 +224,10 @@ class Header extends React.Component {
                           <ListItem>
                             <NavLink to="/my-profile">My Profile</NavLink>
                           </ListItem>
+                          <ListItem>
+                            <NavLink to="/settings">Settings</NavLink>
+                          </ListItem>
+                          
                           {Auth ? (
                             <ListItem>
                               <Button
@@ -274,12 +278,12 @@ class Header extends React.Component {
               <MenuItem>
                 <NavLink to="/my-wallet">My Wallet</NavLink>
               </MenuItem>
-              <MenuItem>
+              {/* <MenuItem>
                 <NavLink to="/my-profile">My Profile</NavLink>
-              </MenuItem>
-              <MenuItem>
+              </MenuItem> */}
+              {/* <MenuItem>
                 <NavLink to="/settings">Settings</NavLink>
-              </MenuItem>
+              </MenuItem> */}
               <MenuItem>
                 <NavLink to="/address-book">Address Book</NavLink>
               </MenuItem>
