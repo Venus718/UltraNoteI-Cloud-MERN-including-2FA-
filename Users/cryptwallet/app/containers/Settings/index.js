@@ -227,14 +227,6 @@ export class Settings extends React.Component {
                     </Button>
                   </Grid>
                   <Grid item xs={12} md={6}>
-<<<<<<< HEAD
-=======
-                    <Typography className="subTitle">Security</Typography>
-                    <Typography component="p">
-                      Please make sure to enable OTP
-                      at login for a better account security.
-                    </Typography>
->>>>>>> 84a279205afd8adbfbb78cd47c5405ee88827f69
                     <Grid className="swtichCheck">
                       <FormControlLabel
                         control={
