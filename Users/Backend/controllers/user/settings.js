@@ -43,6 +43,7 @@ module.exports = {
                 
                 var token = speakeasy.totp({
                     secret: secret.base32,
+                    label: 'UltraNote Infinity', 
                     encoding: 'base32'
                 });
                 let dataUser = await User.findByIdAndUpdate({_id: _id}, { two_fact_auth_code: token, secret: secret, two_fact_auth_tmp: true },{
