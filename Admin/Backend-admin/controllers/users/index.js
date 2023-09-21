@@ -220,7 +220,6 @@ module.exports = {
         otp_auth,
         two_fact_auth_code
       } = req.body;
-console.log("###########",otp_auth);
       const profileUpdated = await User.findOneAndUpdate(
         { _id: ObjectId(_id) },
         {

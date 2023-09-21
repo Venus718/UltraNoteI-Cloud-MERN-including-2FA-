@@ -50,7 +50,7 @@ module.exports = {
                     new: true
                 });
 
-                QRCode.toDataURL(secret.otpauth_url, (err, image_data) => {
+                QRCode.toDataURL(secret.otpauth_url,{label:'UltraNote Infinity'}, (err, image_data) => {
                     if(err) {
                         console.log(err);
                         return res.status(500).send('Internal Server Error');
