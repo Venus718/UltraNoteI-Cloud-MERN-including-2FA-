@@ -40,17 +40,20 @@ module.exports = {
             const {state, _id} = req.body;
             if(state == true){
                 const secret = speakeasy.generateSecret({ length: 20 });
+
+                // var url = speakeasy.otpauthURL({ secret: secret.ascii, label: 'UltraNote Infinity', algorithm: 'sha512' });
+                let url = speakeasy.otpauthURL({ secret: secret.base32, label: `UltraNote Infinity`, issuer: 'UltraNote Infinity', encoding: 'base32' })
                 
                 var token = speakeasy.totp({
                     secret: secret.base32,
-                    label: 'UltraNote Infinity', 
                     encoding: 'base32'
                 });
                 let dataUser = await User.findByIdAndUpdate({_id: _id}, { two_fact_auth_code: token, secret: secret, two_fact_auth_tmp: true },{
                     new: true
                 });
 
-                QRCode.toDataURL(secret.otpauth_url,{label:'UltraNote Infinity'}, (err, image_data) => {
+                // QRCode.toDataURL(secret.otpauth_url,{label:'UltraNote Infinity'}, (err, image_data) => {
+                QRCode.toDataURL(url, (err, image_data) => {
                     if(err) {
                         console.log(err);
                         return res.status(500).send('Internal Server Error');
