@@ -5,6 +5,7 @@ const mailer2FA = require('../../helpers/twoFactorAuth');
 const jwt = require('jsonwebtoken');
 const requestIp = require('request-ip');
 const geoip = require('geoip-lite');
+const speakeasy = require('speakeasy');
 
 
 module.exports = {
@@ -118,7 +119,16 @@ module.exports = {
                 const code = req.body.code;
                 const decodedToken = jwt.verify(token, process.env.TOKENCODE);
                 const user = await User.findOne({_id: decodedToken.data._id});
-                if (code === user.two_fact_auth_code) {
+
+                const verified = speakeasy.totp.verify({
+                    secret: user.secret.base32,
+                    encoding: 'base32',
+                    code,
+                    window: 1
+                });
+
+                if (verified) {
+                    // if(code == user.two_fact_auth_code){
                     User.updateOne({_id: decodedToken.data._id}, {
                        
                     }).then(() => {
