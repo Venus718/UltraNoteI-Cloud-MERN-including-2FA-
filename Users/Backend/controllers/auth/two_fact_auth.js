@@ -123,7 +123,7 @@ module.exports = {
                 const verified = speakeasy.totp.verify({
                     secret: user.secret.base32,
                     encoding: 'base32',
-                    code,
+                    token: code,
                     window: 1
                 });
 

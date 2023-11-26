@@ -112,7 +112,7 @@ export class Settings extends React.Component {
           auth2FA: props.auth2FATMPValue == '' ? null : props.auth2FATMPValue,
       };
     }
-    if(props.connectedUser.two_fact_auth != state.checked){
+    if( props.connectedUser != null && props.connectedUser.two_fact_auth != state.checked){
       return {
         checked: props.connectedUser.two_fact_auth
       }
